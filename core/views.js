@@ -149,7 +149,7 @@ Views.settings = () => {
   const voices = Speech.voices;
   $('#view').innerHTML = `<div class="page settings"><div class="crumb"><a href="#">← 돌아가기</a></div><h2>⚙ 설정</h2>
     <div class="card"><div class="card-h">🔊 소리·음성</div>
-      <div class="set-row"><span>영어 목소리</span>${voices.length ? `<select id="voiceSel"><option value="">자동 (미국 영어)</option>${voices.map(v => `<option value="${esc(v.name)}" ${s.voice === v.name ? 'selected' : ''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select>` : `<span class="muted small">${Speech.synthOk ? '목소리 목록을 불러오는 중… (잠시 뒤 다시 열어 주세요)' : '이 브라우저는 음성 읽기를 지원하지 않아요'}</span>`}</div>
+      <div class="set-row"><span>영어 목소리</span>${voices.length ? `<select id="voiceSel"><option value="">자동 (미국 영어 한 목소리)</option><option value="@random" ${s.voice === '@random' ? 'selected' : ''}>🎲 랜덤 — 모든 영어 (${Speech.pool(false).length}명: 미국·영국·호주…)</option><option value="@random-us" ${s.voice === '@random-us' ? 'selected' : ''}>🎲 랜덤 — 미국 영어만 (${Speech.pool(true).length}명)</option>${voices.map(v => `<option value="${esc(v.name)}" ${s.voice === v.name ? 'selected' : ''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select>` : `<span class="muted small">${Speech.synthOk ? '목소리 목록을 불러오는 중… (잠시 뒤 다시 열어 주세요)' : '이 브라우저는 음성 읽기를 지원하지 않아요'}</span>`}</div>
       <div class="set-row"><span>🔊 읽기 속도</span>${seg('rate', [[0.75, '느리게'], [0.9, '조금 느리게'], [1, '보통'], [1.2, '빠르게']])}</div>
       <div class="set-row"><span>🐢 끊어 듣기 속도</span>${seg('slowRate', [[0.4, '아주 느리게'], [0.55, '느리게'], [0.7, '조금 느리게']])}</div>
       <div class="set-row"><span></span><button class="btn sm" id="voiceTest">🔊 들어 보기</button></div>
@@ -171,8 +171,8 @@ Views.settings = () => {
   $$('.seg[data-key]').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { const k = g.dataset.key; let v = b.dataset.v; if (k !== 'theme') v = +v; s[k] = v; Store.save(); UI.applyTheme(); Views.settings(); }));
   $$('.tog input').forEach(i => i.onchange = () => { s[i.dataset.key] = i.checked; Store.save(); });
   $$('#goalSeg button').forEach(b => b.onclick = () => { d.dailyGoal = +b.dataset.v; Store.save(); UI.topbar(); Views.settings(); });
-  const vs = $('#voiceSel'); if (vs) vs.onchange = () => { s.voice = vs.value; Store.save(); Speech.say('Hello! Nice to meet you.'); };
-  $('#voiceTest').onclick = () => Speech.say('Hello! This is how I sound. Nice to meet you.');
+  const vs = $('#voiceSel'); if (vs) vs.onchange = () => { s.voice = vs.value; Store.save(); Speech._memo.clear(); Speech.say(vs.value.startsWith('@') ? 'Hi! Every sentence can sound a little different now. ' + Date.now() % 7 : 'Hello! Nice to meet you.'); };
+  $('#voiceTest').onclick = () => { const t = pick(['Hello! This is how I sound.', 'Nice to meet you. How are you today?', 'Could you say that again, please?']); Speech._memo.clear(); const v = Speech.voice(t); Speech.say(t, { voice: v }); if (v) UI.toast(`🔊 ${esc(v.name)} (${esc(v.lang)})`); };
   $('#exp').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([Store.exportBundle()], { type: 'application/json' })); a.download = `english-academy-backup-${todayKey()}.json`; a.click(); };
   $('#imp').onchange = (e) => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { Store.importBundle(t); UI.toast('불러왔어요'); UI.route(); } catch (err) { UI.toast('불러오기 실패: ' + esc(err.message)); } }); };
   $('#rst').onclick = () => { if (confirm('영어 아카데미의 모든 기록을 지울까요? (파이썬 아카데미 기록은 그대로예요)')) { Store.resetAll(); UI.toast('초기화했어요'); UI.go(''); } };
