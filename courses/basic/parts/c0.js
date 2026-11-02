@@ -18,10 +18,11 @@ LESSONS.push(
           { en: 'Is|that|G or J?', roles: 'Q S C', ko: '그거 G예요, J예요?' },
           { en: "It's J-I-S-O-O.", ko: '제이, 아이, 에스, 오, 오예요.', deck: false },
         ], tip: '같은 글자가 두 번이면 「double O」처럼 말해도 돼요: J-I-S-double O.' },
-      { title: '문장 속에서는 「소리」로 읽어요', html: '<p>낱말 안에서 a는 「애」, e는 「에」, i는 「이」, o는 「아」, u는 「어」에 가까운 <b>짧은 소리</b>가 기본이에요.</p><p>cat 「캣」, bed 「베드」, cup 「컵」처럼요.</p>',
+      { title: '문장 속에서는 「소리」로 읽어요', html: '<p>낱말 안에서 a는 「애」, e는 「에」, i는 「이」, u는 「어」에 가까운 <b>짧은 소리</b>가 기본이에요. cat 「캣」, bed 「베드」, sit 「싯」, cup 「컵」처럼요.</p><p><b>o는 조금 특별해요.</b> 학교에서는 「오」로 배웠지만, 이 사이트가 들려주는 <b>미국식 발음</b>에서는 hot, stop, box 의 짧은 o 가 입을 크게 벌린 <b>「아」</b>에 가까워요(hot 「핫」, stop 「스탑」). 영국식은 「오」에 더 가까워요(hot 「홋」). 둘 다 맞는 발음이니 🔊로 들으며 익숙한 쪽으로 따라 하면 돼요.</p><p>단, go 「고우」, home 「호움」처럼 <b>긴 o</b>는 「오우」로 읽어요.</p>',
         ex: [
           { en: 'The cat|is|on the bed.', roles: 'S V M', ko: '고양이가 침대 위에 있어요.' },
           { en: 'I|have|a red cup.', roles: 'S V O', ko: '나는 빨간 컵이 있어요.' },
+          { en: 'The hot dog|is|in the box.', roles: 'S V M', ko: '핫도그가 상자 안에 있어요.', note: 'hot 「핫」, box 「박스」 — 미국식 짧은 o 는 「아」에 가까워요.' },
         ] },
     ],
     summary: ['철자를 부를 때는 알파벳 <b>이름</b>(에이·비·씨), 읽을 때는 <b>소리</b>(애·브·크).', 'G(쥐)·J(제이), E(이)·I(아이)를 헷갈리지 않게!', '철자를 물을 때: <b>How do you spell that?</b>'] },
