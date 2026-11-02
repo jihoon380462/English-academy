@@ -139,3 +139,4 @@ code{background:var(--surface2);padding:1px 6px;border-radius:6px;font-size:.92e
 
 .pl-res{display:flex;flex-direction:column;gap:6px;margin:10px 0;text-align:left}.pl-row{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:10px;background:var(--surface2)}.pl-row.rec{outline:2px solid var(--primary)}.pl-row b{color:var(--good);letter-spacing:2px}
 .ltitle .chip{align-self:flex-start;margin-top:2px}
+.say.slow.speaking::after{content:attr(data-part);font-size:.7em;margin-left:4px}

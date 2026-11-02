@@ -14,7 +14,8 @@ const UI = {
   img(name, fallback, cls = '') { return `<span class="aimg-wrap ${cls}"><img class="aimg" src="${assetUrl(name)}" alt="" onerror="this.replaceWith(document.createTextNode('${fallback}'))"></span>`; },
   // 🔊 버튼 (data-say 에 문장). 문서 전체에 위임 핸들러 하나
   sayBtn(text, label = '', cls = '') { return `<button class="say ${cls}" data-say="${esc(Content.plain(text))}" title="듣기" aria-label="듣기">🔊${label ? ' ' + label : ''}</button>`; },
-  slowBtn(text) { return `<button class="say slow" data-say="${esc(Content.plain(text))}" data-rate="0.7" title="천천히 듣기" aria-label="천천히 듣기">🐢</button>`; },
+  // 🐢 = 덩어리(| 표시, 없으면 2~3낱말)마다 끊어서 아주 천천히 (속도만 낮추면 기기에 따라 차이가 거의 없어서, v0.2.2)
+  slowBtn(text) { return `<button class="say slow" data-slow="${esc(String(text ?? ''))}" title="끊어서 천천히 듣기" aria-label="끊어서 천천히 듣기">🐢</button>`; },
   // 성분 색 덩어리 문장
   chunks(en, roles, { say = true } = {}) {
     const cs = Content.chunks(en, roles); const body = cs.map(c => `<span class="chunk ${c.r ? 'r-' + c.r : ''}" ${c.r ? `title="${esc(CONFIG.ROLES[c.r].name)}"` : ''}>${esc(c.t)}</span>`).join(' ');
@@ -39,7 +40,7 @@ const UI = {
     this.views = views; this.applyTheme(); Speech.init(); Confetti.init();
     addEventListener('hashchange', () => this.route());
     matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => this.applyTheme());
-    document.addEventListener('click', (e) => { const b = e.target.closest('[data-say]'); if (b) { e.preventDefault(); Speech.say(b.dataset.say, { btn: b, rate: b.dataset.rate ? +b.dataset.rate : undefined }); } });
+    document.addEventListener('click', (e) => { const sl = e.target.closest('[data-slow]'); if (sl) { e.preventDefault(); Speech.slow(sl.dataset.slow, { btn: sl }); return; } const b = e.target.closest('[data-say]'); if (b) { e.preventDefault(); Speech.say(b.dataset.say, { btn: b, rate: b.dataset.rate ? +b.dataset.rate : undefined }); } });
     this.route();
   },
   // 보상 연출: XP 날아오기·레벨업·뱃지

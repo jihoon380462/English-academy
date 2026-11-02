@@ -150,7 +150,8 @@ Views.settings = () => {
   $('#view').innerHTML = `<div class="page settings"><div class="crumb"><a href="#">← 돌아가기</a></div><h2>⚙ 설정</h2>
     <div class="card"><div class="card-h">🔊 소리·음성</div>
       <div class="set-row"><span>영어 목소리</span>${voices.length ? `<select id="voiceSel"><option value="">자동 (미국 영어)</option>${voices.map(v => `<option value="${esc(v.name)}" ${s.voice === v.name ? 'selected' : ''}>${esc(v.name)} (${esc(v.lang)})</option>`).join('')}</select>` : `<span class="muted small">${Speech.synthOk ? '목소리 목록을 불러오는 중… (잠시 뒤 다시 열어 주세요)' : '이 브라우저는 음성 읽기를 지원하지 않아요'}</span>`}</div>
-      <div class="set-row"><span>읽기 속도</span>${seg('rate', [[0.7, '느리게'], [0.85, '조금 느리게'], [1, '보통'], [1.2, '빠르게']])}</div>
+      <div class="set-row"><span>🔊 읽기 속도</span>${seg('rate', [[0.75, '느리게'], [0.9, '조금 느리게'], [1, '보통'], [1.2, '빠르게']])}</div>
+      <div class="set-row"><span>🐢 끊어 듣기 속도</span>${seg('slowRate', [[0.4, '아주 느리게'], [0.55, '느리게'], [0.7, '조금 느리게']])}</div>
       <div class="set-row"><span></span><button class="btn sm" id="voiceTest">🔊 들어 보기</button></div>
       ${tog('autoplay', '정답을 맞히면 문장 자동 재생 · 듣기 문제는 자동 재생')}
       ${tog('sound', '효과음')}${tog('vibrate', '진동(폰)')}

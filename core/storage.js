@@ -11,7 +11,7 @@ const Store = {
   _set(k, v) { try { localStorage.setItem(this.key(k), JSON.stringify(v)); } catch (e) { console.warn('저장 실패', k, e); } },
   blank() {
     return { v: CONFIG.SCHEMA_VERSION, nick: '', onboarded: false, level0: null, xp: 0, badges: [], badgeDates: {}, stats: {}, streak: { cur: 0, best: 0, last: null }, days: {}, dailyGoal: CONFIG.DAILY_GOAL_DEFAULT,
-      settings: { theme: 'auto', font: 1, sound: true, vibrate: true, anim: 2, voice: '', rate: 1.0, autoplay: true, unlockAll: false, newPerDay: 20, deckCards: 'both' }, last: null };
+      settings: { theme: 'auto', font: 1, sound: true, vibrate: true, anim: 2, voice: '', rate: 1.0, autoplay: true, unlockAll: false, newPerDay: 20, deckCards: 'both', slowRate: 0.55 }, last: null };
   },
   blankCourse() { return { problems: {}, lessons: {} }; },
   load(course) {

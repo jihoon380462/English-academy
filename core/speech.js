@@ -18,7 +18,7 @@ const Speech = {
     text = Content.plain(text); if (!text) return Promise.resolve();
     if (!this.synthOk) { UI.toast('이 기기·브라우저는 음성 읽기를 지원하지 않아요'); return Promise.resolve(); }
     return new Promise(res => {
-      try { speechSynthesis.cancel(); } catch (e) {}
+      this._seq = (this._seq || 0) + 1; try { speechSynthesis.cancel(); } catch (e) {}
       const u = new SpeechSynthesisUtterance(text); const v = this.voice(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = CONFIG.SPEECH.lang;
       u.rate = opt.rate || Store.data.settings.rate || 1; u.onend = u.onerror = () => res();
       if (opt.btn) { opt.btn.classList.add('speaking'); const done = () => opt.btn.classList.remove('speaking'); u.addEventListener('end', done); u.addEventListener('error', done); }
@@ -26,7 +26,21 @@ const Speech = {
       setTimeout(res, 2000 + text.length * 120); // 일부 브라우저가 onend 를 안 부름
     });
   },
-  stop() { try { speechSynthesis.cancel(); } catch (e) {} },
+  stop() { this._seq = (this._seq || 0) + 1; try { speechSynthesis.cancel(); } catch (e) {} },
+  // 끊어서 천천히: '|' 덩어리가 있으면 덩어리마다, 없으면 2~3낱말씩 → 아주 느린 속도로 하나씩 읽고 사이에 쉼. 다시 누르면 멈춤
+  slowParts(raw) {
+    raw = String(raw ?? '').trim(); if (raw.includes('|')) return raw.split('|').map(s => s.trim()).filter(Boolean);
+    const w = raw.split(/\s+/).filter(Boolean); if (w.length <= 3) return w; const out = []; for (let i = 0; i < w.length;) { const n = w.length - i === 4 ? 2 : Math.min(3, w.length - i); out.push(w.slice(i, i + n).join(' ')); i += n; } return out;
+  },
+  async slow(raw, { btn } = {}) {
+    if (btn && btn.classList.contains('speaking')) { this.stop(); btn.classList.remove('speaking'); return; }
+    this.stop(); const my = ++this._seq; const parts = this.slowParts(raw); if (btn) btn.classList.add('speaking');
+    const rate = Store.data.settings.slowRate || 0.55;
+    for (let i = 0; i < parts.length; i++) { if (my !== this._seq) break; if (btn) btn.dataset.part = `${i + 1}/${parts.length}`; await this._one(parts[i], rate); if (my !== this._seq) break; await sleep(380); }
+    if (my === this._seq) await sleep(250);
+    if (btn) { btn.classList.remove('speaking'); delete btn.dataset.part; }
+  },
+  _one(text, rate) { return new Promise(res => { if (!this.synthOk) return res(); const u = new SpeechSynthesisUtterance(Content.plain(text)); const v = this.voice(); if (v) { u.voice = v; u.lang = v.lang; } else u.lang = CONFIG.SPEECH.lang; u.rate = rate; let done = false; const fin = () => { if (!done) { done = true; res(); } }; u.onend = u.onerror = fin; speechSynthesis.speak(u); setTimeout(fin, 1500 + text.length * 220); }); },
   // 음성 인식 한 번. 돌려주는 값 {text, alts[]} — 실패 시 reject(Error(사람이 읽을 이유))
   listen({ onStart } = {}) {
     return new Promise((res, rej) => {
