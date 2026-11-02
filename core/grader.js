@@ -23,8 +23,10 @@ const Grader = {
     return dp[m][n];
   },
   same(a, b) { return a.length === b.length && a.every((w, i) => w === b[i]); },
+  // 문법 차이(어미 -s/-es/-d/-ed)는 오타로 봐주지 않는다: drive ↔ drives, like ↔ liked
+  inflect(x, y) { const [s, l] = x.length < y.length ? [x, y] : [y, x]; return ['s', 'es', 'd', 'ed'].some(e => l === s + e); },
   // 오타 하나(4글자 이상 낱말에서 편집 거리 1)만 다르면 near
-  near(a, b) { if (a.length !== b.length) return null; let typo = null; for (let i = 0; i < a.length; i++) { if (a[i] === b[i]) continue; if (typo || b[i].length < 4 || this.dist(a[i], b[i]) !== 1) return null; typo = { got: a[i], want: b[i] }; } return typo; },
+  near(a, b) { if (a.length !== b.length) return null; let typo = null; for (let i = 0; i < a.length; i++) { if (a[i] === b[i]) continue; if (typo || b[i].length < 4 || this.dist(a[i], b[i]) !== 1 || this.inflect(a[i], b[i])) return null; typo = { got: a[i], want: b[i] }; } return typo; },
   // 낱말 단위 비교: LCS 로 맞은 낱말 표시. 돌려주는 값 got[i] = {w, ok}, missing = 답에만 있는 낱말
   diff(got, want) {
     const m = got.length, n = want.length; const L = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
@@ -46,7 +48,7 @@ const Grader = {
     return { ok: false, best, diff: bestDiff || this.diff(got, this.tokens(best)) };
   },
   // 한 낱말(빈칸) 채점
-  word(input, answers) { const g = this.tokens(input).join(' '); for (const a of answers) { const w = this.tokens(a).join(' '); if (g === w) return { ok: true }; if (w.length >= 4 && !w.includes(' ') && this.dist(g, w) === 1) return { ok: true, typo: { got: g, want: w } }; } return { ok: false }; },
+  word(input, answers) { const g = this.tokens(input).join(' '); for (const a of answers) { const w = this.tokens(a).join(' '); if (g === w) return { ok: true }; if (w.length >= 4 && !w.includes(' ') && this.dist(g, w) === 1 && !this.inflect(g, w)) return { ok: true, typo: { got: g, want: w } }; } return { ok: false }; },
   // 말하기: 인식된 문장과 목표 문장의 낱말 일치율
   speak(heard, target) { const d = this.diff(this.tokens(heard), this.tokens(target)); const want = this.tokens(target); const hit = want.length - d.missing.length; return { rate: want.length ? hit / want.length : 0, diff: d }; },
   // 흔한 실수 설명 (shared/mistakes.js)

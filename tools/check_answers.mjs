@@ -21,7 +21,7 @@ for (const c of courses()) {
 { const { Grader, Anki, ANKI } = load(courses()[0]); const T = (cond, m) => { n++; if (!cond) F('단위: ' + m); };
   T(Grader.text("i'm a student", ['I am a student.']).ok, '축약형'); T(Grader.text('I am a studnet.', ['I am a student.']).typo, '오타 1개'); T(!Grader.text('I is a student.', ['I am a student.']).ok, '틀린 be동사');
   T(Grader.text('I cannot swim', ["I can't swim."]).ok, "cannot = can't"); T(Grader.text('“I’m fine,” she said.', ['"I\'m fine," she said.']).ok, '굽은 따옴표');
-  T(!Grader.text('I am student.', ['I am a student.']).ok, '관사 빠짐은 오답'); T(Grader.speak('i am from korea', "I'm from Korea.").rate === 1, '말하기 일치');
+  T(!Grader.text('I am student.', ['I am a student.']).ok, '관사 빠짐은 오답'); T(!Grader.text('He can drives.', ['He can drive.']).ok, '어미 -s 는 오타로 안 봐줌'); T(!Grader.word('like', ['liked']).ok, '빈칸 -d 차이 오답'); T(Grader.speak('i am from korea', "I'm from Korea.").rate === 1, '말하기 일치');
   const now = Date.UTC(2026, 10, 3, 3, 0); let c = Anki.newCard(); c = Anki.next(c, 3, now); T(c.q === 'learn' && Math.round((c.due - now) / 60000) === 10, 'Anki 새 카드 좋음 → 10분');
   c = Anki.next(c, 3, c.due); T(c.q === 'review' && c.ivl === 1, 'Anki 졸업 1일'); let e = Anki.next(Anki.newCard(), 4, now); T(e.q === 'review' && e.ivl === 4, 'Anki 쉬움 4일');
   let r = Object.assign(Anki.newCard(), { q: 'review', ivl: 10, ease: 2.5, due: now }); const g = Anki.next(r, 3, now); T(g.ivl >= 21 && g.ivl <= 29, `Anki 좋음 10일×2.5 ≈ 25±퍼지 (${g.ivl})`);
