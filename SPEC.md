@@ -149,7 +149,7 @@
 
 | 파이썬 아카데미 | 영어 아카데미 | 방식 |
 | --- | --- | --- |
-| `core/config.js` | 같은 이름 | 수정: `APP_VERSION`, `COURSES`(3-1절), XP 표, 문구 `T`, `SISTER_SITES`(파이썬 아카데미 버튼) |
+| `core/config.js` | 같은 이름 | 수정: `APP_VERSION`, `COURSES`(3-1절), XP 표, 문구 `T` |
 | `core/util.js`, `core/fx.js`, `core/ui-core.js` | 같은 이름 | 거의 그대로 (모달·토스트·상단바·용어 칩·효과음·색종이·마스코트) |
 | `core/storage.js` | 같은 이름 | **키 접두사 `academy.*` → `eng.*`** (`eng.profile`, `eng.course.<id>`, `eng.words`, `eng.sync`) |
 | `core/sync.js` (gist 기기 연동) | 같은 이름 | gist 파일명 `english_academy_save.json` 으로. 토큰·연동 코드 흐름 그대로 |
@@ -161,7 +161,7 @@
 | `core/visualize.js` | `core/sentence.js` | **새로**: 문장 구조 색 블록·틀린 칸 표시 |
 | `core/ui-views-math.js` (지식 지도) | 단어 공간 지도 | 차용 |
 | `core/tutor.js` (Claude 선생님) | 같은 이름 | 차용하되 **꺼 둔 채로** 시작(`TUTOR.enabled:false`) — 켤 때 영어 첨삭 페르소나 |
-| `core/hub.js`, `index.html` | 같은 이름 | 수정 + 맨 아래 **"🐍 파이썬 아카데미로" 버튼** |
+| `core/hub.js`, `index.html` | 같은 이름 | 수정 (파이썬 아카데미 링크 버튼 여부는 10절) |
 | `shared/badges.js`·`glossary.js`·`errors.js` | `badges.js`·`glossary.js`(문법 용어)·`mistakes.js`(흔한 실수)·`contractions.js` | 내용 새로 |
 | `sw.js` | 같은 이름 | **캐시 이름 `academy-shell-*` → `english-shell-*`** (파이썬 sw 가 `academy-shell-` 로 시작하는 남의 캐시를 지움) |
 | `tools/stamp.mjs`·`img_clean.py`·`regress.py` 패턴 | 같은 이름 | 그대로/경로만 |
@@ -183,7 +183,7 @@
 
 | Phase | 내용 | 버전 | 끝났다는 기준 |
 | --- | --- | --- | --- |
-| **0** 뼈대 | 6절 차용 복사·접두사 교체, 허브(코스 카드·공간·파이썬 버튼), 레슨/문제 화면, `core/speech.js` 듣기, 문제 유형 `choice·match·order·build·fill`, Grader 정규화·축약형·거의 정답, 검증 도구 2개 + 배포 게이트, 샘플 레슨 2개 | v0.1.0 | 폰·PC에서 레슨 1개 완주, 파이썬 아카데미 진행이 그대로인지 확인 |
+| **0** 뼈대 | 6절 차용 복사·접두사 교체, 허브(코스 카드·공간), 레슨/문제 화면, `core/speech.js` 듣기, 문제 유형 `choice·match·order·build·fill`, Grader 정규화·축약형·거의 정답, 검증 도구 2개 + 배포 게이트, 샘플 레슨 2개 | v0.1.0 | 폰·PC에서 레슨 1개 완주, 파이썬 아카데미 진행이 그대로인지 확인 |
 | **1** 기초 코스·단어 공간 | `basic` 챕터 0~3 + 보스, 유형 `fix·type`, 문장 구조 그림, 배치 테스트, 단어 공간 500단어 + SRS + 타임어택 | v0.2.0 | 챕터 3 보스까지 플레이 가능, 복습 큐가 허브에 보임 |
 | **2** 듣기·말하기 | 유형 `listen·dictation·speak`, 녹음 폴백, `talk` 코스 상황 미션 6개, 기초 챕터 4~6 | v0.3.0 | 크롬(안드로이드)에서 말하기 채점, 사파리에서 폴백 동작 |
 | **3** 문법 더 깊게 | `grammar` 코스, 흔한 실수 사전 확장, 단어 1000 | v0.4.0 | — |
@@ -207,10 +207,10 @@
 
 ## 10. 파이썬 아카데미 ↔ 영어 아카데미 연결
 
-- 파이썬 아카데미 허브 맨 아래(푸터 위)에 **"🌍 영어 아카데미로 가기"** 버튼(국기 이모지는 윈도우에서 글자로 보여서 안 써요) → `https://jihoon380462.github.io/English-academy/` (파이썬 저장소 PR, `CONFIG.SISTER_SITES`).
+- 파이썬 아카데미 허브 → 영어 아카데미 버튼: **보류**(사용자 11/3). 다시 할 때 방식: 파이썬 `core/config.js` 에 `SISTER_SITES` 목록 + `core/hub.js` 푸터 위 버튼, `[core]` 브랜치 → PR. 아이콘은 🌍(국기 이모지는 윈도우에서 글자로 보임).
 - 영어 아카데미 허브 맨 아래에 **"🐍 파이썬 아카데미로 가기"** 버튼 (Phase 0, 같은 `SISTER_SITES` 방식).
 - `dev` 코스(Phase 4)는 파이썬 아카데미의 에러 사전·레슨으로 바로 가는 링크를 가져요.
 
 ## 11. 바뀐 기록
 
-- v0.1 (2026-11-03, Opus): 첫 기획서. 사용자 지시 "기획서를 만들고 파이썬 아카데미 구조를 어느 정도 차용, 파이썬 홈 아래 버튼으로 이동".
+- v0.1 (2026-11-03, Opus): 첫 기획서. 사용자 지시 "기획서를 만들고 파이썬 아카데미 구조를 어느 정도 차용". 파이썬 홈 하단 버튼은 사용자가 보류(10절).

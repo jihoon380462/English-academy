@@ -8,7 +8,7 @@
 | 항목 | 내용 |
 | --- | --- |
 | **현재 버전** | v0.0.1 (2026-11-03) |
-| **마지막 작업** | (Opus) 저장소 첫 커밋 — 기획서 `SPEC.md` v0.1, 운영 문서(HANDOFF·CHANGELOG·specs/workflow.md), 준비 중 페이지 `index.html`, Pages 배포 워크플로. 파이썬 아카데미 허브 하단 "영어 아카데미로 가기" 버튼은 python-academy 저장소 PR 로 올림(병합은 Fable 또는 사용자). |
+| **마지막 작업** | (Opus) 저장소 첫 커밋 — 기획서 `SPEC.md` v0.1, 운영 문서(HANDOFF·CHANGELOG·specs/workflow.md), 준비 중 페이지 `index.html`, Pages 배포 워크플로. 파이썬 아카데미 허브의 "영어 아카데미로 가기" 버튼은 **보류**(사용자 11/3 — 추가하지 않음, SPEC 10절). |
 | **다음 후보** | ① 사용자: SPEC.md 9절 「결정 필요」 D1~D8 확인(추천안이 기본값) ② **Phase 0 뼈대**(Fable 권장 — 파이썬 core 복사·접두사 교체·speech.js·카드 UI·Grader, SPEC 8절) ③ 기초 코스 챕터 0~1 콘텐츠 초안(Opus 콘텐츠, Phase 0 뒤) |
 
 ## 1. 이게 뭔가
