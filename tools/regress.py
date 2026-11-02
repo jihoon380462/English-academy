@@ -61,13 +61,13 @@ with sync_playwright() as pw:
                     if typ == 'speak':
                         page.click('[data-a=skip]'); continue
                     need += 1
-                    page.click('[data-a=reveal]')
+                    page.evaluate('UI.closeModal()'); page.click('[data-a=reveal]')
                     if not page.locator('.fb.good').count(): page.click('[data-a=check]')
                     if page.locator('.fb.good').count(): cleared += 1
                     else: check(False, f'{course} {pid}({typ}) 정답 보기 후 통과 못 함: ' + page.inner_text('.feedback')[:120])
                     if typ in ('build', 'order', 'match', 'fill', 'fix') and theme == 'dark' and not os.environ.get('SHOT_' + typ):
                         os.environ['SHOT_' + typ] = '1'; shot('problem-' + typ); no_hscroll(f'문제 {typ}')
-                    page.click('[data-a=check]')  # 다음
+                    page.evaluate('UI.closeModal()'); page.click('[data-a=check]')  # 다음 (레벨업 모달은 닫고)
                 page.wait_for_selector('.done-card', timeout=5000)
             check(cleared == need, f'{course}: 레슨 {len(lessons)}개 · 문제 {cleared}/{need} 정답 보기로 통과 (전체 {total}, 말하기 건너뜀)')
             no_hscroll(f'{course} 완료 화면')
@@ -90,6 +90,13 @@ with sync_playwright() as pw:
         labels = page.locator('.grade small').all_inner_texts(); check(labels[:1] == ['1분'] and labels[-1] == '4일', f'Anki 버튼 간격 표시 {labels}')
         page.keyboard.press('3'); page.wait_for_timeout(200)
         nr = page.evaluate("Object.entries(Store.cards).filter(([k,c]) => k.startsWith('s:') && c.q !== 'new').length"); check(nr == 1, '카드 평가 저장(좋음 → 학습 중)')
+        # 실력 확인: 전부 「모르겠어요」 → 결과 화면 → 챕터 0 추천
+        page.evaluate("localStorage.removeItem('eng.course.basic'); delete Store.data.placement; Store.save()")
+        page.goto(BASE + 'courses/basic/#placement'); page.wait_for_selector('.prob')
+        for _ in range(60):
+            if page.locator('.pl-res').count(): break
+            page.click('[data-a=idk]'); page.wait_for_timeout(30)
+        check(page.locator('.pl-res').count() == 1, '실력 확인: 결과 화면'); shot('placement')
         # 설정
         page.goto(BASE + 'courses/basic/#settings'); page.wait_for_selector('.settings'); shot('settings'); no_hscroll('설정')
         # 파이썬 아카데미 키 보존

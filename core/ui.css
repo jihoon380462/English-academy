@@ -138,3 +138,4 @@ code{background:var(--surface2);padding:1px 6px;border-radius:6px;font-size:.92e
 @media (max-width:420px){.page{padding:10px 12px 120px}.statgrid{grid-template-columns:repeat(2,1fr)}.btn.big{padding:12px 14px}.tb-goal{display:none}}
 
 .pl-res{display:flex;flex-direction:column;gap:6px;margin:10px 0;text-align:left}.pl-row{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:10px;background:var(--surface2)}.pl-row.rec{outline:2px solid var(--primary)}.pl-row b{color:var(--good);letter-spacing:2px}
+.ltitle .chip{align-self:flex-start;margin-top:2px}

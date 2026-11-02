@@ -15,7 +15,7 @@ LESSONS.push(
         ] },
       { title: '한국인이 헷갈리는 이름: G와 J, E와 I', html: '<table><tr><th>글자</th><th>이름</th></tr><tr><td>G</td><td>쥐</td></tr><tr><td>J</td><td>제이</td></tr><tr><td>E</td><td>이</td></tr><tr><td>I</td><td>아이</td></tr><tr><td>R</td><td>아-ㄹ</td></tr><tr><td>Y</td><td>와이</td></tr></table><p>특히 <b>G(쥐)</b>와 <b>J(제이)</b>, <b>E(이)</b>와 <b>I(아이)</b>를 바꿔 말하는 실수가 많아요.</p>',
         ex: [
-          { en: 'Is|that|G or J?', roles: 'V S C', ko: '그거 G예요, J예요?' },
+          { en: 'Is|that|G or J?', roles: 'Q S C', ko: '그거 G예요, J예요?' },
           { en: "It's J-I-S-O-O.", ko: '제이, 아이, 에스, 오, 오예요.', deck: false },
         ], tip: '같은 글자가 두 번이면 「double O」처럼 말해도 돼요: J-I-S-double O.' },
       { title: '문장 속에서는 「소리」로 읽어요', html: '<p>낱말 안에서 a는 「애」, e는 「에」, i는 「이」, o는 「아」, u는 「어」에 가까운 <b>짧은 소리</b>가 기본이에요.</p><p>cat 「캣」, bed 「베드」, cup 「컵」처럼요.</p>',
@@ -166,7 +166,7 @@ PROBLEMS.push(
   { id: 'B0P3', lesson: 'B0', boss: true, type: 'listen', prompt: '직원이 컵을 들고 물어요. 무슨 말일까요?', say: 'Can I get a name for the order?', opts: ['주문하실 분 이름을 알려 주시겠어요?', '주문을 바꾸시겠어요?', '어디서 드시겠어요?'], ans: 0, tags: ['카페', '듣기'], hints: ['name 이 들렸나요?', 'a name for the order = 주문에 쓸 이름', '이름을 알려 주시겠어요?'] },
   { id: 'B0P4', lesson: 'B0', boss: true, type: 'type', prompt: '이름을 알려 주세요.', ko: '지훈이에요.', answer: ["It's Jihoon.", 'It is Jihoon.', 'Jihoon.', "I'm Jihoon.", 'My name is Jihoon.', "It's Jihoon, please."], tags: ['카페', '이름'], hints: ['짧게 It\'s + 이름', '지훈 = Jihoon', "It's Jihoon."] },
   { id: 'B0P5', lesson: 'B0', boss: true, type: 'choice', prompt: '직원이 「How do you spell that?」이라고 물어요. 알맞은 대답은?', q: 'How|do|you|spell|that?', qroles: 'Q Q S V O', opts: ['J, I, H, O, O, N.', 'Yes, I do.', 'Jihoon is fine.'], ans: 0, sayOpts: true, tags: ['철자'], hints: ['spell = 철자를 말하다', '알파벳 이름으로 하나씩', 'J, I, H, O, O, N.'], why: '철자를 물으면 알파벳 이름으로 한 글자씩 말해요.' },
-  { id: 'B0P6', lesson: 'B0', boss: true, type: 'choice', prompt: '직원이 「Is that G or J?」라고 되물어요. 내 이름은 J 로 시작해요. 뭐라고 할까요?', q: 'Is|that|G or J?', qroles: 'V S C', opts: ['J as in juice.', 'G as in juice.', 'J as in game.'], ans: 0, sayOpts: true, tags: ['철자', '알파벳 이름'], hints: ['「글자 + as in + 그 글자로 시작하는 낱말」', 'juice 는 J 로 시작해요', 'J as in juice.'], why: 'juice 가 J 로 시작하니까 「J as in juice」. game 은 G 로 시작해요.' },
+  { id: 'B0P6', lesson: 'B0', boss: true, type: 'choice', prompt: '직원이 「Is that G or J?」라고 되물어요. 내 이름은 J 로 시작해요. 뭐라고 할까요?', q: 'Is|that|G or J?', qroles: 'Q S C', opts: ['J as in juice.', 'G as in juice.', 'J as in game.'], ans: 0, sayOpts: true, tags: ['철자', '알파벳 이름'], hints: ['「글자 + as in + 그 글자로 시작하는 낱말」', 'juice 는 J 로 시작해요', 'J as in juice.'], why: 'juice 가 J 로 시작하니까 「J as in juice」. game 은 G 로 시작해요.' },
   { id: 'B0P7', lesson: 'B0', boss: true, type: 'listen', prompt: '잠시 뒤 직원이 외쳐요. 무슨 말일까요?', say: 'One iced latte for Jihoon!', opts: ['지훈 씨, 아이스 라테 나왔어요!', '지훈 씨, 아이스 라테 하나 더 드릴까요?', '지훈 씨, 따뜻한 라테 나왔어요!'], ans: 0, tags: ['카페', '듣기'], hints: ['for Jihoon = 지훈 씨 것', 'iced = 차가운', '아이스 라테 나왔어요!'] },
   { id: 'B0P8', lesson: 'B0', boss: true, type: 'speak', prompt: '🔊 음료를 받고 인사해요. 따라 말해 보세요.', say: 'Thank you! Have a nice day.', ko: '고마워요! 좋은 하루 보내세요.', tags: ['말하기', '카페'], hints: ['th 는 혀끝을 이 사이로', 'Thank you → Have a nice day', 'Thank you! Have a nice day.'] },
 );

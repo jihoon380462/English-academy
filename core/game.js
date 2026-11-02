@@ -55,7 +55,7 @@ const Cards = {
     const before = Store.cards[id] || Anki.newCard(); const wasNew = before.q === 'new';
     let c = Anki.next(before, g, now);
     if (id.startsWith('p:') && wasNew && g >= 3) c = Anki.next(c, 3, now); // 문제는 처음 맞히면 바로 졸업(1일 뒤)
-    Store.cards[id] = c; if (wasNew) { const t = Store.anki(); t.newToday = t.newDay === Anki.dayKey(now) ? t.newToday + 1 : 1; t.newDay = Anki.dayKey(now); }
+    Store.cards[id] = c; if (wasNew && id.startsWith('s:')) { /* 하루 새 카드 한도는 문장 카드만 (문제 카드는 풀면 생김) */ const t = Store.anki(); t.newToday = t.newDay === Anki.dayKey(now) ? t.newToday + 1 : 1; t.newDay = Anki.dayKey(now); }
     Store.ankiLog(id, g, before, c); return c;
   },
   due(prefix, now = Date.now()) { return Object.entries(Store.cards).filter(([id, c]) => id.startsWith(prefix) && Anki.isDue(c, now)).sort((a, b) => a[1].due - b[1].due).map(([id]) => id); },
