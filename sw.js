@@ -1,0 +1,11 @@
+// sw.js — 오프라인 캐시. 캐시 이름은 english-shell-* (파이썬 아카데미 sw 는 academy-shell-* 로 시작하는 캐시를 지우므로 접두사를 절대 바꾸지 말 것). tools/stamp.mjs 가 VERSION·ASSETS 갱신
+const VERSION = '0.1.0';
+const SHELL = 'english-shell-' + VERSION;
+const ASSETS = ["index.html","core/anki.js?v=0.1.0","core/boot.js?v=0.1.0","core/cards.js?v=0.1.0","core/config.js?v=0.1.0","core/content.js?v=0.1.0","core/deck-views.js?v=0.1.0","core/deck.js?v=0.1.0","core/fx.js?v=0.1.0","core/game.js?v=0.1.0","core/grader.js?v=0.1.0","core/hub.js?v=0.1.0","core/speech.js?v=0.1.0","core/storage.js?v=0.1.0","core/ui.css?v=0.1.0","core/ui.js?v=0.1.0","core/util.js?v=0.1.0","core/views.js?v=0.1.0","shared/badges.js?v=0.1.0","shared/contractions.js?v=0.1.0","shared/mistakes.js?v=0.1.0","courses/basic/index.html","courses/basic/content.js?v=0.1.0","courses/deck/index.html","courses/deck/content.js?v=0.1.0"];
+self.addEventListener('install', (e) => { e.waitUntil((async () => { const c = await caches.open(SHELL); await Promise.allSettled(ASSETS.map(u => c.add(new Request(u, { cache: 'reload' })))); self.skipWaiting(); })()); });
+self.addEventListener('activate', (e) => { e.waitUntil((async () => { for (const k of await caches.keys()) if (k.startsWith('english-shell-') && k !== SHELL) await caches.delete(k); await self.clients.claim(); })()); });
+self.addEventListener('fetch', (e) => {
+  const req = e.request; if (req.method !== 'GET') return; const url = new URL(req.url); if (url.origin !== self.location.origin) return;
+  if (req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) { e.respondWith((async () => { try { const r = await fetch(req); const c = await caches.open(SHELL); c.put(req, r.clone()); return r; } catch (err) { return (await caches.match(req)) || (await caches.match(url.pathname.replace(/\/$/, '/index.html'))) || Response.error(); } })()); return; }
+  e.respondWith((async () => { const hit = await caches.match(req); if (hit) return hit; const r = await fetch(req); if (r.ok) { const c = await caches.open(SHELL); c.put(req, r.clone()); } return r; })());
+});

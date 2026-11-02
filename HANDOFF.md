@@ -7,9 +7,9 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| **현재 버전** | v0.0.1 (2026-11-03) |
-| **마지막 작업** | (Opus) 저장소 첫 커밋 — 기획서 `SPEC.md` v0.1, 운영 문서(HANDOFF·CHANGELOG·specs/workflow.md), 준비 중 페이지 `index.html`, Pages 배포 워크플로. 파이썬 아카데미 허브의 "영어 아카데미로 가기" 버튼은 **보류**(사용자 11/3 — 추가하지 않음, SPEC 10절). |
-| **다음 후보** | ① 사용자: SPEC.md 9절 「결정 필요」 D1~D8 확인(추천안이 기본값) ② **Phase 0 뼈대**(Fable 권장 — 파이썬 core 복사·접두사 교체·speech.js·카드 UI·Grader, SPEC 8절) ③ 기초 코스 챕터 0~1 콘텐츠 초안(Opus 콘텐츠, Phase 0 뒤) |
+| **현재 버전** | v0.1.0 (2026-11-03) |
+| **마지막 작업** | (Opus) **Phase 0 뼈대** — 허브, 코스 페이지(지도·레슨·문제·복습·뱃지·설정), 문제 유형 10종(choice·listen·match·build·order·fill·fix·type·dictation·speak), 채점기(축약형·오타 1개·낱말 비교·흔한 실수 22규칙), 음성(브라우저 TTS·음성 인식·녹음 폴백), **Anki 스케줄러 + 🃏 문장 덱**(레슨 예문 자동 수집, 4버튼, 학습 단계·ease·lapse·하루 새 카드·형제 숨기기·단축키), 오프라인 캐시, 검증 3종(validate·check_answers·regress) + 배포 게이트. 샘플 레슨 E1 1개. 사용자 결정 11/3: **문장 위주 · 복습은 Anki · 영어 사이트는 Opus 가 전부**. |
+| **다음 후보** | ① Phase 1: 기초 코스 챕터 1~6 전체 + 보스, 기본 문장 덱 ② Phase 2: 듣기·말하기 코스 ③ Phase 3·4: 문법·읽기·개발자 영어 ④ 아트 요청서(IMAGES.md) |
 
 ## 1. 이게 뭔가
 - 기획서 `SPEC.md` 1~3절 참고. 가장 중요한 가치: **무료 교육**(레슨·문제를 돈 받지 않고 제공).
@@ -18,9 +18,11 @@
 
 ## 2. 작업 방법
 1. `git fetch origin && git reset --hard origin/main` 으로 최신화.
-2. 권한은 `specs/workflow.md` 1절 표대로(모델 이름을 보고 바로 판단, 사용자에게 묻지 않음).
+2. 권한: 영어 아카데미는 **Opus 가 전부**(설계·core·콘텐츠·배포) — `specs/workflow.md` 1절.
 3. 배포하는 커밋에는 이 파일 0절 상태판 + `CHANGELOG.md` 새 항목을 같은 커밋에.
-4. 버전은 `index.html` 푸터(Phase 0 부터는 `core/config.js` 의 `APP_VERSION`)로 사용자가 반영 여부를 확인해요. 배포 후 "vX.Y.Z 배포 완료, Ctrl+F5" 안내.
+4. 버전은 `core/config.js` 의 `APP_VERSION`(허브·설정 맨 아래 표시)로 사용자가 반영 여부를 확인해요. 올린 뒤 `node tools/stamp.mjs`. 배포 후 "vX.Y.Z 배포 완료, Ctrl+F5" 안내.
+5. 파일 지도: `core/config.js`(버전·코스 목록·성분 색·수치) · `util.js` · `grader.js`(채점, Node 겸용) · `content.js`(인덱스) · `storage.js`(eng.*) · `anki.js`(스케줄러) · `game.js`(XP·뱃지·Cards·Review) · `fx.js`(효과음·색종이·부엉이 마스코트) · `speech.js` · `ui.js`(라우터·모달·🔊) · `cards.js`(문제 유형 10종 화면) · `views.js`(지도·레슨·문제·복습·뱃지·설정) · `deck.js`(문장 수집·대기열) · `deck-views.js`(덱 페이지 전용) · `hub.js` · `boot.js` · `ui.css`. 공유 데이터 `shared/`(contractions·mistakes·badges). 코스 `courses/<id>/{index.html,content.js}` — **스키마는 `courses/basic/content.js` 맨 위 주석**, 덱은 `courses/deck/content.js` 주석.
+6. 검증: `node tools/stamp.mjs && node tools/validate_content.mjs && node tools/check_answers.mjs && python3 tools/regress.py` (regress = 헤드리스 크롬, `--shots 폴더` 로 스크린샷).
 
 ## 3. 주의 — 파이썬 아카데미와 같은 출처
 - 두 사이트 모두 `jihoon380462.github.io` 라서 **localStorage 와 캐시 저장소가 공유돼요.** 저장 키는 `eng.*`, 서비스 워커 캐시는 `english-shell-*` 로(SPEC 6절). `academy.*` 키와 `academy-shell-*` 캐시는 파이썬 아카데미 것이니 절대 건드리지 않아요.

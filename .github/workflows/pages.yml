@@ -11,8 +11,20 @@ concurrency:
   group: pages
   cancel-in-progress: false
 jobs:
-  # Phase 0 에서 verify 잡(validate_content + check_answers)을 앞에 붙이고 deploy 에 needs: verify 를 걸어요 (specs/workflow.md 3절).
+  verify:
+    # 배포 전 게이트: 콘텐츠 스키마 검사 + 모든 정답이 채점기를 통과하는지 + Anki 스케줄러 단위 테스트. 하나라도 실패하면 배포하지 않는다.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: validate_content
+        run: node tools/validate_content.mjs
+      - name: check_answers
+        run: node tools/check_answers.mjs
   deploy:
+    needs: verify
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -20,8 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
