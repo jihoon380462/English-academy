@@ -1,0 +1,119 @@
+// courses/grammar/parts/g1.js — 챕터 1 「완료 시제」 (G1~G4 + 보스 GB1). 스키마는 ../../basic/content.js 맨 위 주석
+CHAPTERS.push(
+  { n: 1, title: '완료 시제', icon: '⏳', desc: '해 본 적 있어요 · ~째 하고 있어요 · 방금 끝냈어요 — have + p.p. 로 과거와 지금을 이어요' },
+);
+LESSONS.push(
+  { id: 'G1', ch: 1, n: 1, title: '해 본 적 있어요? (Have you ever …?)', minutes: 7,
+    terms: { '현재완료': '「have/has + 과거분사」. 과거의 일이 지금과 이어져 있을 때 써요.', '과거분사(p.p.)': '동사의 세 번째 모양. eat–ate–<b>eaten</b>, go–went–<b>gone</b>, see–saw–<b>seen</b>.' },
+    pages: [
+      { title: '경험은 have + p.p.', html: '<p>「~해 본 적 있어요」는 영어로 <b>have + 과거분사(p.p.)</b>로 말해요. <b>언제</b> 했는지보다 <b>지금까지 살면서</b> 해 봤는지가 중요할 때 써요.</p><p>주어가 He/She 면 <b>has</b> 예요.</p>',
+        ex: [{ en: 'I|have tried|Thai food.', roles: 'S V O', ko: '나는 태국 음식을 먹어 본 적 있어요.' }, { en: 'She|has seen|that movie|twice.', roles: 'S V O M', ko: '그녀는 그 영화를 두 번 봤어요.' }, { en: "I've met him before.", ko: '나는 그를 전에 만난 적 있어요.', note: "I have 는 줄여서 <b>I've</b> 라고 많이 말해요." }] },
+      { title: 'Have you ever …? / never', html: '<p>질문은 <b>Have</b> 를 맨 앞으로: Have you <b>ever</b> + p.p.? ever 는 「한 번이라도」예요.</p><p>「한 번도 ~해 본 적 없어요」는 <b>never</b>: I have never + p.p.</p>',
+        ex: [{ en: 'Have|you|ever|tried|kimchi stew?', roles: 'Q S M V O', ko: '김치찌개 먹어 본 적 있어요?' }, { en: 'Has|she|ever|ridden|a horse?', roles: 'Q S M V O', ko: '그녀는 말을 타 본 적 있어요?' }, { en: 'I|have never seen|snow.', roles: 'S V O', ko: '나는 눈을 한 번도 본 적이 없어요.' }],
+        tip: "짧은 대답은 <b>Yes, I have.</b> / <b>No, I haven't.</b>" },
+      { title: 'been to = 가 본 적 있다', html: '<p>「~에 가 본 적 있어요」는 gone 이 아니라 <b>have been to</b> 예요.</p><p><b>has gone to</b> 는 「가 버려서 지금 여기 없다」는 뜻이라 경험을 말할 때 쓰지 않아요.</p>',
+        ex: [{ en: 'I|have been|to Jeju|three times.', roles: 'S V M M', ko: '나는 제주도에 세 번 가 봤어요.' }, { en: 'Have|you|ever|been|to London?', roles: 'Q S M V M', ko: '런던에 가 본 적 있어요?' }, { en: 'Mina|has gone|to Busan.', roles: 'S V M', ko: '미나는 부산에 가고 (지금 여기) 없어요.' }] },
+    ],
+    summary: ['경험은 <b>have/has + p.p.</b>: I have tried Thai food.', '질문은 <b>Have you ever + p.p.?</b>, 한 번도 없으면 <b>never</b>.', '가 본 적 있다 = <b>have been to</b> (has gone to 는 「가고 없다」).'] },
+
+  { id: 'G2', ch: 1, n: 2, title: '~째 하고 있어요 (for / since)', minutes: 7,
+    terms: { 'for': '「~ 동안」. 뒤에 기간(two years, a long time)이 와요.', 'since': '「~부터, ~ 이후로」. 뒤에 시작한 때(2020, Monday, I was a child)가 와요.' },
+    pages: [
+      { title: '과거부터 지금까지 계속', html: '<p>과거에 시작해서 <b>지금도 계속</b>되는 일도 have + p.p. 로 말해요.</p><p>한국어로는 「~한 지 10년 됐어요」, 「10년째 ~하고 있어요」에 해당해요. 현재형(I live)으로 말하면 「얼마나 오래」가 빠져요.</p>',
+        ex: [{ en: 'I|have lived|in Seoul|for ten years.', roles: 'S V M M', ko: '나는 서울에 10년째 살고 있어요.' }, { en: 'We|have known|each other|since college.', roles: 'S V O M', ko: '우리는 대학 때부터 서로 알고 지냈어요.' }, { en: 'She|has worked|here|for two years.', roles: 'S V M M', ko: '그녀는 여기서 2년째 일하고 있어요.' }] },
+      { title: 'for + 기간, since + 시작점', html: '<table><tr><th>for (얼마 동안)</th><th>since (언제부터)</th></tr><tr><td>for two years</td><td>since 2020</td></tr><tr><td>for a long time</td><td>since Monday</td></tr><tr><td>for three months</td><td>since I was a child</td></tr></table>',
+        ex: [{ en: 'He|has been|sick|since Monday.', roles: 'S V C M', ko: '그는 월요일부터 아팠어요.' }, { en: 'I|have studied|English|for three months.', roles: 'S V O M', ko: '나는 영어를 석 달째 공부하고 있어요.' }],
+        tip: 'since three years ✗ → <b>for</b> three years ✓ (기간 앞은 for)' },
+      { title: 'How long have you …?', html: '<p>「얼마나 오래 ~했어요?」는 <b>How long have you + p.p.?</b></p><p>지금 이 순간에도 하고 있는 동작이면 <b>have been + -ing</b> 도 자주 써요.</p>',
+        ex: [{ en: 'How long|have|you|lived|here?', roles: 'Q Q S V M', ko: '여기 얼마나 오래 살았어요?' }, { en: 'How long|have|you|been|a teacher?', roles: 'Q Q S V C', ko: '선생님 하신 지 얼마나 됐어요?' }, { en: 'I|have been waiting|for twenty minutes.', roles: 'S V M', ko: '20분째 기다리고 있어요.' }] },
+    ],
+    summary: ['지금도 계속되는 일 = <b>have + p.p.</b> (~째 하고 있어요).', '<b>for</b> + 기간, <b>since</b> + 시작한 때.', '얼마나 오래? = <b>How long have you + p.p.?</b>'] },
+
+  { id: 'G3', ch: 1, n: 3, title: '방금 · 벌써 · 아직 (just / already / yet)', minutes: 7,
+    pages: [
+      { title: '방금 · 벌써 끝냈어요', html: '<p>일이 <b>막 끝나서 그 결과가 지금 남아 있을 때</b>도 have + p.p. 를 써요.</p><p><b>just</b>(방금)와 <b>already</b>(벌써)는 have 와 p.p. <b>사이</b>에 넣어요.</p>',
+        ex: [{ en: 'I|have just finished|my homework.', roles: 'S V O', ko: '방금 숙제를 끝냈어요.' }, { en: 'The bus|has already left.', roles: 'S V', ko: '버스가 벌써 떠났어요.' }, { en: 'She|has just arrived|at the office.', roles: 'S V M', ko: '그녀는 방금 사무실에 도착했어요.' }] },
+      { title: 'yet = 아직 / 벌써?', html: '<p><b>yet</b> 은 <b>문장 끝</b>에 와요.</p><p>부정문에서는 「아직 안 했어요」, 질문에서는 「벌써 했어요?」라는 뜻이에요.</p>',
+        ex: [{ en: "I|haven't eaten|lunch|yet.", roles: 'S V O M', ko: '아직 점심을 안 먹었어요.' }, { en: 'Have|you|finished|the report|yet?', roles: 'Q S V O M', ko: '보고서 벌써 끝냈어요?' }, { en: "The package|hasn't arrived|yet.", roles: 'S V M', ko: '택배가 아직 안 왔어요.' }],
+        tip: '짧게 대답할 때: <b>Not yet.</b> (아직이요.)' },
+      { title: '결과가 지금 남아 있어요', html: '<p>「I lost my wallet.」은 과거에 잃어버린 사실만 말해요. 「I <b>have lost</b> my wallet.」은 <b>그래서 지금도 지갑이 없다</b>는 느낌이에요.</p>',
+        ex: [{ en: 'I|have lost|my wallet.', roles: 'S V O', ko: '지갑을 잃어버렸어요. (지금도 없어요)' }, { en: 'Someone|has taken|my umbrella.', roles: 'S V O', ko: '누가 내 우산을 가져갔어요.' }] },
+    ],
+    summary: ['막 끝난 일·결과가 남은 일 = <b>have + p.p.</b>', '<b>just</b>·<b>already</b> 는 have 와 p.p. 사이.', '<b>yet</b> 은 문장 끝: 부정 「아직」, 질문 「벌써」.'] },
+
+  { id: 'G4', ch: 1, n: 4, title: '현재완료 vs 과거', minutes: 8,
+    pages: [
+      { title: '「언제」를 콕 집으면 과거형', html: '<p>yesterday, last week, in 2020, ~ ago 처럼 <b>이미 끝난 때</b>를 말하면 과거형을 써요. 현재완료는 때를 콕 집지 않아요.</p><table><tr><th>현재완료</th><th>과거</th></tr><tr><td>I have been to Paris.</td><td>I went to Paris last year.</td></tr><tr><td>(가 본 적 있어요)</td><td>(작년에 갔어요)</td></tr></table>',
+        ex: [{ en: 'I|went|to Paris|last year.', roles: 'S V M M', ko: '작년에 파리에 갔어요.' }, { en: 'I|have been|to Paris|twice.', roles: 'S V M M', ko: '파리에 두 번 가 봤어요.' }, { en: 'She|moved|here|three years ago.', roles: 'S V M M', ko: '그녀는 3년 전에 여기로 이사 왔어요.' }] },
+      { title: '경험을 묻고 → 과거로 자세히', html: '<p>대화는 보통 현재완료로 「해 봤어요?」 하고 시작해요. 「언제? 어땠어?」처럼 구체적인 이야기로 들어가면 과거형으로 바꿔요.</p>',
+        ex: [{ en: 'Have|you|ever|been|to Japan?', roles: 'Q S M V M', ko: '일본에 가 본 적 있어요?' }, { en: 'I|went|there|two years ago.', roles: 'S V M M', ko: '2년 전에 거기 갔어요.' }, { en: 'When|did|you|go|there?', roles: 'Q Q S V M', ko: '언제 거기 갔어요?' }],
+        tip: 'When 으로 묻는 질문엔 현재완료를 쓰지 않아요: When have you gone ✗ → When did you go ✓' },
+      { title: '지금도 계속? 이미 끝났어?', html: '<p>I <b>have worked</b> here for five years. → 지금도 여기서 일해요.</p><p>I <b>worked</b> there for five years. → 5년 일했고, 지금은 거기 안 다녀요.</p>',
+        ex: [{ en: 'I|have worked|here|for five years.', roles: 'S V M M', ko: '여기서 5년째 일하고 있어요.' }, { en: 'I|worked|at a bank|for five years.', roles: 'S V M M', ko: '은행에서 5년 동안 일했어요. (지금은 아니에요)' }] },
+    ],
+    summary: ['끝난 때(yesterday, ago, last …)를 말하면 <b>과거형</b>.', 'When …? 질문도 <b>과거형</b>: When did you go?', '지금까지 이어지면 현재완료, 끝났으면 과거.'] },
+
+  { id: 'GB1', ch: 1, boss: true, title: '상황 미션: 면접에서 경력 말하기', minutes: 8,
+    pages: [
+      { title: '상황: 회사 면접', html: '<p>외국계 회사 면접을 보고 있어요. 면접관 Ms. Lee 가 경력과 경험을 물어요.</p><p><b>지금까지 이어지는 경력</b>은 현재완료로, <b>이미 끝난 일</b>은 과거형으로 섞어서 대답해 보세요.</p>',
+        ex: [{ en: 'How long have you worked in marketing?', ko: '마케팅 일은 얼마나 하셨어요?' }, { en: 'I|have worked|in marketing|for six years.', roles: 'S V M M', ko: '마케팅 일을 6년째 하고 있어요.' }, { en: 'I|worked|at a small company|before that.', roles: 'S V M M', ko: '그 전에는 작은 회사에서 일했어요.' }] },
+      { title: '쓸 표현 미리보기', html: '<p>경험(have + p.p.), 방금 끝낸 일(just), 시작한 때(과거형)를 골라 써요.</p>',
+        ex: [{ en: 'I|have led|a team of five people.', roles: 'S V O', ko: '5명으로 된 팀을 이끌어 봤어요.' }, { en: 'I|have never missed|a deadline.', roles: 'S V O', ko: '마감을 한 번도 놓친 적 없어요.' }, { en: 'I|started|my career|in 2019.', roles: 'S V O M', ko: '2019년에 일을 시작했어요.' }] },
+    ],
+    summary: ['지금까지의 경력: <b>I have worked … for/since …</b>', '끝난 일·시작한 때: <b>과거형</b> (I started … in 2019).', '경험·강점: <b>I have led … / I have never missed …</b>'] },
+);
+PROBLEMS.push(
+  // G1 경험
+  { id: 'G1P1', lesson: 'G1', type: 'choice', prompt: '빈칸에 맞는 말을 고르세요.', q: 'Have you ever ___ sushi?', opts: ['eat', 'ate', 'eaten'], ans: 2, tags: ['현재완료', '경험'], hints: ['Have you ever 다음엔 p.p.', 'eat – ate – eaten', 'Have you ever eaten sushi?'], why: 'have 다음에는 과거분사(p.p.)가 와요: eat의 p.p.는 eaten.' },
+  { id: 'G1P2', lesson: 'G1', type: 'listen', prompt: '듣고 알맞은 뜻을 고르세요.', say: 'I have never been to Japan.', opts: ['일본에 한 번도 가 본 적 없어요.', '일본에 가 본 적 있어요.', '일본에 가고 싶어요.'], ans: 0, tags: ['듣기', '경험'], hints: ['never 가 들렸나요?', 'never = 한 번도 ~ 없다', '일본에 한 번도 가 본 적 없어요.'] },
+  { id: 'G1P3', lesson: 'G1', type: 'match', prompt: '문장과 뜻을 짝지으세요.', pairs: [['Have you ever been to Jeju?', '제주도에 가 본 적 있어요?'], ['I have never seen snow.', '눈을 한 번도 본 적 없어요.'], ['She has gone to Busan.', '그녀는 부산에 가고 없어요.'], ['She has been to Busan.', '그녀는 부산에 가 본 적 있어요.']], tags: ['경험', 'been to'], hints: ['never = 한 번도 ~ 없다', 'been to = 가 본 적 있다', 'gone to = 가고 없다'] },
+  { id: 'G1P4', lesson: 'G1', type: 'build', prompt: '색 슬롯에 맞게 카드를 놓아 문장을 만드세요.', ko: '나는 그 영화를 두 번 봤어요.', answer: ['I have seen that movie twice.', "I've seen that movie twice.", 'I have seen the movie twice.'], cards: ['I', 'have seen', 'that movie', 'twice.'], roles: 'S V O M', tags: ['현재완료', '경험'], hints: ['주어 → have + p.p. → 무엇을 → 몇 번', '봤다(경험) = have seen', 'I have seen that movie twice.'] },
+  { id: 'G1P5', lesson: 'G1', type: 'order', prompt: '카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '말을 타 본 적 있어요?', answer: ['Have you ever ridden a horse?'], cards: ['Have', 'you', 'ever', 'ridden', 'a horse?'], distractors: ['rode'], tags: ['경험', '질문'], hints: ['Have 가 맨 앞', 'ride – rode – ridden: have 다음은 ridden', 'Have you ever ridden a horse?'] },
+  { id: 'G1P6', lesson: 'G1', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '나는 부산에 두 번 가 봤어요.', wrong: 'I have gone to Busan twice.', answer: ['I have been to Busan twice.', "I've been to Busan twice."], tags: ['been to', '오개념'], hints: ['gone to 는 「가고 없다」', '경험은 been to', 'I have been to Busan twice.'], why: '「가 본 적 있다」는 have been to. have gone to 는 가서 아직 안 돌아왔다는 뜻이에요.' },
+  { id: 'G1P7', lesson: 'G1', type: 'fill', prompt: '빈칸을 채우세요.', ko: '나는 인도 음식을 한 번도 먹어 본 적 없어요.', text: 'I have ___ tried Indian food.', blanks: [{ a: ['never'], opt: ['never', 'ever', 'yet'] }], tags: ['경험', 'never'], hints: ['「한 번도 ~ 없다」', 'ever 는 질문에 써요', 'never'], why: '「한 번도 ~해 본 적 없다」는 have never + p.p. 예요.' },
+  { id: 'G1P8', lesson: 'G1', type: 'type', prompt: '영어로 써 보세요.', ko: '해외에 가 본 적 있어요?', answer: ['Have you ever been abroad?', 'Have you been abroad?', 'Have you ever traveled abroad?', 'Have you ever travelled abroad?', 'Have you ever been overseas?', 'Have you ever traveled overseas?'], tags: ['경험', '질문'], hints: ['Have you ever + p.p. ?', '가 본 적 = been, 해외에 = abroad', 'Have you ever been abroad?'] },
+  { id: 'G1P9', lesson: 'G1', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'Have you ever been to Jeju?', ko: '제주도에 가 본 적 있어요?', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'been to 는 「빈 투」처럼 붙여서', 'Have you ever been to Jeju?'] },
+
+  // G2 for / since
+  { id: 'G2P1', lesson: 'G2', type: 'choice', prompt: '빈칸에 맞는 말을 고르세요.', q: 'I have lived here ___ 2019.', opts: ['for', 'since', 'from'], ans: 1, tags: ['since'], hints: ['2019 는 기간일까요, 시작점일까요?', '시작한 때 앞에는 since', 'I have lived here since 2019.'], why: '2019 는 시작한 때라 since. 기간(얼마 동안)일 때만 for 예요.' },
+  { id: 'G2P2', lesson: 'G2', type: 'choice', prompt: '빈칸에 맞는 말을 고르세요.', q: 'She has worked here ___ five years.', opts: ['for', 'since', 'during'], ans: 0, tags: ['for'], hints: ['five years 는 기간이에요', '기간 앞에는 for', 'She has worked here for five years.'], why: 'five years(5년 동안)는 기간이라 for 를 써요.' },
+  { id: 'G2P3', lesson: 'G2', type: 'match', prompt: '구와 뜻을 짝지으세요.', pairs: [['for a long time', '오랫동안'], ['since last summer', '지난여름부터'], ['for two weeks', '2주 동안'], ['since I was a child', '어렸을 때부터']], tags: ['for', 'since'], hints: ['for = ~ 동안', 'since = ~부터', 'since I was a child = 어렸을 때부터'] },
+  { id: 'G2P4', lesson: 'G2', type: 'build', prompt: '색 슬롯에 맞게 카드를 놓아 문장을 만드세요.', ko: '우리는 대학 때부터 서로 알고 지냈어요.', answer: ['We have known each other since college.', "We've known each other since college."], cards: ['We', 'have known', 'each other', 'since college.'], roles: 'S V O M', tags: ['현재완료', '계속'], hints: ['주어 → have + p.p. → 누구를 → 언제부터', '알고 지냈다 = have known', 'We have known each other since college.'] },
+  { id: 'G2P5', lesson: 'G2', type: 'order', prompt: '카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '여기 얼마나 오래 살았어요?', answer: ['How long have you lived here?'], cards: ['How long', 'have', 'you', 'lived', 'here?'], distractors: ['did'], tags: ['How long', '질문'], hints: ['How long 이 맨 앞', 'How long + have + you + p.p.', 'How long have you lived here?'] },
+  { id: 'G2P6', lesson: 'G2', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '나는 영어를 3년째 공부하고 있어요.', wrong: 'I study English for three years.', answer: ['I have studied English for three years.', "I've studied English for three years.", 'I have been studying English for three years.', "I've been studying English for three years."], tags: ['현재완료', '오개념'], hints: ['지금까지 계속된 일이에요', '현재형 대신 have + p.p.', 'I have studied English for three years.'], why: '「~째 하고 있다」는 현재형이 아니라 have + p.p. (또는 have been -ing)로 말해요.' },
+  { id: 'G2P7', lesson: 'G2', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '그는 월요일부터 아팠어요.', wrong: 'He has been sick for Monday.', answer: ['He has been sick since Monday.'], tags: ['since', '오개념'], hints: ['Monday 는 기간일까요, 시작점일까요?', '시작점 앞에는 since', 'He has been sick since Monday.'], why: 'Monday 는 시작한 때라 since 를 써요.' },
+  { id: 'G2P8', lesson: 'G2', type: 'type', prompt: '영어로 써 보세요.', ko: '나는 서울에 10년째 살고 있어요.', answer: ['I have lived in Seoul for ten years.', "I've lived in Seoul for ten years.", 'I have been living in Seoul for ten years.', "I've been living in Seoul for ten years.", 'I have lived in Seoul for 10 years.', "I've lived in Seoul for 10 years."], tags: ['현재완료', 'for'], hints: ['have + p.p. + for + 기간', '살다 live → lived', 'I have lived in Seoul for ten years.'] },
+  { id: 'G2P9', lesson: 'G2', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'How long have you been here?', ko: '여기 온 지 얼마나 됐어요?', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'have you 는 「해뷰」처럼 이어져요', 'How long have you been here?'] },
+
+  // G3 just / already / yet
+  { id: 'G3P1', lesson: 'G3', type: 'choice', prompt: '빈칸에 맞는 말을 고르세요.', q: "I haven't finished it ___.", opts: ['yet', 'already', 'just'], ans: 0, tags: ['yet'], hints: ['부정문 끝에 오는 말', '「아직」 = yet', "I haven't finished it yet."], why: '부정문 끝의 yet 은 「아직」이에요. already·just 는 보통 긍정문에 써요.' },
+  { id: 'G3P2', lesson: 'G3', type: 'listen', prompt: '듣고 알맞은 뜻을 고르세요.', say: 'I have just finished my homework.', opts: ['방금 숙제를 끝냈어요.', '아직 숙제를 안 끝냈어요.', '숙제를 벌써 끝냈어요?'], ans: 0, tags: ['듣기', 'just'], hints: ['just 가 들렸나요?', 'just = 방금', '방금 숙제를 끝냈어요.'] },
+  { id: 'G3P3', lesson: 'G3', type: 'build', prompt: '색 슬롯에 맞게 카드를 놓아 문장을 만드세요.', ko: '기차가 벌써 역을 떠났어요.', answer: ['The train has already left the station.'], cards: ['The train', 'has already left', 'the station.'], roles: 'S V O', tags: ['already'], hints: ['주어 → has already + p.p. → 무엇을', 'already 는 has 와 left 사이', 'The train has already left the station.'] },
+  { id: 'G3P4', lesson: 'G3', type: 'order', prompt: '카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '보고서 벌써 끝냈어요?', answer: ['Have you finished the report yet?'], cards: ['Have', 'you', 'finished', 'the report', 'yet?'], distractors: ['finish'], tags: ['yet', '질문'], hints: ['Have 가 맨 앞, yet 은 맨 끝', 'have 다음은 p.p. finished', 'Have you finished the report yet?'] },
+  { id: 'G3P5', lesson: 'G3', type: 'fill', prompt: '빈칸을 채우세요.', ko: '그녀는 방금 사무실에 도착했어요.', text: 'She ___ just arrived at the office.', blanks: [{ a: ['has'], opt: ['has', 'have', 'is'] }], tags: ['현재완료', 'just'], hints: ['주어가 She 예요', 'She 다음은 has', 'has'], why: 'He/She 가 주어면 have 대신 has 를 써요.' },
+  { id: 'G3P6', lesson: 'G3', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '아직 점심을 안 먹었어요.', wrong: "I haven't eaten lunch already.", answer: ["I haven't eaten lunch yet.", "I haven't had lunch yet."], tags: ['yet', '오개념'], hints: ['부정문의 「아직」', 'already 대신 yet', "I haven't eaten lunch yet."], why: '부정문에서 「아직」은 yet. already 는 「벌써」라서 부정문과 어울리지 않아요.' },
+  { id: 'G3P7', lesson: 'G3', type: 'type', prompt: '영어로 써 보세요.', ko: '방금 도착했어요.', answer: ['I have just arrived.', "I've just arrived.", 'I just arrived.', 'I have just got here.', "I've just got here.", 'I just got here.'], tags: ['just'], hints: ['have + just + p.p.', '도착하다 arrive → arrived', 'I have just arrived.'] },
+  { id: 'G3P8', lesson: 'G3', type: 'type', prompt: '영어로 써 보세요.', ko: '택배가 아직 안 왔어요.', answer: ["The package hasn't arrived yet.", "My package hasn't arrived yet.", "The parcel hasn't arrived yet.", "The package hasn't come yet.", "The delivery hasn't arrived yet.", "My package hasn't come yet."], tags: ['yet'], hints: ["hasn't + p.p. + yet", '택배 = the package, 도착하다 = arrive', "The package hasn't arrived yet."] },
+  { id: 'G3P9', lesson: 'G3', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'Have you eaten yet?', ko: '밥 먹었어요?', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', '끝을 올려서 질문처럼', 'Have you eaten yet?'] },
+
+  // G4 현재완료 vs 과거
+  { id: 'G4P1', lesson: 'G4', type: 'choice', prompt: '빈칸에 맞는 말을 고르세요.', q: 'I ___ to Paris last year.', opts: ['went', 'have gone', 'have been'], ans: 0, tags: ['과거', '현재완료'], hints: ['last year 가 보이나요?', '끝난 때를 말하면 과거형', 'I went to Paris last year.'], why: 'last year 처럼 끝난 때를 콕 집으면 현재완료가 아니라 과거형이에요.' },
+  { id: 'G4P2', lesson: 'G4', type: 'choice', prompt: '빈칸에 맞는 말을 고르세요.', q: 'I ___ in this city since 2015.', opts: ['have lived', 'lived', 'live'], ans: 0, tags: ['현재완료', 'since'], hints: ['since 가 보이나요?', '2015년부터 지금까지 계속', 'I have lived in this city since 2015.'], why: 'since 2015 = 그때부터 지금까지 → have + p.p.' },
+  { id: 'G4P3', lesson: 'G4', type: 'choice', prompt: '자연스러운 문장을 고르세요.', opts: ['When did you arrive?', 'When have you arrived?', 'When you have arrived?'], ans: 0, sayOpts: true, tags: ['과거', '질문'], hints: ['When 은 「언제」 — 때를 콕 집어요', 'When 질문은 과거형', 'When did you arrive?'], why: 'When 은 끝난 때를 묻는 말이라 현재완료와 같이 쓰지 않아요.' },
+  { id: 'G4P4', lesson: 'G4', type: 'match', prompt: '문장과 뜻을 짝지으세요.', pairs: [['I have worked here for five years.', '여기서 5년째 일하고 있어요.'], ['I worked there for five years.', '거기서 5년 동안 일했어요. (지금은 아님)'], ['I have been to Paris.', '파리에 가 본 적 있어요.'], ['I went to Paris last year.', '작년에 파리에 갔어요.']], tags: ['현재완료', '과거'], hints: ['have + p.p. = 지금과 이어짐', '과거형 = 이미 끝남', 'I worked there = 지금은 안 다녀요'] },
+  { id: 'G4P5', lesson: 'G4', type: 'build', prompt: '색 슬롯에 맞게 카드를 놓아 문장을 만드세요.', ko: '그녀는 3년 전에 여기로 이사 왔어요.', answer: ['She moved here three years ago.', 'She moved here 3 years ago.'], cards: ['She', 'moved', 'here', 'three years ago.'], roles: 'S V M M', tags: ['과거', 'ago'], hints: ['ago 가 있으면 과거형', '이사 오다 move → moved', 'She moved here three years ago.'] },
+  { id: 'G4P6', lesson: 'G4', type: 'order', prompt: '카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '언제 거기 갔어요?', answer: ['When did you go there?'], cards: ['When', 'did', 'you', 'go', 'there?'], distractors: ['have', 'went'], tags: ['과거', '질문'], hints: ['When 질문은 과거형', 'When + did + you + 동사원형', 'When did you go there?'] },
+  { id: 'G4P7', lesson: 'G4', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '어제 그 영화를 봤어요.', wrong: 'I have seen the movie yesterday.', answer: ['I saw the movie yesterday.', 'I saw that movie yesterday.', 'I watched the movie yesterday.', 'I watched that movie yesterday.'], tags: ['과거', '오개념'], hints: ['yesterday 가 보이나요?', '끝난 때 → 과거형 saw', 'I saw the movie yesterday.'], why: 'yesterday 같은 끝난 때와 현재완료는 같이 못 써요. 과거형 saw 로 바꿔요.' },
+  { id: 'G4P8', lesson: 'G4', type: 'type', prompt: '영어로 써 보세요.', ko: '나는 2년 전에 일본에 갔어요.', answer: ['I went to Japan two years ago.', 'I went to Japan 2 years ago.', 'Two years ago, I went to Japan.', 'I visited Japan two years ago.'], tags: ['과거', 'ago'], hints: ['ago → 과거형', '갔다 = went', 'I went to Japan two years ago.'] },
+  { id: 'G4P9', lesson: 'G4', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'I have worked here for five years.', ko: '여기서 5년째 일하고 있어요.', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'worked here 는 「웍트 히어」', 'I have worked here for five years.'] },
+
+  // GB1 면접
+  { id: 'GB1P1', lesson: 'GB1', boss: true, type: 'listen', prompt: '면접관 Ms. Lee 의 질문이에요. 듣고 뜻을 고르세요.', say: 'How long have you worked in marketing?', opts: ['마케팅 일은 얼마나 하셨어요?', '언제 마케팅 일을 시작했어요?', '마케팅 일을 좋아하세요?'], ans: 0, tags: ['듣기', 'How long'], hints: ['How long 이 들렸나요?', 'How long have you … = 얼마나 오래', '마케팅 일은 얼마나 하셨어요?'] },
+  { id: 'GB1P2', lesson: 'GB1', boss: true, type: 'order', prompt: '경력을 대답하세요. 카드를 순서대로 놓으세요.', ko: '마케팅 일을 6년째 하고 있어요.', answer: ['I have worked in marketing for six years.', "I've worked in marketing for six years.", 'I have been working in marketing for six years.'], cards: ['I', 'have worked', 'in marketing', 'for six years.'], distractors: ['since'], tags: ['현재완료', 'for'], hints: ['지금까지 계속 → have + p.p.', '기간 앞은 for', 'I have worked in marketing for six years.'] },
+  { id: 'GB1P3', lesson: 'GB1', boss: true, type: 'choice', prompt: '처음 일을 시작한 때를 말해요. 빈칸에 맞는 말을 고르세요.', q: 'I ___ my career at a small company in 2019.', opts: ['started', 'have started', 'start'], ans: 0, tags: ['과거'], hints: ['in 2019 가 보이나요?', '끝난 때 → 과거형', 'I started my career at a small company in 2019.'], why: 'in 2019 처럼 때를 콕 집으면 과거형이에요.' },
+  { id: 'GB1P4', lesson: 'GB1', boss: true, type: 'fill', prompt: '「팀을 관리해 본 적 있어요?」에 대답하세요.', ko: '네, 있어요. 5명으로 된 팀을 이끌어 봤어요.', text: 'Yes, I ___. I have ___ a team of five people.', blanks: [{ a: ['have'], opt: ['have', 'did', 'am'] }, { a: ['led'], opt: ['led', 'lead', 'leading'] }], tags: ['경험', '짧은 대답'], hints: ['Have you …? 에는 Yes, I have.', 'lead – led – led', 'have / led'], why: 'Have you …? 질문엔 have 로 대답하고, have 다음엔 p.p. led 예요.' },
+  { id: 'GB1P5', lesson: 'GB1', boss: true, type: 'fix', prompt: '강점을 말해요. 틀린 곳을 고쳐 다시 쓰세요.', ko: '마감을 한 번도 놓친 적 없어요.', wrong: 'I have never miss a deadline.', answer: ['I have never missed a deadline.', "I've never missed a deadline."], tags: ['경험', 'never'], hints: ['have never 다음 동사 모양', 'have 다음은 p.p.', 'I have never missed a deadline.'], why: 'have never 다음에도 과거분사(missed)가 와요.' },
+  { id: 'GB1P6', lesson: 'GB1', boss: true, type: 'type', prompt: '최근 성과를 말해요. 영어로 써 보세요.', ko: '방금 큰 프로젝트를 끝냈어요.', answer: ['I have just finished a big project.', "I've just finished a big project.", 'I just finished a big project.', 'I have just completed a big project.', "I've just completed a big project.", 'I just completed a big project.'], tags: ['just'], hints: ['have + just + p.p.', '끝내다 finish → finished', 'I have just finished a big project.'] },
+  { id: 'GB1P7', lesson: 'GB1', boss: true, type: 'type', prompt: '「해외 근무 경험 있어요?」에 솔직하게 대답하세요.', ko: '해외에서 일해 본 적은 없어요.', answer: ['I have never worked abroad.', "I've never worked abroad.", "I haven't worked abroad.", 'I have never worked overseas.', "I've never worked overseas.", "I haven't worked overseas."], tags: ['경험', 'never'], hints: ['have never + p.p.', '해외에서 = abroad', 'I have never worked abroad.'] },
+  { id: 'GB1P8', lesson: 'GB1', boss: true, type: 'speak', prompt: '🔊 마지막으로 자신 있게 말해 보세요.', say: 'I have worked in marketing for six years.', ko: '마케팅 일을 6년째 하고 있어요.', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'for six years 를 또박또박', 'I have worked in marketing for six years.'] },
+);

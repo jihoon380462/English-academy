@@ -1,0 +1,76 @@
+// courses/basic/parts/c7.js — 챕터 7 「실전」 (레슨 E35~E37, 보스 없음 — 미니 프로젝트). 스키마는 ../content.js 맨 위 주석
+CHAPTERS.push(
+  { n: 7, title: '실전', icon: '🏁', desc: '배운 걸 다 섞어 쓰는 미니 프로젝트' },
+);
+LESSONS.push(
+  // ── E35 내 하루 일기 5문장 ──
+  { id: 'E35', ch: 7, n: 35, title: '내 하루 일기 5문장 쓰기', minutes: 8,
+    terms: { '과거형': '이미 지나간 일을 말하는 동사 모양. go → went, have → had, get → got, am/is → was.' },
+    pages: [
+      { title: '일기는 5문장이면 충분해요', html: '<p>오늘 하루를 <b>5문장</b>으로 써 봐요. 순서만 정해 두면 쉬워요.</p><table><tr><td>①</td><td>하루 한 줄 평</td></tr><tr><td>②</td><td>아침 — 몇 시에 일어났는지</td></tr><tr><td>③</td><td>낮 — 누구와 무엇을 했는지</td></tr><tr><td>④</td><td>저녁 — 어디에 갔는지</td></tr><tr><td>⑤</td><td>느낌 — 어땠는지</td></tr></table><p>이미 지나간 일이라 동사는 전부 <b>과거형</b>이에요.</p>',
+        ex: [{ en: 'Today|was|a busy day.', roles: 'S V C', ko: '오늘은 바쁜 하루였어요.' }, { en: 'I|got up|at seven.', roles: 'S V M', ko: '나는 7시에 일어났어요.' }] },
+      { title: '낮과 저녁: 누구와, 어디에', html: '<p>「~와」는 <b>with</b>, 「~에 갔어요」는 <b>went to</b>. 「퇴근하고」는 문장 앞에 <b>After work,</b> 를 붙이면 돼요.</p><p>자주 쓰는 과거형: <b>had</b>(먹었다) · <b>went</b>(갔다) · <b>met</b>(만났다) · <b>watched</b>(봤다)</p>',
+        ex: [{ en: 'I|had|lunch|with Mina.', roles: 'S V O M', ko: '점심은 미나랑 먹었어요.' }, { en: 'After work,|I|went|to the gym.', roles: 'M S V M', ko: '퇴근하고 헬스장에 갔어요.' }, { en: 'I|met|an old friend|downtown.', roles: 'S V O M', ko: '시내에서 옛 친구를 만났어요.' }] },
+      { title: '마지막은 느낌으로', html: '<p>느낌은 <b>I was + 형용사</b>, 또는 <b>I felt + 형용사</b>. 반대되는 느낌은 <b>but</b> 으로 이어요.</p><p>내일 계획을 한 줄 더 쓰고 싶으면 <b>will</b> 을 써요.</p>',
+        ex: [{ en: 'I|was|tired,|but|I|felt|good.', roles: 'S V C J S V C', ko: '피곤했지만 기분은 좋았어요.' }, { en: 'Tomorrow,|I|will sleep|late.', roles: 'M S V M', ko: '내일은 늦잠을 잘 거예요.' }], tip: '처음엔 이 레슨 문장을 그대로 쓰고, 낱말만 내 하루로 바꿔 보세요. seven → eight, Mina → Jisoo, gym → library 처럼요.' },
+    ],
+    summary: ['일기 5문장 = 한 줄 평 → 아침 → 낮 → 저녁 → 느낌.', '지나간 일은 과거형: got up · had · went · was · felt.', '반대되는 느낌은 <b>but</b> 으로 이어요: I was tired, but I felt good.'] },
+
+  // ── E36 자기소개 1분 말하기 ──
+  { id: 'E36', ch: 7, n: 36, title: '자기소개 1분 말하기', minutes: 8,
+    pages: [
+      { title: '1분 자기소개 순서', html: '<p>1분이면 <b>6~7문장</b>이에요. 이 순서로 말하면 막히지 않아요.</p><table><tr><td>①</td><td>인사·이름</td></tr><tr><td>②</td><td>어디 출신·지금 사는 곳</td></tr><tr><td>③</td><td>하는 일</td></tr><tr><td>④</td><td>취미·할 수 있는 것</td></tr><tr><td>⑤</td><td>영어 공부하는 이유</td></tr><tr><td>⑥</td><td>마무리 인사</td></tr></table>',
+        ex: [{ en: "Hi,|my name|is|Jisoo.", roles: 'M S V C', ko: '안녕하세요, 제 이름은 지수예요.' }, { en: "I'm from Busan, but I live in Seoul now.", ko: '부산 출신인데, 지금은 서울에 살아요.' }, { en: 'I|work|at a design company.', roles: 'S V M', ko: '디자인 회사에서 일해요.' }] },
+      { title: '취미와 영어 공부 이유', html: '<p>취미는 <b>I like to + 동사</b>, 할 줄 아는 건 <b>I can + 동사</b>. 이유는 <b>because</b> 로 이어요.</p><p>마지막은 <b>Nice to meet you.</b> 나 <b>Thank you.</b> 로 깔끔하게 끝내요.</p>',
+        ex: [{ en: 'In my free time,|I|like to watch|movies.', roles: 'M S V O', ko: '시간 날 때는 영화 보는 걸 좋아해요.' }, { en: 'I|can play|the guitar|a little.', roles: 'S V O M', ko: '기타를 조금 칠 줄 알아요.' }, { en: 'I|am learning|English|because|I|want to travel.', roles: 'S V O J S V', ko: '여행하고 싶어서 영어를 배우고 있어요.' }] },
+      { title: '덩어리로 끊어 말하기', html: '<p>긴 문장은 <b>의미 덩어리</b>마다 살짝 쉬어요. 「In my free time, / I like to watch / movies.」처럼요.</p><p>틀려도 멈추지 말고 끝까지 말하는 게 1분 말하기의 핵심이에요.</p>',
+        ex: [{ en: 'Nice to meet you.', ko: '만나서 반가워요.' }, { en: 'Thank you for listening.', ko: '들어 주셔서 고마워요.' }], tip: '이 레슨이 끝나면 이름·도시·직업·취미만 내 것으로 바꿔서 타이머 1분을 맞추고 소리 내어 말해 보세요.' },
+    ],
+    summary: ['순서: 인사·이름 → 출신·사는 곳 → 일 → 취미 → 영어 공부 이유 → 마무리.', '취미는 <b>I like to …</b>, 할 줄 아는 건 <b>I can …</b>, 이유는 <b>because …</b>', '덩어리마다 살짝 쉬고, 틀려도 끝까지 말해요.'] },
+
+  // ── E37 메신저 대화: 약속 잡기 ──
+  { id: 'E37', ch: 7, n: 37, title: '메신저 대화: 친구와 약속 잡기', minutes: 7,
+    pages: [
+      { title: '시간 있어? → 뭐 할래? → 몇 시?', html: '<p>친구 Tom 과 메신저로 주말 약속을 잡아요. 약속은 보통 이렇게 흘러가요.</p><p><b>시간 있는지 묻기</b> → <b>무엇을 할지 제안</b> → <b>시간·장소 정하기</b> → <b>마무리 인사</b></p>',
+        ex: [{ en: 'Are|you|free|this Saturday?', roles: 'Q S C M', ko: '이번 토요일에 시간 있어?' }, { en: 'Do|you|want to see|a movie?', roles: 'Q S V O', ko: '영화 볼래?' }, { en: 'Sounds|good!', roles: 'V C', ko: '좋아!' }] },
+      { title: '시간과 장소 정하기', html: '<p>시간을 제안할 땐 <b>How about …?</b>(~ 어때?), 바꾸고 싶으면 <b>Can we meet at … instead?</b>(대신 ~에 만날 수 있어?)</p><p>장소는 <b>Let\'s meet …</b>(~에서 만나자). 시각 앞에는 <b>at</b>!</p>',
+        ex: [{ en: "How about three o'clock?", ko: '3시 어때?' }, { en: 'Can|we|meet|at four|instead?', roles: 'Q S V M M', ko: '대신 4시에 만날 수 있어?' }, { en: "Let's meet|in front of the theater.", roles: 'V M', ko: '극장 앞에서 만나자.' }] },
+      { title: '마무리 & 늦을 때', html: '<p>약속이 정해지면 <b>See you then!</b>(그때 봐!). 당일에 늦을 것 같으면 바로 메시지를 보내요.</p>',
+        ex: [{ en: 'See you then!', ko: '그때 봐!' }, { en: "Sorry, I'm running ten minutes late.", ko: '미안, 나 10분 늦을 것 같아.', deck: false }, { en: "Sorry, I'll be about ten minutes late.", ko: '미안, 10분쯤 늦을 거야.' }], tip: '메신저에서는 짧게 써도 괜찮아요. Sounds good! / See you! / On my way! 같은 한마디 답장을 많이 써요.' },
+    ],
+    summary: ['시간 있어? = <b>Are you free …?</b> / 할래? = <b>Do you want to …?</b>', '시간 제안 = <b>How about …?</b> / 장소 = <b>Let\'s meet …</b> (시각 앞엔 at)', '마무리 = <b>See you then!</b> / 늦을 때 = <b>I\'m running … late.</b>'] },
+);
+PROBLEMS.push(
+  // E35 — 일기 (조각 연습 → 5문장을 한 줄씩 직접 쓰기)
+  { id: 'E35P1', lesson: 'E35', type: 'choice', prompt: '일기는 지나간 일이라 과거형으로 써요. 빈칸에 맞는 말을 고르세요.', q: 'I ___ up at seven this morning.', opts: ['got', 'get', 'gets'], ans: 0, tags: ['과거형', '일기'], hints: ['오늘 아침은 이미 지나갔어요', 'get 의 과거형은 불규칙이에요', 'I got up at seven this morning.'], why: '지나간 일이라 과거형 got 을 써요. get → got.' },
+  { id: 'E35P2', lesson: 'E35', type: 'build', prompt: '색 슬롯에 맞게 카드를 놓아 일기 첫 문장을 만드세요.', ko: '오늘은 바쁜 하루였어요.', answer: ['Today was a busy day.', 'It was a busy day today.'], cards: ['Today', 'was', 'a busy day.'], roles: 'S V C', tags: ['일기', '과거형'], hints: ['파랑(주어)은 Today', '빨강(동사)은 was', 'Today was a busy day.'] },
+  { id: 'E35P3', lesson: 'E35', type: 'order', prompt: '카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '점심은 미나랑 먹었어요.', answer: ['I had lunch with Mina.', 'I ate lunch with Mina.'], cards: ['I', 'had', 'lunch', 'with', 'Mina.'], distractors: ['have'], tags: ['일기', '과거형'], hints: ['누가 → 했다 → 무엇을 → 누구와', '먹었다 = had (have 의 과거형)', 'I had lunch with Mina.'] },
+  { id: 'E35P4', lesson: 'E35', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '퇴근하고 헬스장에 갔어요.', wrong: 'After work, I goed to the gym.', answer: ['After work, I went to the gym.', 'I went to the gym after work.'], tags: ['과거형', '오개념'], hints: ['동사를 보세요', 'go 는 -ed 를 붙이지 않는 불규칙 동사', 'After work, I went to the gym.'], why: 'go 의 과거형은 goed 가 아니라 went 예요.' },
+  { id: 'E35P5', lesson: 'E35', type: 'type', title: '일기 1/5', prompt: '📝 일기 ① 하루 한 줄 평을 영어로 써 보세요.', ko: '오늘은 바쁜 하루였어요.', answer: ['Today was a busy day.', 'It was a busy day today.', 'I had a busy day today.', 'I had a busy day.', 'It was a busy day.'], tags: ['일기'], hints: ['Today was …', 'a busy day = 바쁜 하루', 'Today was a busy day.'] },
+  { id: 'E35P6', lesson: 'E35', type: 'type', title: '일기 2/5', prompt: '📝 일기 ② 아침: 몇 시에 일어났는지 써 보세요.', ko: '나는 7시에 일어났어요.', answer: ['I got up at seven.', 'I got up at 7.', "I got up at seven o'clock.", 'I woke up at seven.', 'I woke up at 7.', 'I got up at seven this morning.'], tags: ['일기', '과거형'], hints: ['일어났다 = got up', '시각 앞에는 at', 'I got up at seven.'] },
+  { id: 'E35P7', lesson: 'E35', type: 'type', title: '일기 3/5', prompt: '📝 일기 ③ 낮: 누구와 무엇을 했는지 써 보세요.', ko: '점심은 미나랑 먹었어요.', answer: ['I had lunch with Mina.', 'I ate lunch with Mina.', 'I had lunch with Mina today.', 'I had lunch with Mina at noon.'], tags: ['일기', '과거형'], hints: ['먹었다 = had', 'I had lunch + with Mina', 'I had lunch with Mina.'] },
+  { id: 'E35P8', lesson: 'E35', type: 'type', title: '일기 4/5', prompt: '📝 일기 ④ 저녁: 어디에 갔는지 써 보세요.', ko: '퇴근하고 헬스장에 갔어요.', answer: ['After work, I went to the gym.', 'I went to the gym after work.', 'After work I went to the gym.', 'After work, I went to the fitness center.'], tags: ['일기', '과거형'], hints: ['After work, 로 시작해 보세요', 'went to + the gym', 'After work, I went to the gym.'] },
+  { id: 'E35P9', lesson: 'E35', type: 'type', title: '일기 5/5', prompt: '📝 일기 ⑤ 느낌으로 마무리해 보세요.', ko: '피곤했지만 기분은 좋았어요.', answer: ['I was tired, but I felt good.', 'I was tired, but I felt great.', 'I was tired but happy.', 'I was tired, but I was happy.', 'I was tired, but I felt happy.', 'I felt tired, but I felt good.'], tags: ['일기', '연결어'], hints: ['I was tired 로 시작해요', ', but I felt good', 'I was tired, but I felt good.'] },
+
+  // E36 — 자기소개 1분 (배열 → 말하기)
+  { id: 'E36P1', lesson: 'E36', type: 'listen', prompt: '자기소개를 듣고 알맞은 뜻을 고르세요.', say: "I'm from Busan, but I live in Seoul now.", opts: ['부산 출신인데, 지금은 서울에 살아요.', '서울 출신인데, 지금은 부산에 살아요.', '부산에 살다가 서울로 여행 왔어요.'], ans: 0, tags: ['듣기', '자기소개'], hints: ['from 뒤가 출신지예요', 'live in 뒤가 지금 사는 곳', '부산 출신인데, 지금은 서울에 살아요.'] },
+  { id: 'E36P2', lesson: 'E36', type: 'order', prompt: '① 인사·이름. 카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '안녕하세요, 제 이름은 지수예요.', answer: ['Hi, my name is Jisoo.', 'Hello, my name is Jisoo.', "Hi, I'm Jisoo."], cards: ['Hi,', 'my', 'name', 'is', 'Jisoo.'], distractors: ['am'], tags: ['자기소개', 'be동사'], hints: ['Hi, 다음에 my name', 'my name 은 한 사람 → is', 'Hi, my name is Jisoo.'] },
+  { id: 'E36P3', lesson: 'E36', type: 'order', prompt: '② 출신·사는 곳. 카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '부산 출신인데, 지금은 서울에 살아요.', answer: ["I'm from Busan, but I live in Seoul now.", 'I am from Busan, but I live in Seoul now.', "I'm from Busan, but now I live in Seoul."], cards: ["I'm", 'from Busan,', 'but', 'I', 'live', 'in Seoul', 'now.'], distractors: ['lives'], tags: ['자기소개', '연결어'], hints: ["I'm from Busan 다음에 but", 'I 뒤에는 live (-s 없음)', "I'm from Busan, but I live in Seoul now."] },
+  { id: 'E36P4', lesson: 'E36', type: 'order', prompt: '③ 하는 일. 카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '디자인 회사에서 일해요.', answer: ['I work at a design company.', 'I work for a design company.'], cards: ['I', 'work', 'at', 'a design company.'], distractors: ['works'], tags: ['자기소개'], hints: ['I + 동사', 'I 뒤에는 work', 'I work at a design company.'] },
+  { id: 'E36P5', lesson: 'E36', type: 'order', prompt: '④ 취미. 카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '시간 날 때는 영화 보는 걸 좋아해요.', answer: ['In my free time, I like to watch movies.', 'In my free time, I like watching movies.', 'I like to watch movies in my free time.', 'I like watching movies in my free time.'], cards: ['In my free time,', 'I', 'like', 'to watch', 'movies.'], distractors: ['likes'], tags: ['자기소개', 'to부정사'], hints: ['In my free time, 으로 시작해요', 'I like to + 동사', 'In my free time, I like to watch movies.'] },
+  { id: 'E36P6', lesson: 'E36', type: 'speak', prompt: '🔊 ③ 하는 일을 따라 말해 보세요.', say: 'I work at a design company.', ko: '디자인 회사에서 일해요.', roles: 'S V M', tags: ['말하기', '자기소개'], hints: ['🐢 로 천천히 들어 보세요', 'at a 를 이어서 「애러」', 'I work at a design company.'] },
+  { id: 'E36P7', lesson: 'E36', type: 'speak', prompt: '🔊 ② 출신·사는 곳을 따라 말해 보세요.', say: "I'm from Busan, but I live in Seoul now.", ko: '부산 출신인데, 지금은 서울에 살아요.', tags: ['말하기', '자기소개'], hints: ['🐢 로 천천히 들어 보세요', 'Busan, 에서 살짝 쉬어요', "I'm from Busan, but I live in Seoul now."] },
+  { id: 'E36P8', lesson: 'E36', type: 'speak', prompt: '🔊 ④ 취미를 따라 말해 보세요.', say: 'In my free time, I like to watch movies.', ko: '시간 날 때는 영화 보는 걸 좋아해요.', roles: 'M S V O', tags: ['말하기', '자기소개'], hints: ['🐢 로 천천히 들어 보세요', 'In my free time, / I like to watch / movies.', 'In my free time, I like to watch movies.'] },
+  { id: 'E36P9', lesson: 'E36', type: 'speak', prompt: '🔊 ⑤ 영어 공부하는 이유까지! 따라 말해 보세요.', say: "I'm learning English because I want to travel.", ko: '여행하고 싶어서 영어를 배우고 있어요.', tags: ['말하기', '자기소개'], hints: ['🐢 로 천천히 들어 보세요', 'because 앞에서 살짝 쉬어요', "I'm learning English because I want to travel."] },
+
+  // E37 — 메신저 대화: 약속 잡기
+  { id: 'E37P1', lesson: 'E37', type: 'listen', prompt: '💬 Tom 의 메시지를 듣고 뜻을 고르세요.', say: 'Are you free this Saturday?', opts: ['이번 토요일에 시간 있어?', '이번 토요일에 바빠?', '지난 토요일에 뭐 했어?'], ans: 0, tags: ['듣기', '약속'], hints: ['free 가 들렸나요?', 'Are you free? = 시간 있어?', '이번 토요일에 시간 있어?'] },
+  { id: 'E37P2', lesson: 'E37', type: 'match', prompt: '메신저 표현과 뜻을 짝 지으세요.', pairs: [['Sounds good!', '좋아!'], ['See you then!', '그때 봐!'], ["How about three o'clock?", '3시 어때?'], ["I'm running late.", '나 좀 늦어.']], tags: ['약속'], hints: ['How about …? = ~ 어때?', 'See you = 봐, then = 그때', "running late = 늦어지고 있어"] },
+  { id: 'E37P3', lesson: 'E37', type: 'order', prompt: '💬 영화 보자고 제안하세요. 필요 없는 카드도 있어요.', ko: '영화 볼래?', answer: ['Do you want to see a movie?', 'Do you want to watch a movie?'], cards: ['Do', 'you', 'want', 'to see', 'a movie?'], distractors: ['Does'], tags: ['약속', '질문'], hints: ['you 에게 묻는 질문 → Do', 'Do you want to + 동사', 'Do you want to see a movie?'] },
+  { id: 'E37P4', lesson: 'E37', type: 'listen', prompt: '💬 Tom 이 시간을 제안해요. 뜻을 고르세요.', say: "How about three o'clock?", opts: ['3시 어때?', '3시에 끝나.', '3시간 걸려.'], ans: 0, tags: ['듣기', '약속'], hints: ['How about 이 들렸나요?', 'How about …? = ~ 어때?', '3시 어때?'] },
+  { id: 'E37P5', lesson: 'E37', type: 'order', prompt: '💬 4시로 바꾸자고 하세요. 필요 없는 카드도 있어요.', ko: '대신 4시에 만날 수 있어?', answer: ['Can we meet at four instead?', 'Could we meet at four instead?', 'Can we meet at 4 instead?'], cards: ['Can', 'we', 'meet', 'at four', 'instead?'], distractors: ['in four'], tags: ['약속', 'can'], hints: ['Can we 로 시작해요', '시각 앞에는 at', 'Can we meet at four instead?'] },
+  { id: 'E37P6', lesson: 'E37', type: 'type', prompt: '💬 이유를 보내세요.', ko: '나 2시까지 일해야 돼.', answer: ['I have to work until two.', 'I have to work until 2.', 'I have to work till two.', 'I have to work till 2.', "I have to work until two o'clock.", 'I must work until two.'], tags: ['약속', 'have to'], hints: ['해야 돼 = have to', '~까지 = until', 'I have to work until two.'] },
+  { id: 'E37P7', lesson: 'E37', type: 'type', prompt: '💬 만날 장소를 정하세요.', ko: '극장 앞에서 만나자.', answer: ["Let's meet in front of the theater.", "Let's meet in front of the theatre.", "Let's meet in front of the movie theater.", "Let's meet in front of the cinema.", "Let's meet outside the theater.", "Let's meet at the theater."], tags: ['약속'], hints: ["Let's meet 로 시작해요", '~ 앞에서 = in front of', "Let's meet in front of the theater."] },
+  { id: 'E37P8', lesson: 'E37', type: 'dictation', prompt: '💬 토요일, Tom 에게서 음성 메시지가 왔어요. 듣고 받아쓰세요.', say: "Sorry, I'm running ten minutes late.", answer: ["Sorry, I'm running ten minutes late.", "Sorry, I'm running 10 minutes late.", "Sorry, I am running ten minutes late."], tags: ['받아쓰기', '약속'], hints: ['Sorry 로 시작해요', "I'm running … late", "Sorry, I'm running ten minutes late."] },
+  { id: 'E37P9', lesson: 'E37', type: 'type', prompt: '💬 괜찮다고 답장하고 대화를 마무리하세요.', ko: '괜찮아, 이따 봐!', answer: ['No problem. See you soon!', "That's okay. See you soon!", "It's okay. See you soon!", 'No worries. See you soon!', 'No problem. See you later!', "It's okay. See you later!", "That's fine. See you soon!"], tags: ['약속'], hints: ['괜찮아 = No problem.', '이따 봐 = See you soon!', 'No problem. See you soon!'] },
+);
