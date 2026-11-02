@@ -32,7 +32,7 @@ const UI = {
     const h = decodeURIComponent(location.hash.slice(1)); const [name, ...rest] = h.split('/'); const v = this.views[name] ? name : 'home';
     Speech.stop(); this.cur = v; this.topbar(); window.scrollTo(0, 0);
     try { this.views[v](rest.join('/')); } catch (e) { console.error(e); $('#view').innerHTML = `<div class="page"><div class="card">화면을 그리다 문제가 생겼어요: ${esc(e.message)}<br><a class="btn" href="#">홈으로</a></div></div>`; }
-    Store.data.last = { course: Store.course, hash: h }; Store.save();
+    Store.data.last = { course: Store.course, hash: h }; Store.save({ silent: true });
   },
   go(hash) { if (location.hash === '#' + hash) this.route(); else location.hash = hash; },
   start(views) {

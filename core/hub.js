@@ -32,5 +32,5 @@ const Hub = {
 window.addEventListener('DOMContentLoaded', () => {
   Store.load(null); UI.applyTheme(); Speech.init(); Confetti.init();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
-  Hub.render();
+  Hub.render(); Sync.init();
 });

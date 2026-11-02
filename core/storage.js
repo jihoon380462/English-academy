@@ -20,7 +20,7 @@ const Store = {
     this.cdata = course ? Object.assign(this.blankCourse(), this._get('course.' + course) || {}) : this.blankCourse();
     this.cards = this._get('cards') || {}; this.ankiData = Object.assign({ newDay: '', newToday: 0, log: [] }, this._get('anki') || {}); this.mydeck = this._get('mydeck') || {};
   },
-  save() { this.data.updatedAt = Date.now(); this._set('profile', this.data); if (this.course) this._set('course.' + this.course, this.cdata); this._set('cards', this.cards); this._set('anki', this.ankiData); this._set('mydeck', this.mydeck); },
+  save(opt = {}) { if (!opt.silent) { this.data.updatedAt = Date.now(); if (typeof Sync !== 'undefined') Sync.schedule(); } this._set('profile', this.data); if (this.course) this._set('course.' + this.course, this.cdata); this._set('cards', this.cards); this._set('anki', this.ankiData); this._set('mydeck', this.mydeck); },
   anki() { return this.ankiData; },
   ankiLog(id, g, before, after) { const L = this.ankiData.log; L.push([Date.now(), id, g, before.q, Math.round(after.ivl || 0)]); if (L.length > 3000) L.splice(0, L.length - 3000); },
   courseData(id) { return Object.assign(this.blankCourse(), this._get('course.' + id) || {}); },
