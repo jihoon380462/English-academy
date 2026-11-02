@@ -30,7 +30,7 @@ const Speech = {
   // 끊어서 천천히: '|' 덩어리가 있으면 덩어리마다, 없으면 2~3낱말씩 → 아주 느린 속도로 하나씩 읽고 사이에 쉼. 다시 누르면 멈춤
   slowParts(raw) {
     raw = String(raw ?? '').trim(); if (raw.includes('|')) return raw.split('|').map(s => s.trim()).filter(Boolean);
-    const w = raw.split(/\s+/).filter(Boolean); if (w.length <= 3) return w; const out = []; for (let i = 0; i < w.length;) { const n = w.length - i === 4 ? 2 : Math.min(3, w.length - i); out.push(w.slice(i, i + n).join(' ')); i += n; } return out;
+    const out = []; for (const clause of raw.split(/(?<=[,.?!;:])\s+/)) { const w = clause.split(/\s+/).filter(Boolean); if (w.length <= 3) { out.push(...w); continue; } for (let i = 0; i < w.length;) { const n = w.length - i === 4 ? 2 : Math.min(3, w.length - i); out.push(w.slice(i, i + n).join(' ')); i += n; } } return out; // 쉼표·마침표 경계는 넘지 않음
   },
   async slow(raw, { btn } = {}) {
     if (btn && btn.classList.contains('speaking')) { this.stop(); btn.classList.remove('speaking'); return; }

@@ -1,7 +1,7 @@
 // core/config.js — 버전·코스 목록·수치·문구 (수정할 때 APP_VERSION 을 올리고 node tools/stamp.mjs)
 // 저장 키는 eng.* / 캐시는 english-shell-* — 같은 출처의 파이썬 아카데미(academy.*, academy-shell-*)와 절대 겹치면 안 된다 (SPEC 6절)
 const CONFIG = {
-  APP_VERSION: '0.2.2',
+  APP_VERSION: '0.2.3',
   SCHEMA_VERSION: 1,
   KEY_PREFIX: 'eng.',
   HUB_PATH: '../../index.html',
