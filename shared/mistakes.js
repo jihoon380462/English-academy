@@ -19,7 +19,7 @@ const MISTAKES = [
   { re: "\\bmore\\s+(bigger|smaller|faster|taller|older|better|worse)\\b", msg: '-er 비교급에 more 를 또 붙이지 않아요: bigger (more bigger ✗).' },
   { re: "\\b(is|are|am)\\s+(go|eat|play|study|work|watch|read|run|sleep|cook)\\b", msg: '진행형은 be동사 + 동사-ing: I am eating. 그냥 현재라면 be동사 없이 I eat.' },
   { re: "\\bthere\\s+is\\s+(two|three|many|some|a lot of)\\b", msg: '여럿이면 There are: There are two cats.' },
-  { re: "\\bdo\\s+(he|she|it)\\b", msg: 'He/She/It 의 질문은 Does: Does she like coffee?' },
+  { re: "^ do\\s+(he|she)\\b|^ do\\s+it\\s+(have|work|look|take|need|cost|matter|hurt|mean|come|go)\\b", msg: 'He/She/It 의 질문은 Does: Does she like coffee?' },
   { re: "\\bdoes\\s+(i|you|we|they)\\b", msg: 'I/You/We/They 의 질문은 Do: Do you like coffee?' },
   { re: "\\bpeoples\\b", msg: 'people 은 이미 여럿이라는 뜻이라 s 를 붙이지 않아요.' },
   { re: "\\b(informations|advices|furnitures|homeworks)\\b", msg: 'information · advice · furniture · homework 는 셀 수 없는 명사라 s 가 붙지 않아요.' },
