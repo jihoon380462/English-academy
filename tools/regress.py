@@ -20,6 +20,7 @@ Handler = functools.partial(Quiet, directory=tmp)
 srv = socketserver.TCPServer(('127.0.0.1', 0), Handler); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 BASE = f'http://127.0.0.1:{port}/English-academy/'
+COURSES = ['basic', 'talk', 'grammar', 'read', 'dev']
 PY_KEYS = {'academy.profile': '{"xp":1234}', 'academy.course.python': '{"problems":{"L1P1":{"status":"clear"}}}'}
 
 with sync_playwright() as pw:
@@ -40,30 +41,37 @@ with sync_playwright() as pw:
         check(page.locator('.hc.ready').count() >= 2, '허브: 열린 코스 카드 2개 이상')
         # 코스 지도
         page.goto(BASE + 'courses/basic/'); page.wait_for_selector('.lrow'); shot('map'); no_hscroll('지도')
-        total = page.evaluate('PROBLEMS.length'); lessons = page.evaluate('LESSONS.map(l => l.id)')
+        lessons = page.evaluate('LESSONS.map(l => l.id)')
         # 레슨 쪽 넘기기
         page.goto(BASE + f'courses/basic/#lesson/{lessons[0]}'); page.wait_for_selector('.lcard'); shot('lesson'); no_hscroll('레슨')
         check(page.locator('.say').count() > 0, '레슨: 🔊 버튼 있음')
-        # 모든 문제: 정답 보기 → 확인 → 통과
-        cleared = 0
-        for lid in lessons:
-            page.goto(BASE + f'courses/basic/#play/{lid}/0'); page.wait_for_selector('.prob')
-            n = page.evaluate(f'Content.problemsOf({json.dumps(lid)}).length')
-            for i in range(n):
-                page.wait_for_selector('.prob'); pid = page.evaluate('Play.state.list[Play.state.idx]'); typ = page.evaluate(f'Content.problem({json.dumps(pid)}).type')
-                if i == 0 and lid == lessons[0]: shot('problem')
-                if typ == 'speak':
-                    page.click('[data-a=skip]'); continue
-                page.click('[data-a=reveal]')
-                if not page.locator('.fb.good').count(): page.click('[data-a=check]')
-                ok = page.locator('.fb.good').count() > 0
-                if not ok: check(False, f'{pid}({typ}) 정답 보기 후 통과 못 함: ' + page.inner_text('.feedback')[:120])
-                else: cleared += 1
-                if typ in ('build', 'order', 'match') and theme == 'dark' and lid == lessons[0]: shot('problem-' + typ); no_hscroll(f'문제 {typ}')
-                page.click('[data-a=check]')  # 다음
-            page.wait_for_selector('.done-card, .prob', timeout=5000)
-        speaks = page.evaluate("PROBLEMS.filter(p => p.type === 'speak').length")
-        check(cleared == total - speaks, f'문제 {cleared}/{total - speaks}개 정답 보기로 통과 (말하기 {speaks}개 건너뜀)')
+        # 모든 코스의 모든 문제: 정답 보기 → 확인 → 통과 (라이트 테마는 코스마다 첫 레슨만)
+        for course in COURSES:
+            page.goto(BASE + f'courses/{course}/'); page.wait_for_selector('#view .page')
+            lessons = page.evaluate('LESSONS.map(l => l.id)'); total = page.evaluate('PROBLEMS.length')
+            if not lessons: continue
+            if theme == 'light': lessons = lessons[:1]
+            cleared = 0; need = 0
+            for lid in lessons:
+                page.goto(BASE + f'courses/{course}/#play/{lid}/0'); page.wait_for_selector('.prob')
+                n = page.evaluate(f'Content.problemsOf({json.dumps(lid)}).length')
+                for i in range(n):
+                    page.wait_for_selector('.prob'); pid = page.evaluate('Play.state.list[Play.state.idx]'); typ = page.evaluate(f'Content.problem({json.dumps(pid)}).type')
+                    if course == 'basic' and i == 0 and lid == lessons[0]: shot('problem')
+                    if typ == 'speak':
+                        page.click('[data-a=skip]'); continue
+                    need += 1
+                    page.click('[data-a=reveal]')
+                    if not page.locator('.fb.good').count(): page.click('[data-a=check]')
+                    if page.locator('.fb.good').count(): cleared += 1
+                    else: check(False, f'{course} {pid}({typ}) 정답 보기 후 통과 못 함: ' + page.inner_text('.feedback')[:120])
+                    if typ in ('build', 'order', 'match', 'fill', 'fix') and theme == 'dark' and not os.environ.get('SHOT_' + typ):
+                        os.environ['SHOT_' + typ] = '1'; shot('problem-' + typ); no_hscroll(f'문제 {typ}')
+                    page.click('[data-a=check]')  # 다음
+                page.wait_for_selector('.done-card', timeout=5000)
+            check(cleared == need, f'{course}: 레슨 {len(lessons)}개 · 문제 {cleared}/{need} 정답 보기로 통과 (전체 {total}, 말하기 건너뜀)')
+            no_hscroll(f'{course} 완료 화면')
+        page.goto(BASE + 'courses/basic/'); page.wait_for_selector('.lrow'); total = page.evaluate('PROBLEMS.length'); speaks = page.evaluate("PROBLEMS.filter(p => p.type === 'speak').length")
         shot('done')
         # 오답 처리: 첫 문장 문제에 엉뚱한 답
         tp = page.evaluate("(PROBLEMS.find(p => p.type === 'type') || {}).id")
@@ -71,7 +79,7 @@ with sync_playwright() as pw:
             page.goto(BASE + f'courses/basic/#p/{tp}'); page.wait_for_selector('.sent-in'); page.fill('.sent-in', 'He go school'); page.click('[data-a=check]')
             check(page.locator('.fb.bad').count() == 1, '오답: 틀림 표시'); check(page.locator('.w-bad, .w-miss').count() > 0, '오답: 낱말 비교 표시'); shot('wrong')
         # 복습 카드 (문제 카드가 생겼는지) → 내일로 당겨서 복습 화면
-        nCards = page.evaluate("Object.keys(Store.cards).filter(k => k.startsWith('p:basic:')).length"); check(nCards >= total - speaks, f'문제 복습 카드 {nCards}장 생김')
+        nCards = page.evaluate("Object.keys(Store.cards).filter(k => k.startsWith('p:basic:')).length"); check(nCards > 0, f'문제 복습 카드 {nCards}장 생김')
         page.evaluate("Object.values(Store.cards).forEach(c => c.due = 0); Store.save()")
         page.goto(BASE + 'courses/basic/#review'); page.wait_for_selector('.prob'); check(True, '복습 화면 열림')
         # 문장 덱: 레슨 문장 수집 + Anki 리뷰어

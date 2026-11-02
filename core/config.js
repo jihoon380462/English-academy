@@ -11,10 +11,10 @@ const CONFIG = {
   COURSES: [
     { id: 'basic', name: '영어 다시 시작', icon: '🔤', desc: '문장 뼈대부터 시제·꾸밈말까지, 카드로 조립하며', path: 'courses/basic/', color: '#3d8bfd', ready: true },
     { id: 'deck', name: '문장 덱', icon: '🃏', desc: 'Anki 방식 복습 — 듣고 뜻 떠올리기 · 뜻 보고 영어로 말하기. 레슨에서 배운 문장이 자동으로 쌓여요', path: 'courses/deck/', color: '#f5a623', ready: true, space: true },
-    { id: 'talk', name: '듣기·말하기', icon: '🎧', desc: '따라 말하기·받아쓰기·상황 회화 미션', path: 'courses/talk/', color: '#2bb673', phase: 2 },
-    { id: 'grammar', name: '문법 더 깊게', icon: '🧩', desc: '완료·수동태·관계사·가정법', path: 'courses/grammar/', color: '#9b59b6', phase: 3, requires: { course: 'basic', boss: 'B4', label: '기초 코스 챕터 4까지 끝내면 열려요' } },
-    { id: 'read', name: '읽기', icon: '📖', desc: '의미 덩어리로 끊어 읽기 → 짧은 글 → 긴 글', path: 'courses/read/', color: '#e67e22', phase: 4 },
-    { id: 'dev', name: '개발자 영어', icon: '💻', desc: '에러 메시지·공식 문서 읽기, 커밋·이슈·PR 쓰기', path: 'courses/dev/', color: '#14b8a6', phase: 4 },
+    { id: 'talk', name: '듣기·말하기', icon: '🎧', desc: '따라 말하기·받아쓰기·상황 회화 미션', path: 'courses/talk/', color: '#2bb673', ready: true },
+    { id: 'grammar', name: '문법 더 깊게', icon: '🧩', desc: '완료·수동태·관계사·가정법', path: 'courses/grammar/', color: '#9b59b6', ready: true, requires: { course: 'basic', boss: 'B4', label: '기초 코스 챕터 4까지 끝내면 열려요' } },
+    { id: 'read', name: '읽기', icon: '📖', desc: '의미 덩어리로 끊어 읽기 → 짧은 글 → 긴 글', path: 'courses/read/', color: '#e67e22', ready: true },
+    { id: 'dev', name: '개발자 영어', icon: '💻', desc: '에러 메시지·공식 문서 읽기, 커밋·이슈·PR 쓰기', path: 'courses/dev/', color: '#14b8a6', ready: true },
   ],
 
   // 성분 색 (SPEC 3-2절) — 모든 코스 공통
