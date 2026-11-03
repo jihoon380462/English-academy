@@ -29,8 +29,8 @@ code{background:var(--surface2);padding:1px 6px;border-radius:6px;font-size:.92e
 .tb-goal,.tb-streak{font-size:.88em;font-weight:700;white-space:nowrap}.tb-streak{opacity:.5}.tb-streak.on{opacity:1}
 
 /* 토스트·모달 */
-#toasts{position:fixed;left:50%;top:62px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(92vw,420px)}
-.toast{background:#222a;color:#fff;background:rgba(25,28,38,.94);padding:9px 16px;border-radius:12px;font-size:.95em;transition:opacity .4s,transform .4s;text-align:center}.toast.out{opacity:0;transform:translateY(-10px)}
+#toasts{position:fixed;right:10px;top:58px;z-index:60;display:flex;flex-direction:column;gap:4px;align-items:flex-end;pointer-events:none;max-width:min(70vw,360px)}
+.toast{color:#fff;background:rgba(25,28,38,.88);padding:6px 12px;border-radius:10px;font-size:.85em;transition:opacity .4s,transform .4s;text-align:right;box-shadow:0 2px 8px rgba(0,0,0,.25)}.toast.out{opacity:0;transform:translateY(-10px)}
 #modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.45)}
 .modal-box{position:relative;background:var(--surface);border-radius:18px;padding:22px 18px;width:min(440px,100%);max-height:88vh;overflow:auto}.modal-box.wide{width:min(680px,100%)}
 .modal-x{position:absolute;right:10px;top:8px;border:0;background:none;color:var(--muted);font-size:1.2em;cursor:pointer}
