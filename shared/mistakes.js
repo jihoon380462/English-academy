@@ -18,7 +18,7 @@ const MISTAKES = [
   { re: "\\b(in|on)\\s+\\d{1,2}(:\\d\\d|\\s*(am|pm|a\\.m\\.|p\\.m\\.|o'clock))", msg: '시각 앞에는 at: at 7, at 3:30. (in 10 minutes 처럼 「~ 뒤에」는 in)' },
   { re: "\\bmore\\s+(bigger|smaller|faster|taller|older|better|worse)\\b", msg: '-er 비교급에 more 를 또 붙이지 않아요: bigger (more bigger ✗).' },
   { re: "\\b(i am|you are|we are|they are|he is|she is|i'm|you're|we're|they're|he's|she's)\\s+(go|eat|play|watch|read|run|sleep|cook|drink|swim|write)\\b", msg: '진행형은 be동사 + 동사-ing: I am eating. 그냥 현재라면 be동사 없이 I eat.' },
-  { re: "\\bthere\\s+is\\s+(two|three|many|some|a lot of)\\b", msg: '여럿이면 There are: There are two cats.' },
+  { re: "\\bthere\\s+is\\s+(two|three|four|five|many|several|(a lot of|lots of|some) (?!news\\b)(\\w+s|people|children))\\b", msg: '여럿이면 There are: There are two cats.' },
   { re: "^ do\\s+(he|she)\\b|^ do\\s+it\\s+(have|work|look|take|need|cost|matter|hurt|mean|come|go)\\b", msg: 'He/She/It 의 질문은 Does: Does she like coffee?' },
   { re: "\\bdoes\\s+(i|you|we|they)\\b", msg: 'I/You/We/They 의 질문은 Do: Do you like coffee?' },
   { re: "\\bpeoples\\b", msg: 'people 은 이미 여럿이라는 뜻이라 s 를 붙이지 않아요.' },
