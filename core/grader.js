@@ -50,14 +50,16 @@ const Grader = {
     const show = (w) => w.includes('|') ? w.split('|')[0] : w;
     return { got: got.map((w, k) => ({ w: show(w), ok: okG[k] })), missing: want.filter((w, k) => !okW[k]).map(show), score: n ? L[0][0] / Math.max(n, m) : 0 };
   },
+  // 명사 + 's 는 소유격(dad's car)일 수도, is/has 축약(My dad's used to…)일 수도 → 두 갈래로 펼쳐서 비교 (최대 3개)
+  expand(t) { const idx = t.map((w, i) => /^[a-z]+'s$/.test(w) ? i : -1).filter(i => i >= 0).slice(0, 3); let out = [t]; for (const i of idx.reverse()) out = out.flatMap(v => [v, [...v.slice(0, i), v[i].slice(0, -2), 'is|has', ...v.slice(i + 1)]]); return out; },
   // 문장 채점. answers: 허용 답 목록(첫째가 대표). 돌려주는 값 {ok, typo?, best, diff}
   text(input, answers) {
-    const got = this.tokens(input); const list = (Array.isArray(answers) ? answers : [answers]).filter(a => a != null);
+    const got = this.tokens(input); const list = (Array.isArray(answers) ? answers : [answers]).filter(a => a != null); const G = this.expand(got);
     let best = list[0], bestDiff = null;
     for (const a of list) {
-      const want = this.tokens(a);
-      if (this.same(got, want)) return { ok: true, best: a };
-      const typo = this.near(got, want); if (typo) return { ok: true, typo, best: a };
+      const want = this.tokens(a); const Wv = this.expand(want);
+      for (const g of G) for (const w of Wv) if (this.same(g, w)) return { ok: true, best: a };
+      for (const g of G) for (const w of Wv) { const typo = this.near(g, w); if (typo) return { ok: true, typo, best: a }; }
       const d = this.diff(got, want); if (!bestDiff || d.score > bestDiff.score) { bestDiff = d; best = a; }
     }
     return { ok: false, best, diff: bestDiff || this.diff(got, this.tokens(best)) };
