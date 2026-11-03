@@ -88,7 +88,7 @@ def run():
                 page.click('[data-a=check]')
             elif t in ('fix', 'type', 'dictation', 'free'):
                 ans = (p.get('answer') or [p.get('say')]); ans = ans if isinstance(ans, list) else [ans]
-                page.fill('.sent-in', ans[0].replace('|', ' ')); page.click('[data-a=check]')
+                page.wait_for_timeout(90); page.fill('.sent-in', ans[0].replace('|', ' ')); page.click('[data-a=check]')  # 입력칸 자동 포커스(50ms)가 끝난 뒤에 채움
             elif t == 'speak':
                 page.evaluate(f"window.__fakeHeard = {json.dumps(p['say'].replace('|', ' '))}"); page.click('.mic'); page.wait_for_timeout(120)
             page.wait_for_timeout(40)
@@ -98,7 +98,7 @@ def run():
             if t in ('choice', 'listen') and len(p['opts']) > 1:
                 wi = (p['ans'] + 1) % len(p['opts']); page.click(f'.opt[data-i="{wi}"]'); ok = check(fb() == 'bad', f'{where}: 틀린 보기를 골랐는데 오답 표시가 없음'); page.wait_for_timeout(950)
             elif t in ('fix', 'type', 'dictation'):
-                page.fill('.sent-in', 'Zebra purple quickly window'); page.click('[data-a=check]')
+                page.wait_for_timeout(90); page.fill('.sent-in', 'Zebra purple quickly window'); page.click('[data-a=check]')
                 ok = check(fb() == 'bad', f'{where}: 엉뚱한 답이 오답 처리 안 됨') and check(page.locator('.w-bad, .w-miss').count() > 0, f'{where}: 오답 낱말 비교 표시 없음')
             elif t == 'order' and len(p['cards']) > 2:
                 for i in reversed(range(len(p['cards']))): page.click(f'.pool .card-w[data-id="c{i}"]')
@@ -117,7 +117,7 @@ def run():
             else: return
             stats['wrong_checked'] += 1
             # 힌트 버튼
-            if p.get('hints'): page.click('[data-a=hint]'); check(page.locator('.hint').count() >= 1, f'{where}: 힌트가 안 보임')
+            if p.get('hints') and page.locator('[data-a=hint]:not([disabled])').count(): page.click('[data-a=hint]'); check(page.locator('.hint').count() >= 1, f'{where}: 힌트가 안 보임')
 
         def play_course(course):
             page.goto(BASE + f'courses/{course}/'); page.wait_for_selector('#view .page')

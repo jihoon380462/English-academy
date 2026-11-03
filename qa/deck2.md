@@ -5,7 +5,7 @@
 검수 방법
 - 400문장 전부 원어민 자연스러움, ko 뜻·말투(해요체, 아이에게 하는 말처럼 반말이 분명한 곳만 반말), key/keyko, alt 를 확인했어요.
 - 덱 사이 비슷한 문장: d00~d16 전체에서 낱말 일치율(LCS) 0.6 이상 쌍과 **같은 key** 쌍을 뽑아 직접 보고, 거의 같은 문장은 **뒤쪽 덱** 문장을 바꿨어요. 다른 코스 레슨 예문(자동으로 「내 문장」에 들어감)과 **똑같은 문장**도 찾아서 바꿨어요.
-- 채점기 v0.3.0 기준으로 alt 를 정리했어요: 채점기가 이미 같게 보는 alt(숫자 낱말↔숫자, 7:30↔seven thirty, 축약형, gonna, 하이픈, en 과 글자까지 같은 것) **105개를 뺐어요**. 채점기가 같게 보지 **않는** $40↔forty dollars, 20%↔twenty percent, 3rd↔third, 1988↔nineteen eighty-eight, 100↔a hundred, 302↔three oh two, 2.5 는 alt 에 남겼어요.
+- 채점기 v0.3.0 기준으로 alt 를 정리했어요: 채점기가 이미 같게 보는 alt(숫자 낱말↔숫자, 7:30↔seven thirty, 축약형, gonna, 하이픈, en 과 글자까지 같은 것) **112개를 뺐어요**(작업 끝 무렵 채점기가 서수 3rd↔third, 1st↔first 도 같게 보게 바뀌어 그것도 정리). 채점기가 같게 보지 **않는** $40↔forty dollars, 20%↔twenty percent, 1988↔nineteen eighty-eight, 100↔a hundred, 302↔three oh two, 2.5 는 alt 에 남겼어요.
 - 학습자가 쓸 법한 답 약 190개를 `C.Grader.text(입력, [it.en, ...it.alt])` 로 채점해 보고, 뜻이 같은데 떨어지는 것 35개를 alt 에 넣었어요. 일부러 안 넣은 것: `Its up to you`(its 는 다른 낱말), `I can't login`(log in 이 맞는 형태), `I'm looking for … for my mother`(ko 가 「엄마」), 문장이 아닌 조각 답(`About two and a half hours.`).
 
 ## 고친 것
@@ -62,4 +62,4 @@
 2. **채점기: 아포스트로피 없는 `its`**: `Its up to you` 는 오답이에요(its 는 다른 낱말이라 일부러 뺀 것으로 알아요). 그대로 둬도 될지 확인 부탁해요.
 3. **`login` / `log in`**: `I can't login.` 은 오답이에요. 동사는 log in 이 맞아서 alt 에 안 넣었는데, 실제로 아주 흔하게 쓰는 형태라 허용할지 정해 주세요.
 4. **ko 말투**: 덱 안에서는 해요체로 맞췄고, 부모가 아이에게 하는 말(home-027 「오늘 학교 어땠어?」, home-028 「숙제 다 했어?」)만 반말로 뒀어요. 덱 전체 기준을 「상황상 반말이 분명하면 반말」로 계속 갈지 확인 부탁해요.
-5. **채점 중에 채점기가 바뀐 것 같아요**: 처음 정리할 땐 같다고 안 보던 `Dinner's ready` ↔ `Dinner is ready`, `Why's that` ↔ `Why is that` 이 작업 끝 무렵엔 같게 처리됐어요(다른 에이전트가 `'s` 규칙을 넓힌 듯). 지금 기준으로 정리했어요.
+5. **채점 중에 채점기가 바뀐 것 같아요**: 처음 정리할 땐 같다고 안 보던 `Dinner's ready` ↔ `Dinner is ready`, `Why's that` ↔ `Why is that`, 서수 `3rd` ↔ `third` 가 작업 끝 무렵(core/grader.js·shared/contractions.js 18:32 수정)엔 같게 처리됐어요. 지금 기준으로 alt 를 정리했어요. 채점기를 되돌리면 이 alt 들이 다시 필요해요.
