@@ -64,14 +64,14 @@ const Play = {
       <div class="card prob ${p.boss ? 'is-boss' : ''}">
         <div class="phead"><span class="chip ptype">${TYPE_LABEL[p.type] || p.type}</span>${s.mode === 'review' ? '<span class="chip">복습</span>' : s.mode === 'placement' ? '<span class="chip">실력 확인</span>' : ''}${rec.status === 'clear' ? `<span class="chip">${UI.stars(rec.stars)}</span>` : ''}</div>
         ${p.title ? `<h3>${esc(p.title)}</h3>` : ''}<div class="prompt">${p.prompt || ''}</div>
-        ${p.ko ? `<div class="ko">뜻: <b>${esc(p.ko)}</b></div>` : ''}
+        ${p.ko ? `<div class="ko">${p.type === 'free' ? '✍️ 과제' : '뜻'}: <b>${esc(p.ko)}</b></div>` : ''}
         <div class="widget"></div><div class="feedback"></div><div class="hintbox"></div>
       </div>
       <div class="actions"><button class="btn sm" data-a="hint">💡 힌트 <span class="hn">0/${(p.hints || []).length}</span></button><button class="btn sm" data-a="reveal">정답 보기</button><button class="btn primary big" data-a="check">확인</button></div>
     </div>`;
+    if (s.mode === 'placement') { $('.actions').innerHTML = `<button class="btn sm" data-a="idk">모르겠어요</button><button class="btn primary big" data-a="check">확인</button>`; }
     const wEl = $('.widget'), fb = $('.feedback'), hb = $('.hintbox'), btn = $('[data-a=check]');
     const api = { submit: () => doCheck() };
-    if (s.mode === 'placement') { $('.actions').innerHTML = `<button class="btn sm" data-a="idk">모르겠어요</button><button class="btn primary big" data-a="check">확인</button>`; }
     const w = (W[p.type] || W.choice).mount(p, wEl, api);
     if (w.skippable) $('.actions').insertAdjacentHTML('afterbegin', `<button class="btn sm" data-a="skip" title="마이크를 쓸 수 없을 때">건너뛰기</button>`);
     const next = () => { s.idx++; if (s.idx >= s.list.length) this.finish(); else this.render(); };
@@ -87,7 +87,7 @@ const Play = {
         const best = r.best || Content.answerText(p);
         fb.innerHTML = `<div class="fb good"><div class="fb-h">✅ ${st.revealed ? '정답을 확인했어요' : pick(T.correct)} ${UI.stars(res.stars)}</div>
           ${r.typo ? `<div class="small">✏️ 철자 확인: <s>${esc(r.typo.got)}</s> → <b>${esc(r.typo.want)}</b></div>` : ''}
-          ${best && p.type !== 'match' ? `<div class="fb-best">${p.type === 'build' && p.roles && best === Content.answers(p)[0] ? UI.chunks(p.cards.join('|'), p.roles) : UI.chunks(best, null)}${p.ko ? `<div class="muted small">${esc(p.ko)}</div>` : ''}</div>` : ''}
+          ${best && p.type !== 'match' ? `<div class="fb-best">${p.type === 'build' && p.roles && best === Content.answers(p)[0] ? UI.chunks(p.cards.join('|'), p.roles) : UI.chunks(best, null)}${p.ko && p.type !== 'free' ? `<div class="muted small">${esc(p.ko)}</div>` : ''}</div>` : ''}
           ${r.msg || p.why ? `<div class="why">💬 ${r.msg || p.why}</div>` : ''}</div>`;
         if (best && Store.data.settings.autoplay && !['listen', 'dictation', 'speak', 'match'].includes(p.type)) setTimeout(() => Speech.say(best), 250);
         btn.textContent = s.idx + 1 >= s.list.length ? '완료 🎉' : '다음 →'; btn.classList.add('pulse');

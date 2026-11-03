@@ -133,7 +133,7 @@ def run():
                     if pi == 0 and li == 0: shot(f'{course}-lesson'); layout(f'{course} {lid} 쪽{pi}')
                     exs = L['ex'][pi]
                     if exs:
-                        page.evaluate('Speech.stop(); window.__said = []'); page.wait_for_timeout(30); btn = page.locator('.examples .say:not(.slow)').first; want = btn.get_attribute('data-say'); btn.click(); said = page.evaluate('window.__said')
+                        page.wait_for_timeout(300); page.evaluate('Speech.stop(); window.__said = []'); page.wait_for_timeout(30); btn = page.locator('.examples .say:not(.slow)').first; want = btn.get_attribute('data-say'); btn.click(); said = page.evaluate('window.__said')
                         check(said and said[-1] == want, f'{course} {lid} 쪽{pi}: 🔊 가 버튼과 다른 글을 읽음 {said[-1:]} ≠ {want!r}')
                         check(want == ' '.join(exs[0].replace('|', ' ').split()), f'{course} {lid} 쪽{pi}: 첫 🔊 버튼 글({want!r})이 첫 예문({exs[0]!r})과 다름')
                         if li % 5 == 0:

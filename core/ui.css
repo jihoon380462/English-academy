@@ -152,3 +152,4 @@ code{background:var(--surface2);padding:1px 6px;border-radius:6px;font-size:.92e
 .big-score{font-size:3em;font-weight:900;color:var(--primary)}
 .terms-list{display:flex;flex-direction:column}.term-row{padding:10px 0;border-bottom:1px solid var(--border)}.term-row b{color:var(--primary)}
 .undo-row{display:flex;justify-content:center;margin-top:-4px;margin-bottom:8px}
+.free-need{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}.free-need .chip{white-space:normal;text-align:left}

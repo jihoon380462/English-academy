@@ -20,7 +20,7 @@ Handler = functools.partial(Quiet, directory=tmp)
 srv = socketserver.TCPServer(('127.0.0.1', 0), Handler); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 BASE = f'http://127.0.0.1:{port}/English-academy/'
-COURSES = ['basic', 'talk', 'grammar', 'read', 'dev']
+COURSES = ['basic', 'talk', 'grammar', 'read', 'dev', 'pattern', 'write', 'travel', 'work', 'phrasal']
 PY_KEYS = {'academy.profile': '{"xp":1234}', 'academy.course.python': '{"problems":{"L1P1":{"status":"clear"}}}'}
 
 with sync_playwright() as pw:
