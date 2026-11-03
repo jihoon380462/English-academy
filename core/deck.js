@@ -3,9 +3,10 @@
 const Deck = {
   // ---- 노트 목록: 「내 문장」(eng.mydeck) + 기본 덱(SENTENCE_DECKS, courses/deck/content.js) ----
   notes() {
-    const out = []; const on = Store.data.settings.decksOn || {};
-    for (const [id, n] of Object.entries(Store.mydeck)) out.push(Object.assign({ id, deck: 'mine' }, n));
-    if (typeof SENTENCE_DECKS !== 'undefined') for (const d of SENTENCE_DECKS) { if (on[d.id] === false) continue; if (on[d.id] === undefined && !d.defaultOn) continue; for (const it of d.items) out.push(Object.assign({ deck: d.id }, it)); }
+    const out = []; const on = Store.data.settings.decksOn || {}; const seen = new Set(); // 같은 문장(레슨 예문 ↔ 덱, 여러 레슨)은 한 번만 — 먼저 나온 것(내 문장)을 남김
+    const add = (n) => { const k = Grader.tokens(n.en).join(' '); if (seen.has(k)) return; seen.add(k); out.push(n); };
+    for (const [id, n] of Object.entries(Store.mydeck)) add(Object.assign({ id, deck: 'mine' }, n));
+    if (typeof SENTENCE_DECKS !== 'undefined') for (const d of SENTENCE_DECKS) { if (on[d.id] === false) continue; if (on[d.id] === undefined && !d.defaultOn) continue; for (const it of d.items) add(Object.assign({ deck: d.id }, it)); }
     return out;
   },
   noteMap() { const m = {}; for (const n of this.notes()) m[n.id] = n; return m; },
