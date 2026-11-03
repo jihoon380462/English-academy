@@ -21,5 +21,6 @@ const BADGES = [
   { id: 'deck500', icon: '🧠', name: '문장 500', desc: '문장 카드 500장 졸업', cond: s => (s.cardsGraduated || 0) >= 500 },
   { id: 'mature', icon: '🌳', name: '오래 기억', desc: '간격 21일 넘은 카드 20장 (Anki 의 「성숙」 카드)', cond: s => (s.matureCards || 0) >= 20 },
   { id: 'review100', icon: '🔁', name: '복습왕', desc: '카드 평가 100번', cond: s => (s.cardReviews || 0) >= 100 },
+  { id: 'attack20', icon: '⏱️', name: '번개 손', desc: '문장 타임어택 20개', cond: s => (s.attackBest || 0) >= 20 },
   { id: 'level10', icon: '⭐', name: '레벨 10', desc: '레벨 10 달성', cond: (s, d) => Game.levelFromXp(d.xp).level >= 10 },
 ];

@@ -59,7 +59,9 @@ const Cards = {
     Store.ankiLog(id, g, before, c); return c;
   },
   due(prefix, now = Date.now()) { return Object.entries(Store.cards).filter(([id, c]) => id.startsWith(prefix) && Anki.isDue(c, now)).sort((a, b) => a[1].due - b[1].due).map(([id]) => id); },
-  newLeft(now = Date.now()) { const t = Store.anki(); return Math.max(0, (Store.data.settings.newPerDay ?? ANKI.newPerDay) - (t.newDay === Anki.dayKey(now) ? t.newToday : 0)); },
+  newLeft(now = Date.now()) { const t = Store.anki(); const day = Anki.dayKey(now); const extra = t.extraDay === day ? (t.extraNew || 0) : 0; return Math.max(0, (Store.data.settings.newPerDay ?? ANKI.newPerDay) + extra - (t.newDay === day ? t.newToday : 0)); },
+  moreNew(n = 10, now = Date.now()) { const t = Store.anki(); const day = Anki.dayKey(now); if (t.extraDay !== day) { t.extraDay = day; t.extraNew = 0; } t.extraNew += n; Store.save(); }, // Anki 「맞춤 학습: 새 카드 더」
+  suspend(id, on = true) { const c = Store.cards[id] || Anki.newCard(); c.susp = on || undefined; if (!on) delete c.susp; Store.cards[id] = c; Store.save(); },
   count(prefix, pred = () => true) { return Object.entries(Store.cards).filter(([id, c]) => id.startsWith(prefix) && pred(c)).length; },
 };
 const Review = {

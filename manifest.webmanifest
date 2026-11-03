@@ -1,0 +1,12 @@
+{
+  "name": "영어 아카데미",
+  "short_name": "영어 아카데미",
+  "description": "문장으로 다시 시작하는 무료 영어 — 카드 조립·듣기·말하기·Anki 복습",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14161c",
+  "theme_color": "#14161c",
+  "lang": "ko",
+  "icons": [{ "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

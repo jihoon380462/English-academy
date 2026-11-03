@@ -15,6 +15,11 @@ const CONFIG = {
     { id: 'grammar', name: '문법 더 깊게', icon: '🧩', desc: '완료·수동태·관계사·가정법', path: 'courses/grammar/', color: '#9b59b6', ready: true, requires: { course: 'basic', boss: 'B4', label: '기초 코스 챕터 4까지 끝내면 열려요' } },
     { id: 'read', name: '읽기', icon: '📖', desc: '의미 덩어리로 끊어 읽기 → 짧은 글 → 긴 글', path: 'courses/read/', color: '#e67e22', ready: true },
     { id: 'dev', name: '개발자 영어', icon: '💻', desc: '에러 메시지·공식 문서 읽기, 커밋·이슈·PR 쓰기', path: 'courses/dev/', color: '#14b8a6', ready: true },
+    { id: 'pattern', name: '핵심 패턴 회화', icon: '🔁', desc: '자주 쓰는 문장 틀 하나로 수십 문장 — I\'m going to… / Do you want to… / I used to…', path: 'courses/pattern/', color: '#e11d48', ready: true },
+    { id: 'write', name: '쓰기', icon: '✍️', desc: '메시지·이메일·일기·리뷰 — 내 문장으로 직접 써 보기', path: 'courses/write/', color: '#0ea5e9', ready: true },
+    { id: 'travel', name: '여행 영어', icon: '✈️', desc: '공항부터 호텔·식당·교통·쇼핑·위급 상황까지 장면별로', path: 'courses/travel/', color: '#f97316', ready: true },
+    { id: 'work', name: '직장 영어', icon: '💼', desc: '이메일·회의·전화·발표·스몰토크', path: 'courses/work/', color: '#64748b', ready: true },
+    { id: 'phrasal', name: '구동사·관용 표현', icon: '🧷', desc: 'get up · look for · run out of — 원어민이 매일 쓰는 덩어리 표현', path: 'courses/phrasal/', color: '#84cc16', ready: true },
   ],
 
   // 성분 색 (SPEC 3-2절) — 모든 코스 공통
@@ -32,7 +37,7 @@ const CONFIG = {
   SPEECH: { lang: 'en-US', rates: [0.7, 1.0, 1.2], speakPass: 0.8 },
 
   // 게임 수치
-  XP: { choice: 8, listen: 8, match: 10, build: 10, order: 12, fill: 10, fix: 14, type: 16, dictation: 14, speak: 16 },
+  XP: { free: 18, choice: 8, listen: 8, match: 10, build: 10, order: 12, fill: 10, fix: 14, type: 16, dictation: 14, speak: 16 },
   BOSS_XP: 40,
   HINT_XP_MULT: [1, 0.8, 0.6, 0.4],
   FIRST_TRY_BONUS: 0.2,

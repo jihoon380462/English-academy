@@ -3,7 +3,7 @@
 import fs from 'node:fs'; import path from 'node:path';
 import { ROOT, courses, load } from './load_content.mjs';
 let fails = 0, warns = 0; const F = (m) => { fails++; console.log('  ✗ ' + m); }; const Wn = (m) => { warns++; console.log('  ⚠ ' + m); };
-const TYPES = ['choice', 'listen', 'match', 'build', 'order', 'fill', 'fix', 'type', 'dictation', 'speak'];
+const TYPES = ['free', 'choice', 'listen', 'match', 'build', 'order', 'fill', 'fix', 'type', 'dictation', 'speak'];
 const ROLE = /^[SVOCMJQ]$/;
 const ver = (fs.readFileSync(path.join(ROOT, 'core/config.js'), 'utf8').match(/APP_VERSION:\s*'([^']+)'/) || [])[1];
 const ids = new Set();
@@ -19,7 +19,9 @@ for (const c of courses()) {
     if (!Array.isArray(l.summary) || l.summary.length < 2) F(`${w}: summary 2줄 이상 필요`);
     if (!PROBLEMS.some(p => p.lesson === l.id)) F(`${w}: 문제가 없어요`);
   }
-  for (const ch of CHAPTERS) if (LESSONS.some(l => l.ch === ch.n) && !LESSONS.some(l => l.ch === ch.n && l.boss)) Wn(`챕터 ${ch.n}: 보스(상황 미션) 없음`);
+  for (const ch of CHAPTERS) if (!ch.practice && LESSONS.some(l => l.ch === ch.n) && !LESSONS.some(l => l.ch === ch.n && l.boss)) Wn(`챕터 ${ch.n}: 보스(상황 미션) 없음 (실전 챕터면 practice:true)`);
+  if (new Set(CHAPTERS.map(c => c.n)).size !== CHAPTERS.length) F('챕터 번호 중복');
+  for (const l of LESSONS) if (LESSONS.filter(x => x.id === l.id).length > 1) F(`레슨 id ${l.id} 중복`);
   for (const p of PROBLEMS) {
     const w = `문제 ${p.id}`; if (ids.has(p.id)) F(`${w}: id 중복`); ids.add(p.id);
     if (!lids.has(p.lesson)) F(`${w}: 레슨 ${p.lesson} 없음`); if (!TYPES.includes(p.type)) F(`${w}: type ${p.type} 모름`);
@@ -33,7 +35,8 @@ for (const c of courses()) {
       case 'fill': if (!p.text || !arr('blanks')) F(`${w}: text·blanks 필요`); else { const n = p.text.split('___').length - 1; if (n !== p.blanks.length) F(`${w}: 빈칸 ${n}개 ≠ blanks ${p.blanks.length}개`); p.blanks.forEach((b, i) => { if (!Array.isArray(b.a) || !b.a.length) F(`${w}: blanks[${i}].a 없음`); if (b.opt && !b.opt.some(o => b.a.includes(o))) F(`${w}: blanks[${i}] 보기에 정답 없음`); }); } break;
       case 'fix': if (!p.wrong || !arr('answer')) F(`${w}: wrong·answer 필요`); break;
       case 'type': if (!p.ko) F(`${w}: ko 필요`); if (!arr('answer')) F(`${w}: answer 없음`); break;
-      case 'dictation': case 'speak': if (!p.say) F(`${w}: say 없음`); break;
+      case 'free': if (!arr('answer')) F(`${w}: 모범 문장(answer) 없음`); if (p.need && !Array.isArray(p.need)) F(`${w}: need 는 배열`); break;
+      case 'dictation': case 'speak': if (!p.say) F(`${w}: say 없음`); if (p.type === 'speak' && p.roles) checkEx({ en: p.say, roles: p.roles }, w + ' 말하기 색'); break;
     }
   }
   if (SENTENCE_DECKS) { const sids = new Set(); for (const d of SENTENCE_DECKS) { if (!/^[\w-]+$/.test(d.id)) F(`덱 ${d.id}: id 문자`); for (const it of d.items) { const w = `덱 ${d.id} ${it.id}`; if (!/^[\w-]+$/.test(it.id)) F(`${w}: id 에 쓸 수 없는 글자`); if (sids.has(it.id)) F(`${w}: id 중복`); sids.add(it.id); if (!it.en || !it.ko) F(`${w}: en·ko 필요`); checkEx(it, w); } } console.log(`  덱 ${SENTENCE_DECKS.length}개 · 문장 ${sids.size}개`); }

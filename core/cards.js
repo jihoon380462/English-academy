@@ -1,7 +1,7 @@
 // core/cards.js — 문제 유형별 화면(위젯). 파이썬 ui-editors.js 자리 (SPEC 4-1절)
 // W[type].mount(p, el, api) → { check(): {ok, typo?, best?, diff?, msg?} | null(아직 답 없음), reveal(), auto?: bool }
 //   api.submit() : 위젯이 스스로 제출할 때(객관식 클릭·짝 맞추기 완료). 결과 표시는 views.js 의 Play 가 한다.
-const TYPE_LABEL = { choice: '고르기', listen: '듣고 고르기', match: '짝 맞추기', build: '카드 조립', order: '카드 배열', fill: '빈칸 채우기', fix: '틀린 곳 고치기', type: '직접 쓰기', dictation: '받아쓰기', speak: '말하기' };
+const TYPE_LABEL = { free: '자유 쓰기', choice: '고르기', listen: '듣고 고르기', match: '짝 맞추기', build: '카드 조립', order: '카드 배열', fill: '빈칸 채우기', fix: '틀린 곳 고치기', type: '직접 쓰기', dictation: '받아쓰기', speak: '말하기' };
 const W = {};
 
 // ---------- 고르기 / 듣고 고르기 ----------
@@ -125,6 +125,24 @@ W.speak = {
       check() { if (!result) return null; const ok = result.rate >= CONFIG.SPEECH.speakPass; return { ok, self: result.self, best: p.say, msg: ok ? null : `목표 ${Math.round(CONFIG.SPEECH.speakPass * 100)}점 — 🐢 천천히 듣고 다시 해 봐요.`, speak: true }; },
       reveal() { Speech.say(p.say, { rate: 0.8 }); },
       skippable: true,
+    };
+  },
+};
+
+// ---------- 자유 쓰기 (free): 내 문장으로 쓰기 — 조건(낱말 수·꼭 넣을 표현)만 맞으면 통과, 모범 문장과 흔한 실수 안내 ----------
+W.free = {
+  mount(p, el, api) {
+    const need = p.need || []; const min = p.minWords || 4;
+    el.innerHTML = `<div class="free-need small">${need.length ? `꼭 넣을 표현: ${need.map(g => `<span class="chip">${(Array.isArray(g) ? g : [g]).map(esc).join(' / ')}</span>`).join(' ')}` : ''} <span class="muted">· ${min}낱말 이상</span></div>
+      <textarea class="sent-in" rows="3" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="내 이야기로 자유롭게 써 보세요 (영어)"></textarea><div class="muted small">정답이 하나가 아니에요. 조건만 맞으면 통과하고, 모범 문장을 보여 드려요.</div>`;
+    const ta = el.querySelector('textarea'); ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); api.submit(); } }); setTimeout(() => ta.focus(), 50);
+    return {
+      check() {
+        const v = ta.value.trim(); if (!v) return null; const r = Grader.free(v, need, min); const model = Content.answers(p);
+        if (r.ok) return { ok: true, best: model[0], msg: (r.explain.length ? `💡 한 번 더 확인: ${esc(r.explain[0])}<br>` : '') + `모범 문장 예시예요. 내 문장과 비교해 보세요.` };
+        return { ok: false, soft: false, input: v, msg: r.short ? `조금 더 길게 써 봐요 (${min}낱말 이상, 지금 ${r.words}낱말).` : `꼭 넣을 표현이 빠졌어요: ${r.missing.map(g => (Array.isArray(g) ? g : [g]).join(' / ')).join(', ')}`, speak: true, explain: r.explain };
+      },
+      reveal() { ta.value = Content.answerText(p); },
     };
   },
 };

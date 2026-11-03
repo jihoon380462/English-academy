@@ -9,6 +9,7 @@ for (const c of courses()) {
   for (const p of PROBLEMS) {
     const w = `${p.id}(${p.type})`; n++; const ans = Content.answers(p);
     for (const a of ans) { const r = Grader.text(a, ans); if (!r.ok) F(`${w}: 허용 답 「${a}」가 통과 못 해요`); if (['type', 'fix', 'order', 'build', 'dictation'].includes(p.type)) mist(a, w); }
+    if (p.type === 'free') { for (const a of ans) { const r = Grader.free(a, p.need, p.minWords || 4); if (!r.ok) F(`${w}: 모범 문장 「${a}」이 자유 쓰기 조건을 못 채워요 ${JSON.stringify(r.missing)}`); } continue; }
     if (p.type === 'build' || p.type === 'order') { const s = p.cards.join(' '); if (!Grader.text(s, ans).ok) F(`${w}: 카드를 순서대로 놓은 「${s}」가 정답이 아니에요`); }
     if (p.type === 'fix') { if (Grader.text(p.wrong, ans).ok) F(`${w}: 틀린 문장이 이미 정답으로 통과해요`); }
     if (p.type === 'fill') { const filled = Content.answerText(p); if (/___/.test(filled)) F(`${w}: 빈칸이 남아요`); p.blanks.forEach((b, i) => b.a.forEach(a => { if (!Grader.word(a, b.a).ok) F(`${w}: 빈칸${i} 답 ${a} 통과 못 함`); })); if (/[a-z]/i.test(filled)) mist(filled, w); }
@@ -21,7 +22,12 @@ for (const c of courses()) {
 { const { Grader, Anki, ANKI } = load(courses()[0]); const T = (cond, m) => { n++; if (!cond) F('단위: ' + m); };
   T(Grader.text("i'm a student", ['I am a student.']).ok, '축약형'); T(Grader.text('I am a studnet.', ['I am a student.']).typo, '오타 1개'); T(!Grader.text('I is a student.', ['I am a student.']).ok, '틀린 be동사');
   T(Grader.text('I cannot swim', ["I can't swim."]).ok, "cannot = can't"); T(Grader.text('“I’m fine,” she said.', ['"I\'m fine," she said.']).ok, '굽은 따옴표');
-  T(!Grader.text('I am student.', ['I am a student.']).ok, '관사 빠짐은 오답'); T(!Grader.text('He can drives.', ['He can drive.']).ok, '어미 -s 는 오타로 안 봐줌'); T(!Grader.word('like', ['liked']).ok, '빈칸 -d 차이 오답'); T(Grader.speak('i am from korea', "I'm from Korea.").rate === 1, '말하기 일치');
+  T(!Grader.text('I am student.', ['I am a student.']).ok, '관사 빠짐은 오답'); T(!Grader.text('He can drives.', ['He can drive.']).ok, '어미 -s 는 오타로 안 봐줌'); T(!Grader.word('like', ['liked']).ok, '빈칸 -d 차이 오답');
+  T(Grader.text('Im fine, thanks', ["I'm fine, thanks."]).ok, '아포스트로피 없는 축약형 im'); T(Grader.text("He's got a car.", ['He has got a car.']).ok, "'s = has"); T(Grader.text('He is tall.', ["He's tall."]).ok, "'s = is");
+  T(Grader.text('I will be there in 15 minutes.', ['I will be there in fifteen minutes.']).ok, '숫자 = 숫자 낱말'); T(Grader.text('at 7:30', ['at seven thirty']).ok, '7:30 = seven thirty'); T(Grader.text('twenty five dollars', ['25 dollars']).ok, 'twenty five = 25');
+  T(!Grader.text('the thing what I want', ['the thing that I want']).ok, 'what↔that 오타 아님'); T(!Grader.text("I haven't never been there.", ["I haven't ever been there."]).ok, 'never↔ever 오타 아님');
+  T(!Grader.text('The museum closed on Mondays.', ['The museum closes on Mondays.']).ok, 'closed↔closes 오타 아님'); T(Grader.text('I go to the libary.', ['I go to the library.']).typo, '일반 낱말 오타는 봐줌');
+  T(Grader.text('ok, see you', ['Okay, see you.']).ok, 'ok = okay'); T(Grader.text('a round trip ticket', ['a round-trip ticket']).ok, '하이픈'); T(Grader.speak("that's 15 dollars not 50", "That's fifteen dollars, not fifty.").rate === 1, '말하기 숫자'); T(Grader.speak('i am from korea', "I'm from Korea.").rate === 1, '말하기 일치');
   const now = Date.UTC(2026, 10, 3, 3, 0); let c = Anki.newCard(); c = Anki.next(c, 3, now); T(c.q === 'learn' && Math.round((c.due - now) / 60000) === 10, 'Anki 새 카드 좋음 → 10분');
   c = Anki.next(c, 3, c.due); T(c.q === 'review' && c.ivl === 1, 'Anki 졸업 1일'); let e = Anki.next(Anki.newCard(), 4, now); T(e.q === 'review' && e.ivl === 4, 'Anki 쉬움 4일');
   let r = Object.assign(Anki.newCard(), { q: 'review', ivl: 10, ease: 2.5, due: now }); const g = Anki.next(r, 3, now); T(g.ivl >= 21 && g.ivl <= 29, `Anki 좋음 10일×2.5 ≈ 25±퍼지 (${g.ivl})`);

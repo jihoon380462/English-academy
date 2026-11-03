@@ -21,7 +21,7 @@ LESSONS.push(
         tip: '🐍 <a href="https://jihoon380462.github.io/python-academy/" target="_blank" rel="noopener">파이썬 아카데미</a>에서 일부러 에러를 내 보고, 맨 아래 줄을 여기서 배운 대로 읽어 보세요.' },
       { title: 'Did you mean …? = 혹시 이거예요?', html: `<p>요즘 파이썬은 에러 끝에 <b>Did you mean: 'print'?</b> 처럼 짐작한 답을 알려 줘요. 「혹시 ~를 말한 거예요?」라는 뜻이에요.</p>`,
         ex: [
-          { en: "Did you mean 'total'?", ko: "혹시 'total' 을 말한 거예요?" },
+          { en: "Did you mean 'total'?", ko: "혹시 'total' 을 말한 거예요?", note: "실제 에러 줄에서는 콜론이 붙어요: NameError: name 'totl' is not defined. Did you mean: 'total'?" },
           { en: 'You|forgot to define|the variable.', roles: 'S V O', ko: '변수를 정의하는 걸 잊었어요.' },
           { en: 'Check|the spelling|of the name.', roles: 'V O M', ko: '이름의 철자를 확인하세요.' },
         ] },
@@ -53,7 +53,7 @@ LESSONS.push(
     summary: ['<b>can only A to B</b> = B 에는 A 만 ~할 수 있다.', '<b>unsupported</b> = 지원되지 않는 (un- = 안).', '<b>takes 1 … but 2 were given</b> = 1개 받는데 2개가 주어졌다.'] },
 
   { id: 'D3', ch: 1, n: 3, title: '범위·키·값 에러 (out of range)', minutes: 7,
-    terms: { '인덱스': '리스트에서 몇 번째인지 나타내는 번호. 0부터 세요.', 'literal': "코드에 그대로 적은 값 (예: 'abc', 42)." },
+    terms: { '인덱스': '리스트에서 몇 번째인지 나타내는 번호. 0부터 세요.', 'literal': "값을 글자로 적은 모양. '42' 는 정수 42 를 적은 글자예요. invalid literal = 그 값으로 읽을 수 없는 글자." },
     pages: [
       { title: 'out of range = 범위를 벗어났어요', html: `<p><b>IndexError: list index out of range</b> — 「리스트 인덱스가 범위를 벗어났어요」. 3칸짜리 리스트에서 [3] 을 찾으면 나요 (0, 1, 2 까지만 있으니까요).</p><p><b>out of ~</b> = 「~의 밖으로, ~이 다 떨어진」: out of range, out of memory.</p>`,
         ex: [
@@ -68,7 +68,7 @@ LESSONS.push(
         ] },
       { title: 'ValueError — invalid = 올바르지 않은', html: `<p><b>ValueError: invalid literal for int() with base 10: 'abc'</b> — 「int() 에 넣은 'abc' 는 10진수로 맞지 않는 값이에요」. 타입(글자)은 맞는데 <b>내용</b>이 틀렸을 때 나요.</p><p><b>invalid</b> = 올바르지 않은 (in- = 안). invalid input, invalid value 처럼 자주 써요.</p>`,
         ex: [
-          { en: "ValueError: invalid literal for int() with base 10: 'abc'", ko: "ValueError: 'abc' 는 int() 에 넣을 수 없는 10진수 값이에요." },
+          { en: "ValueError: invalid literal for int() with base 10: 'abc'", ko: "ValueError: 'abc' 는 int() 가 10진수 정수로 읽을 수 없는 값이에요." },
           { en: 'The input|is|invalid.', roles: 'S V C', ko: '입력이 올바르지 않아요.' },
           { en: 'Please enter|a valid number.', roles: 'V O', ko: '올바른 숫자를 입력해 주세요.' },
         ] },
@@ -87,7 +87,7 @@ LESSONS.push(
       { title: 'expected = ~가 와야 했어요', html: `<p><b>expected</b> 는 「기대했다, (원래) ~가 와야 했다」. 에러에서 <b>expected X</b> = 「X 가 있어야 하는데 없어요」예요.</p><p>짝꿍 표현: <b>expected X, got Y</b> = X 를 기대했는데 Y 를 받았어요.</p>`,
         ex: [
           { en: "IndentationError: expected an indented block after 'if' statement on line 3", ko: "IndentationError: 3번 줄 'if' 문 뒤에 들여쓴 블록이 와야 해요." },
-          { en: 'Expected 2 values, got 3.', ko: '값 2개를 기대했는데 3개를 받았어요.' },
+          { en: 'Expected 2 values, got 3.', ko: '값 2개를 기대했는데 3개를 받았어요.', note: '여러 도구에서 흔히 보는 모양이에요. 파이썬 3.12 는 같은 상황(a, b = [1, 2, 3])에서 ValueError: too many values to unpack (expected 2) 라고 써요.' },
           { en: 'The function|expected|a list.', roles: 'S V O', ko: '그 함수는 리스트를 기대했어요.' },
         ] },
       { title: 'No module named … = 그런 모듈이 없어요', html: `<p><b>ModuleNotFoundError: No module named 'requests'</b> — 「'requests' 라는 이름의 모듈이 없어요」. 대부분 <b>설치를 안 했을 때</b> 나요.</p><p><b>No + 명사 + named X</b> = 「X 라는 이름의 ~가 없다」.</p>`,
@@ -111,7 +111,7 @@ LESSONS.push(
       { title: 'missing · not found — 없어요', html: `<p><b>missing</b> = 「빠진, 없는」. <b>Missing required field: name</b> 은 「꼭 필요한 칸 name 이 빠졌어요」.</p><p><b>not found</b> 도 비슷해요. <b>command not found</b> = 그런 명령을 찾을 수 없어요.</p>`,
         ex: [
           { en: 'Missing required field: name', ko: '꼭 필요한 칸이 빠졌어요: name', deck: false },
-          { en: 'pip: command not found', ko: 'pip: 그런 명령을 찾을 수 없어요.', deck: false },
+          { en: 'pip: command not found', ko: 'pip: 그런 명령을 찾을 수 없어요.', note: '터미널(bash)에서는 앞에 셸 이름이 붙어 bash: pip: command not found 처럼 나와요.', deck: false },
           { en: 'A config file|is missing.', roles: 'S V', ko: '설정 파일이 하나 빠져 있어요.' },
         ] },
       { title: 'deprecated — 곧 없어질 기능', html: `<p><b>DeprecationWarning</b> 은 에러가 아니라 경고예요. 「지금은 되지만 <b>곧 없어지니</b> 다른 걸 쓰세요」라는 뜻이에요.</p><p>보통 <b>is deprecated and will be removed in …</b> + <b>Use … instead</b>(대신 …를 쓰세요) 모양으로 나와요.</p>`,
@@ -194,7 +194,7 @@ PROBLEMS.push(
   { id: 'D5P5', lesson: 'D5', type: 'order', prompt: '로그 줄을 만드세요. 필요 없는 카드도 있어요.', ko: '파일을 내려받지 못했어요.', answer: ['Failed to download the file.'], cards: ['Failed', 'to', 'download', 'the file.'], distractors: ['downloading'], tags: ['로그 읽기'], hints: ['Failed to + 동사', 'to 다음은 동사 원형', 'Failed to download the file.'] },
   { id: 'D5P6', lesson: 'D5', type: 'fill', prompt: '빈칸을 채워 경고 문장을 완성하세요.', text: 'This function is deprecated and will be ___ in the next version.', blanks: [{ a: ['removed'], opt: ['removed', 'remove', 'removing'] }], tags: ['수동태'], hints: ['「없어지다」= 수동', 'will be + 과거분사', 'removed'], why: 'will be + 과거분사 = ~될 것이다. 그래서 will be removed 예요.' },
   { id: 'D5P7', lesson: 'D5', type: 'fix', prompt: '틀린 곳을 고쳐 로그 줄을 다시 쓰세요.', ko: '데이터베이스에 연결하지 못했어요.', wrong: 'Failed to connected to the database.', answer: ['Failed to connect to the database.'], tags: ['오개념'], hints: ['to 다음 동사 모양을 보세요', 'to + 동사 원형', 'Failed to connect to the database.'], why: 'to 다음에는 동사 원형이에요: failed to connect.' },
-  { id: 'D5P8', lesson: 'D5', type: 'type', prompt: '영어로 써 보세요.', ko: '빌드가 실패했어요.', answer: ['The build failed.', 'The build has failed.', 'Build failed.'], tags: ['로그 읽기'], hints: ['빌드 = The build', '실패했다 = failed', 'The build failed.'] },
+  { id: 'D5P8', lesson: 'D5', type: 'type', prompt: '영어로 써 보세요.', ko: '빌드가 실패했어요.', answer: ['The build failed.', 'The build has failed.', 'Build failed.', 'Build has failed.'], tags: ['로그 읽기'], hints: ['빌드 = The build', '실패했다 = failed', 'The build failed.'] },
   { id: 'D5P9', lesson: 'D5', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'This function is deprecated. Use the new function instead.', ko: '이 함수는 곧 없어져요. 대신 새 함수를 쓰세요.', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'deprecated 는 「데프리케이티드」', 'This function is deprecated. Use the new function instead.'] },
 
   // DB1 보스
@@ -203,6 +203,6 @@ PROBLEMS.push(
   { id: 'DB1P3', lesson: 'DB1', boss: true, type: 'choice', prompt: 'ERROR 아래 줄이에요. 진짜 원인은 무엇일까요?', q: "ModuleNotFoundError: No module named 'yaml'", opts: ["'yaml' 모듈이 설치되어 있지 않아요.", "'yaml' 파일의 문법이 틀렸어요.", "'yaml' 변수가 정의되지 않았어요."], ans: 0, tags: ['에러 읽기'], hints: ['ModuleNotFoundError 예요', 'No module named = 그런 모듈이 없다', '설치가 안 됐어요'], why: "No module named 'yaml' = 'yaml' 모듈이 없다 → 설치가 안 됐다는 뜻이에요." },
   { id: 'DB1P4', lesson: 'DB1', boss: true, type: 'order', prompt: 'Tom 에게 원인을 설명하세요. 필요 없는 카드도 있어요.', ko: "'yaml' 모듈이 빠져서 빌드가 실패했어요.", answer: ["The build failed because the 'yaml' module is missing.", 'The build failed because the yaml module is missing.'], cards: ['The build', 'failed', 'because', "the 'yaml' module", 'is missing.'], distractors: ['fail'], tags: ['원인 말하기'], hints: ['결과 → because → 원인', '이미 일어난 일이라 failed', "The build failed because the 'yaml' module is missing."] },
   { id: 'DB1P5', lesson: 'DB1', boss: true, type: 'type', prompt: '로그 셋째 줄(Failed to run tests)을 쉬운 문장으로 써 보세요.', ko: '테스트가 실행되지 않았어요.', answer: ['The tests did not run.', "The tests didn't run.", 'The tests were not run.', "The tests weren't run.", 'Tests did not run.'], tags: ['로그 읽기'], hints: ['테스트 = The tests', '과거 부정 = did not + 동사 원형', 'The tests did not run.'] },
-  { id: 'DB1P6', lesson: 'DB1', boss: true, type: 'type', prompt: '해결 방법을 영어로 써 보세요.', ko: '먼저 그 모듈을 설치해야 해요.', answer: ['We need to install the module first.', 'We have to install the module first.', 'First, we need to install the module.', 'You need to install the module first.', 'We need to install the yaml module first.'], tags: ['원인 말하기'], hints: ['need to + 동사', '설치하다 = install', 'We need to install the module first.'] },
+  { id: 'DB1P6', lesson: 'DB1', boss: true, type: 'type', prompt: '해결 방법을 영어로 써 보세요.', ko: '먼저 그 모듈을 설치해야 해요.', answer: ['We need to install the module first.', 'We have to install the module first.', 'First, we need to install the module.', 'You need to install the module first.', 'We need to install the yaml module first.', 'We have to install the yaml module first.', 'We should install the module first.'], tags: ['원인 말하기'], hints: ['need to + 동사', '설치하다 = install', 'We need to install the module first.'] },
   { id: 'DB1P7', lesson: 'DB1', boss: true, type: 'speak', prompt: '🔊 Tom 에게 말하듯 따라 말해 보세요.', say: "The build failed because of a missing module. I'll fix it right away.", ko: '모듈이 빠져서 빌드가 실패했어요. 바로 고칠게요.', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'because of + 명사 = ~때문에', "The build failed because of a missing module. I'll fix it right away."] },
 );

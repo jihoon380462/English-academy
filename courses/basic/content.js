@@ -20,6 +20,7 @@ PROBLEMS = [{ id:'E1P1', lesson:'E1', type, title?, prompt(HTML), ko?, tags:[1~3
    fill      : text:'I ___ a student.'(빈칸 ___), blanks:[{ a:[허용 답], opt?:[고르기 보기] }]
    fix       : wrong:'틀린 문장', answer:[고친 문장 허용 답]
    type      : ko(필수), answer:[허용 답 — 자연스러운 다른 표현도 넣기], cards?:[쓸 낱말 힌트]  (사다리 3단)
+   free      : 자유 쓰기. ko(과제), need?:[['went','visited'],['yesterday']](묶음마다 하나 이상), minWords?(기본 4), answer:[모범 문장] — 조건만 맞으면 통과
    dictation : say(들려줄 문장), answer?(생략하면 say)
    speak     : say(말할 문장), ko?, roles?  (사다리 4단)
    answer 비교: 대소문자·끝 문장부호·축약형(I'm=I am)·오타 1개는 봐준다. 쉼표·마침표는 무시. 다른 어순·다른 낱말은 answer 에 따로 넣어야 정답.

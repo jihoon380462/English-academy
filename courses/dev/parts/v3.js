@@ -35,16 +35,16 @@ LESSONS.push(
           { en: 'The app|crashes|when I click Save.', roles: 'S V M', ko: '저장을 누르면 앱이 멈춰요.' },
           { en: 'The login button|does not work|on mobile.', roles: 'S V M', ko: '모바일에서 로그인 버튼이 안 돼요.' },
         ] },
-      { title: 'Steps to reproduce = 재현 순서', html: `<p>본문 첫 칸은 <b>Steps to reproduce</b> — 버그를 다시 일으키는 순서예요. 번호를 붙이고 <b>명령문</b>으로 써요: 1. Go to … 2. Click … 3. Enter …</p>`,
+      { title: 'Steps to reproduce = 재현 순서', html: `<p>본문 첫 칸은 <b>Steps to reproduce</b> — 버그를 다시 일으키는 순서예요. 번호를 붙이고 <b>명령문</b>으로 써요: 1. Go to … 2. Leave … empty 3. Click …</p>`,
         ex: [
           { en: 'Go to|the settings page.', roles: 'V M', ko: '설정 페이지로 가세요.' },
+          { en: 'Leave|the name field|empty.', roles: 'V O C', ko: '이름 칸을 비워 두세요.' },
           { en: 'Click|the Save button.', roles: 'V O', ko: '저장 버튼을 누르세요.' },
-          { en: 'Enter|an empty name.', roles: 'V O', ko: '이름을 비워서 입력하세요.' },
         ] },
       { title: 'Expected vs Actual = 기대한 것 vs 실제', html: `<p><b>Expected behavior</b>(기대한 동작): 원래 이렇게 돼야 해요 — <b>should</b> 를 많이 써요.</p><p><b>Actual behavior</b>(실제 동작): 실제로는 이렇게 돼요 — 현재형으로.</p>`,
         ex: [
           { en: 'The file|should be saved.', roles: 'S V', ko: '파일이 저장돼야 해요.' },
-          { en: 'The app|freezes|and nothing happens.', roles: 'S V M', ko: '앱이 멈추고 아무 일도 일어나지 않아요.' },
+          { en: 'The app|freezes|and|nothing|happens.', roles: 'S V J S V', ko: '앱이 멈추고 아무 일도 일어나지 않아요.' },
           { en: 'It|happens|every time.', roles: 'S V M', ko: '매번 그래요.' },
         ] },
     ],
@@ -78,7 +78,7 @@ LESSONS.push(
       { title: '부드럽게 부탁하기: Could you …?', html: `<p>리뷰에서는 명령보다 <b>Could you + 동사?</b>(~해 주실 수 있어요?)가 훨씬 부드러워요. <b>What do you think about …?</b>(~는 어때요?)로 제안도 해요.</p>`,
         ex: [
           { en: 'Could|you|add|a test|for this case?', roles: 'Q S V O M', ko: '이 경우에 대한 테스트를 추가해 주실 수 있어요?' },
-          { en: 'What do you think about|using a dictionary here?', roles: 'Q O', ko: '여기에 딕셔너리를 쓰는 건 어때요?' },
+          { en: 'What do you think about|using a dictionary here?', ko: '여기에 딕셔너리를 쓰는 건 어때요?' },
           { en: 'This name|is|a bit confusing.', roles: 'S V C', ko: '이 이름은 조금 헷갈려요.' },
         ] },
       { title: 'nit: 와 LGTM', html: `<p><b>nit:</b> 으로 시작하면 「아주 사소한 거예요」라는 신호예요: <b>nit: extra blank line here.</b></p><p><b>LGTM</b> = Looks good to me. 「좋아 보여요, 합쳐도 돼요」라는 승인이에요.</p>`,
@@ -99,20 +99,20 @@ LESSONS.push(
   { id: 'D14', ch: 3, n: 5, title: '스탠드업 (Yesterday I… · Today I\'ll… · I\'m blocked by…)', minutes: 7,
     terms: { '스탠드업': '매일 아침 짧게 「어제 한 일 · 오늘 할 일 · 막힌 것」을 나누는 회의.', 'blocked': '다른 일 때문에 막혀서 진행을 못 하는.' },
     pages: [
-      { title: 'Yesterday I + 과거형', html: `<p>어제 한 일은 <b>Yesterday, I + 과거형</b>: worked on(~작업을 했다), fixed, finished.</p><p><b>work on</b> = 「~을 작업하다」. 개발자가 가장 많이 쓰는 동사예요.</p>`,
+      { title: 'Yesterday I + 과거형', html: `<p>어제 한 일은 <b>Yesterday, I + 과거형</b>: worked on(~작업을 했다), fixed, finished.</p><p><b>work on</b> = 「~을 작업하다」. 개발자가 아주 자주 쓰는 표현이에요.</p>`,
         ex: [
           { en: 'Yesterday,|I|worked on|the login page.', roles: 'M S V O', ko: '어제는 로그인 페이지 작업을 했어요.' },
           { en: 'I|finished|the search feature.', roles: 'S V O', ko: '검색 기능을 끝냈어요.' },
         ] },
       { title: "Today I'll + 동사 원형", html: `<p>오늘 할 일은 <b>Today, I'll + 동사 원형</b> 또는 <b>I'm going to + 동사 원형</b>.</p><p>will 다음에는 꼭 <b>원형</b>: I'll fix (I'll fixes ✗).</p>`,
         ex: [
-          { en: "Today,|I'll|write|tests|for the API.", roles: 'M S V O M', ko: '오늘은 API 테스트를 쓸 거예요.' },
-          { en: "I'm going to review|Mina's PR.", roles: 'V O', ko: '미나의 PR 을 리뷰할 거예요.' },
+          { en: "Today,|I'll|write|tests|for the API.", ko: '오늘은 API 테스트를 쓸 거예요.' },
+          { en: "I'm going to review|Mina's PR.", ko: '미나의 PR 을 리뷰할 거예요.' },
         ] },
       { title: "I'm blocked by … = …때문에 막혔어요", html: `<p>막힌 게 있으면 <b>I'm blocked by + 명사</b>(~때문에 막혔어요) 또는 <b>I'm waiting for + 명사</b>(~를 기다리고 있어요).</p><p>없으면 <b>No blockers.</b>(막힌 거 없어요) 한마디면 돼요.</p>`,
         ex: [
-          { en: "I'm blocked by|the server issue.", roles: 'V M', ko: '서버 문제 때문에 막혔어요.' },
-          { en: "I'm waiting for|access to the database.", roles: 'V O', ko: '데이터베이스 접근 권한을 기다리고 있어요.' },
+          { en: "I'm blocked by|the server issue.", ko: '서버 문제 때문에 막혔어요.' },
+          { en: "I'm waiting for|access to the database.", ko: '데이터베이스 접근 권한을 기다리고 있어요.' },
           { en: 'No blockers.', ko: '막힌 거 없어요.' },
         ] },
     ],
@@ -138,7 +138,7 @@ PROBLEMS.push(
   { id: 'D10P5', lesson: 'D10', type: 'order', prompt: '커밋 메시지를 만드세요. 필요 없는 카드도 있어요.', ko: '리스트가 비었을 때 멈추는 문제 수정', answer: ['Fix crash when the list is empty', 'Fix crash when list is empty'], cards: ['Fix', 'crash', 'when', 'the list', 'is empty'], distractors: ['Fixed'], tags: ['커밋 메시지'], hints: ['동사 원형 Fix', 'when + 상황', 'Fix crash when the list is empty'] },
   { id: 'D10P6', lesson: 'D10', type: 'fix', prompt: '커밋 규칙에 맞게 고쳐 쓰세요. (동사 원형으로 시작)', ko: 'README 갱신', wrong: 'Updated the README', answer: ['Update the README', 'Update README'], tags: ['커밋 메시지', '오개념'], hints: ['과거형 말고', '동사 원형', 'Update the README'], why: '커밋 제목은 「이 커밋을 적용하면 ~한다」라는 명령형이라 Updated 가 아니라 Update 예요.' },
   { id: 'D10P7', lesson: 'D10', type: 'type', prompt: '커밋 메시지를 영어로 써 보세요.', ko: '모바일 로그인 버그 수정', answer: ['Fix login bug on mobile', 'Fix the login bug on mobile', 'Fix mobile login bug', 'Fix login bug on mobile devices'], tags: ['커밋 메시지'], hints: ['동사 Fix 로 시작', '로그인 버그 = login bug', 'Fix login bug on mobile'] },
-  { id: 'D10P8', lesson: 'D10', type: 'type', prompt: '커밋 메시지를 영어로 써 보세요.', ko: '안 쓰는 import 삭제', answer: ['Remove unused imports', 'Remove the unused imports', 'Delete unused imports'], tags: ['커밋 메시지'], hints: ['지우다 = Remove', '안 쓰는 = unused', 'Remove unused imports'] },
+  { id: 'D10P8', lesson: 'D10', type: 'type', prompt: '커밋 메시지를 영어로 써 보세요.', ko: '안 쓰는 import 삭제', answer: ['Remove unused imports', 'Remove the unused imports', 'Delete unused imports', 'Delete the unused imports'], tags: ['커밋 메시지'], hints: ['지우다 = Remove', '안 쓰는 = unused', 'Remove unused imports'] },
   { id: 'D10P9', lesson: 'D10', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'Fix crash when the list is empty', ko: '리스트가 비었을 때 멈추는 문제 수정', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'crash 는 「크래시」', 'Fix crash when the list is empty'] },
 
   // D11
@@ -160,7 +160,7 @@ PROBLEMS.push(
   { id: 'D12P5', lesson: 'D12', type: 'order', prompt: '카드를 순서대로 놓으세요. 필요 없는 카드도 있어요.', ko: '보조 함수들을 utils.py 로 옮겼어요.', answer: ['I moved the helper functions to utils.py.'], cards: ['I', 'moved', 'the helper functions', 'to utils.py.'], distractors: ['move'], tags: ['과거형'], hints: ['한 일은 과거형', 'move → moved', 'I moved the helper functions to utils.py.'] },
   { id: 'D12P6', lesson: 'D12', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '이 PR 은 다크 모드를 추가해요.', wrong: 'This PR add dark mode.', answer: ['This PR adds dark mode.'], tags: ['3인칭 단수', '오개념'], hints: ['주어가 하나예요', '현재형에 -s', 'This PR adds dark mode.'], why: 'This PR 은 하나라서 현재형 동사에 -s: adds.' },
   { id: 'D12P7', lesson: 'D12', type: 'type', prompt: '영어로 써 보세요.', ko: '크롬과 파이어폭스에서 테스트했어요.', answer: ['I tested it on Chrome and Firefox.', 'I tested it in Chrome and Firefox.', 'I tested this on Chrome and Firefox.', 'Tested on Chrome and Firefox.'], tags: ['PR 설명'], hints: ['한 일은 과거형 tested', '~에서 = on', 'I tested it on Chrome and Firefox.'] },
-  { id: 'D12P8', lesson: 'D12', type: 'type', prompt: '영어로 부탁해 보세요.', ko: '이 PR 리뷰해 주실 수 있어요?', answer: ['Could you review this PR?', 'Could you please review this PR?', 'Can you review this PR?', 'Could you review this pull request?', 'Would you review this PR?'], tags: ['PR 설명'], hints: ['정중한 부탁 = Could you …?', 'review = 리뷰하다', 'Could you review this PR?'] },
+  { id: 'D12P8', lesson: 'D12', type: 'type', prompt: '영어로 부탁해 보세요.', ko: '이 PR 리뷰해 주실 수 있어요?', answer: ['Could you review this PR?', 'Could you please review this PR?', 'Can you review this PR?', 'Could you review this pull request?', 'Would you review this PR?', 'Could you please review this pull request?'], tags: ['PR 설명'], hints: ['정중한 부탁 = Could you …?', 'review = 리뷰하다', 'Could you review this PR?'] },
   { id: 'D12P9', lesson: 'D12', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'This PR adds dark mode to the settings page.', ko: '이 PR 은 설정 화면에 다크 모드를 추가해요.', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'PR 은 「피알」', 'This PR adds dark mode to the settings page.'] },
 
   // D13
@@ -171,7 +171,7 @@ PROBLEMS.push(
   { id: 'D13P5', lesson: 'D13', type: 'order', prompt: '리뷰 코멘트를 만드세요. 필요 없는 카드도 있어요.', ko: '이 경우에 대한 테스트를 추가해 주실 수 있어요?', answer: ['Could you add a test for this case?'], cards: ['Could', 'you', 'add', 'a test', 'for this case?'], distractors: ['adds'], tags: ['코드 리뷰'], hints: ['Could you + 동사 원형', 'adds 가 아니라 add', 'Could you add a test for this case?'] },
   { id: 'D13P6', lesson: 'D13', type: 'fix', prompt: '틀린 곳을 고쳐 문장을 다시 쓰세요.', ko: '이 경우에 대한 테스트를 추가해 주실 수 있어요?', wrong: 'Could you adding a test for this case?', answer: ['Could you add a test for this case?', 'Could you please add a test for this case?'], tags: ['코드 리뷰', '오개념'], hints: ['Could 다음 동사 모양', 'Could you + 동사 원형', 'Could you add a test for this case?'], why: 'could 같은 조동사 다음에는 동사 원형: Could you add …?' },
   { id: 'D13P7', lesson: 'D13', type: 'type', prompt: '리뷰 제안을 영어로 써 보세요.', ko: '여기에 딕셔너리를 쓰는 건 어때요?', answer: ['What do you think about using a dictionary here?', 'How about using a dictionary here?', 'What about using a dictionary here?', 'Could we use a dictionary here?', 'Why not use a dictionary here?'], tags: ['코드 리뷰'], hints: ['What do you think about + 동사-ing?', '딕셔너리를 쓰는 것 = using a dictionary', 'What do you think about using a dictionary here?'] },
-  { id: 'D13P8', lesson: 'D13', type: 'type', prompt: '리뷰 답글을 영어로 써 보세요.', ko: '잘 찾았네요! 최신 커밋에서 고쳤어요.', answer: ['Good catch! I fixed it in the latest commit.', 'Good catch! Fixed in the latest commit.', 'Good catch! I fixed this in the latest commit.', 'Nice catch! I fixed it in the latest commit.'], tags: ['코드 리뷰'], hints: ['잘 찾았네요 = Good catch!', '고쳤다 = fixed', 'Good catch! I fixed it in the latest commit.'] },
+  { id: 'D13P8', lesson: 'D13', type: 'type', prompt: '리뷰 답글을 영어로 써 보세요.', ko: '잘 찾았네요! 최신 커밋에서 고쳤어요.', answer: ['Good catch! I fixed it in the latest commit.', 'Good catch! Fixed in the latest commit.', 'Good catch! I fixed this in the latest commit.', 'Nice catch! I fixed it in the latest commit.', 'Good catch! Fixed it in the latest commit.'], tags: ['코드 리뷰'], hints: ['잘 찾았네요 = Good catch!', '고쳤다 = fixed', 'Good catch! I fixed it in the latest commit.'] },
   { id: 'D13P9', lesson: 'D13', type: 'speak', prompt: '🔊 듣고 따라 말해 보세요.', say: 'Looks good to me. Thanks for the fix.', ko: '좋아 보여요. 고쳐 줘서 고마워요.', tags: ['말하기'], hints: ['🐢 로 천천히 들어 보세요', 'Looks good to me 는 한 덩어리', 'Looks good to me. Thanks for the fix.'] },
 
   // D14

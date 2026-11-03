@@ -20,7 +20,7 @@ Views.home = () => {
     ${CHAPTERS.map(c => { const open = Game.chapterOpen(c.n); const ls = Content.lessonsOf(c.n); const nd = ls.filter(l => Game.lessonDone(l)).length;
       return `<section class="chap ${open ? '' : 'locked'}"><div class="chap-h"><span class="chap-icon">${UI.img(`chapter-${COURSE.id}-${c.n}.png`, c.icon || '📘')}</span><div class="grow"><div class="chap-t">챕터 ${c.n}. ${esc(c.title)}</div><div class="muted small">${esc(c.desc || '')}</div></div><span class="chip">${nd}/${ls.length}</span></div>
         ${open ? `<div class="lrows">${ls.map(lessonRow).join('')}</div>` : `<div class="muted small lockmsg">🔒 앞 챕터의 상황 미션을 깨면 열려요 <small>(설정 → 「모든 챕터 열기」로 풀 수 있어요)</small></div>`}</section>`; }).join('')}
-    <div class="foot muted small center">${esc(T.appName)} v${CONFIG.APP_VERSION} · <a href="#badges">🏅 뱃지</a> · <a href="#settings">⚙ 설정</a></div>
+    <div class="foot muted small center">${esc(T.appName)} v${CONFIG.APP_VERSION} · <a href="#terms">📎 용어 모음</a> · <a href="#badges">🏅 뱃지</a> · <a href="#settings">⚙ 설정</a></div>
   </div>`;
 };
 
@@ -87,7 +87,7 @@ const Play = {
         const best = r.best || Content.answerText(p);
         fb.innerHTML = `<div class="fb good"><div class="fb-h">✅ ${st.revealed ? '정답을 확인했어요' : pick(T.correct)} ${UI.stars(res.stars)}</div>
           ${r.typo ? `<div class="small">✏️ 철자 확인: <s>${esc(r.typo.got)}</s> → <b>${esc(r.typo.want)}</b></div>` : ''}
-          ${best && p.type !== 'match' ? `<div class="fb-best">${UI.chunks(best, p.roles && p.type === 'build' ? p.roles : null)}${p.ko ? `<div class="muted small">${esc(p.ko)}</div>` : ''}</div>` : ''}
+          ${best && p.type !== 'match' ? `<div class="fb-best">${p.type === 'build' && p.roles && best === Content.answers(p)[0] ? UI.chunks(p.cards.join('|'), p.roles) : UI.chunks(best, null)}${p.ko ? `<div class="muted small">${esc(p.ko)}</div>` : ''}</div>` : ''}
           ${r.msg || p.why ? `<div class="why">💬 ${r.msg || p.why}</div>` : ''}</div>`;
         if (best && Store.data.settings.autoplay && !['listen', 'dictation', 'speak', 'match'].includes(p.type)) setTimeout(() => Speech.say(best), 250);
         btn.textContent = s.idx + 1 >= s.list.length ? '완료 🎉' : '다음 →'; btn.classList.add('pulse');
@@ -197,3 +197,15 @@ const Placement = {
   },
 };
 Views.placement = () => { const ids = Placement.pick(); if (!ids.length) return UI.go(''); Play.start(ids, 0, 'placement', null); };
+
+// ---------- 용어 모음 (이 코스 레슨의 terms 전부) ----------
+Views.terms = (q) => {
+  const f = (q || '').toLowerCase(); const rows = []; const seen = new Set();
+  const by = {}; for (const l of LESSONS) for (const [k, v] of Object.entries(l.terms || {})) { const r = by[k] || (by[k] = { k, v, ls: [] }); if (!r.ls.includes(l)) r.ls.push(l); }
+  for (const r of Object.values(by)) if (!f || r.k.toLowerCase().includes(f) || String(r.v).toLowerCase().includes(f)) rows.push(r);
+  rows.sort((a, b) => a.k.localeCompare(b.k, 'ko'));
+  $('#view').innerHTML = `<div class="page"><div class="crumb"><a href="#">← 지도</a></div><h2>📎 용어 모음 <small class="muted">${esc(COURSE.name)} · ${rows.length}개</small></h2>
+    <input class="search" id="tq" placeholder="찾기 (예: 동사, 주어, 완료)" value="${esc(q || '')}">
+    <div class="terms-list">${rows.map(r => `<div class="term-row"><b>${esc(r.k)}</b> — ${esc(r.v)} <div class="small">${r.ls.map(l => `<a href="#lesson/${l.id}">${esc(l.title)} →</a>`).join(' · ')}</div></div>`).join('') || '<p class="muted">용어가 없어요.</p>'}</div></div>`;
+  const tq = $('#tq'); tq.oninput = () => { clearTimeout(tq._t); tq._t = setTimeout(() => { const v = tq.value; Views.terms(v); const n = $('#tq'); n.focus(); n.setSelectionRange(v.length, v.length); }, 250); };
+};

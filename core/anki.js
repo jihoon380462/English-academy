@@ -41,7 +41,8 @@ const Anki = {
   },
   // 버튼에 붙는 다음 간격 글자 (Anki 처럼)
   label(card, g, now = Date.now()) { const n = this.next(card, g, now); const ms = n.due - now; if (n.q === 'review') { const d = n.ivl; return d < 31 ? `${d}일` : d < 365 ? `${(d / 30).toFixed(1).replace('.0', '')}개월` : `${(d / 365).toFixed(1).replace('.0', '')}년`; } const m = Math.round(ms / this.MIN); return m < 1 ? '<1분' : m < 60 ? `${m}분` : `${Math.round(m / 60)}시간`; },
-  isDue(c, now = Date.now()) { if (!c || c.q === 'new') return false; if (c.q === 'review') return c.due < this.dayStart(now) + this.DAY; return c.due <= now + ANKI.learnAheadMin * this.MIN; },
+  isDue(c, now = Date.now()) { if (!c || c.q === 'new' || c.susp) return false; // susp = 「그만 보기」(Anki 의 suspend)
+    if (c.q === 'review') return c.due < this.dayStart(now) + this.DAY; return c.due <= now + ANKI.learnAheadMin * this.MIN; },
   // 문제 풀이 결과 → 자동 평가 (문제 복습용)
   autoGrade({ revealed, hints, fails }) { if (revealed || fails >= 2) return 1; if (hints >= 1 || fails === 1) return 2; return 3; },
 };

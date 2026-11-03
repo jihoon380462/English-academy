@@ -24,19 +24,19 @@ const Deck = {
     const notes = this.notes(); const kinds = this.kinds(); const ids = new Set(notes.flatMap(n => kinds.map(k => this.cid(n.id, k))));
     const learn = [], review = [], fresh = []; const today = Anki.dayKey(now); const seenToday = new Set();
     for (const [id, c] of Object.entries(Store.cards)) if (id.startsWith('s:') && c.last && Anki.dayKey(c.last) === today) seenToday.add(id.split(':')[1]);
-    for (const id of ids) { const c = Store.cards[id]; if (!c || c.q === 'new') continue; if ((c.q === 'learn' || c.q === 'relearn') && Anki.isDue(c, now)) learn.push(id); else if (c.q === 'review' && Anki.isDue(c, now)) review.push(id); }
+    for (const id of ids) { const c = Store.cards[id]; if (!c || c.q === 'new' || c.susp) continue; if ((c.q === 'learn' || c.q === 'relearn') && Anki.isDue(c, now)) learn.push(id); else if (c.q === 'review' && Anki.isDue(c, now)) review.push(id); }
     const buried = new Set(); // 형제 숨기기: 같은 문장의 다른 카드는 오늘 하나만
     const rev = review.filter(id => { const nid = id.split(':')[1]; if (buried.has(nid)) return false; buried.add(nid); return true; });
     let left = Cards.newLeft(now);
-    for (const n of notes) { if (left <= 0) break; if (seenToday.has(n.id) || buried.has(n.id)) continue; for (const k of kinds) { const id = this.cid(n.id, k); const c = Store.cards[id]; if (c && c.q !== 'new') continue; fresh.push(id); buried.add(n.id); left--; break; } }
+    for (const n of notes) { if (left <= 0) break; if (seenToday.has(n.id) || buried.has(n.id)) continue; for (const k of kinds) { const id = this.cid(n.id, k); const c = Store.cards[id]; if (c && (c.q !== 'new' || c.susp)) continue; fresh.push(id); buried.add(n.id); left--; break; } }
     learn.sort((a, b) => Store.cards[a].due - Store.cards[b].due);
     return { learn, review: shuffle(rev), fresh };
   },
   counts(now = Date.now()) { const q = this.queue(now); return { n: q.fresh.length, l: q.learn.length, r: q.review.length }; },
   stats() {
     const notes = this.notes(); const kinds = this.kinds(); let total = 0, fresh = 0, young = 0, mature = 0;
-    for (const n of notes) for (const k of kinds) { total++; const c = Store.cards[this.cid(n.id, k)]; if (!c || c.q === 'new') fresh++; else if (c.q === 'review' && c.ivl >= 21) mature++; else young++; }
-    return { notes: notes.length, total, fresh, young, mature };
+    let susp = 0; for (const n of notes) for (const k of kinds) { total++; const c = Store.cards[this.cid(n.id, k)]; if (c && c.susp) { susp++; continue; } if (!c || c.q === 'new') fresh++; else if (c.q === 'review' && c.ivl >= 21) mature++; else young++; }
+    return { notes: notes.length, total, fresh, young, mature, susp };
   },
   forecast(days = 7) { const out = new Array(days).fill(0); const base = Anki.dayStart(); for (const [id, c] of Object.entries(Store.cards)) { if (!id.startsWith('s:') || c.q !== 'review') continue; const d = Math.max(0, Math.floor((c.due - base) / Anki.DAY)); if (d < days) out[d]++; } return out; },
 };

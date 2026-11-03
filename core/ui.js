@@ -5,7 +5,7 @@ const UI = {
     const s = Store.data.settings; const dark = s.theme === 'dark' || (s.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.dataset.theme = dark ? 'dark' : 'light'; document.documentElement.dataset.font = s.font;
   },
-  toast(msg, ms = 2600) { let box = $('#toasts'); if (!box) { box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); } const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg; box.appendChild(t); setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, ms); },
+  toast(msg, ms = 2600) { let box = $('#toasts'); if (!box) { box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); } while (box.children.length >= 3) box.firstChild.remove(); const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg; box.appendChild(t); setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 400); }, ms); },
   modal(html, { onClose, wide } = {}) {
     UI.closeModal(); const m = document.createElement('div'); m.id = 'modal'; m.innerHTML = `<div class="modal-bg"></div><div class="modal-box ${wide ? 'wide' : ''}"><button class="modal-x" aria-label="닫기">✕</button>${html}</div>`;
     document.body.appendChild(m); const close = () => { m.remove(); onClose && onClose(); }; m.querySelector('.modal-bg').onclick = close; m.querySelector('.modal-x').onclick = close; this._modalClose = close; return m;
@@ -18,7 +18,8 @@ const UI = {
   slowBtn(text) { return `<button class="say slow" data-slow="${esc(String(text ?? ''))}" title="끊어서 천천히 듣기" aria-label="끊어서 천천히 듣기">🐢</button>`; },
   // 성분 색 덩어리 문장
   chunks(en, roles, { say = true } = {}) {
-    const cs = Content.chunks(en, roles); const body = cs.map(c => `<span class="chunk ${c.r ? 'r-' + c.r : ''}" ${c.r ? `title="${esc(CONFIG.ROLES[c.r].name)}"` : ''}>${esc(c.t)}</span>`).join(' ');
+    const words = (t) => String(t).split(/\s+/).map(w => /[A-Za-z]/.test(w) ? `<span class="w" data-w="${esc(w)}">${esc(w)}</span>` : esc(w)).join(' '); // 낱말을 누르면 그 낱말만 들림 (v0.3.0)
+    const cs = Content.chunks(en, roles); const body = cs.map(c => `<span class="chunk ${c.r ? 'r-' + c.r : ''}" ${c.r ? `title="${esc(CONFIG.ROLES[c.r].name)}"` : ''}>${words(c.t)}</span>`).join(' ');
     return `<span class="sent">${body}</span>${say ? this.sayBtn(en) : ''}`;
   },
   roleLegend(roles) { const used = [...new Set(String(roles || '').split(/\s+/).filter(Boolean))]; return used.length ? `<div class="legend">${used.map(r => `<span class="chunk r-${r}">${CONFIG.ROLES[r].name}</span><small class="muted">${CONFIG.ROLES[r].ko}</small>`).join(' ')}</div>` : ''; },
@@ -40,8 +41,31 @@ const UI = {
     this.views = views; this.applyTheme(); Speech.init(); Confetti.init();
     addEventListener('hashchange', () => this.route());
     matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => this.applyTheme());
-    document.addEventListener('click', (e) => { const sl = e.target.closest('[data-slow]'); if (sl) { e.preventDefault(); Speech.slow(sl.dataset.slow, { btn: sl }); return; } const b = e.target.closest('[data-say]'); if (b) { e.preventDefault(); Speech.say(b.dataset.say, { btn: b, rate: b.dataset.rate ? +b.dataset.rate : undefined }); } });
+    this.bindSay(); this.bindKeys();
     this.route();
+  },
+  // 🔊·🐢·낱말 누르기 (문서 전체에 하나) — 허브에서도 부른다
+  bindSay() {
+    if (this._said) return; this._said = true;
+    document.addEventListener('click', (e) => {
+      const sl = e.target.closest('[data-slow]'); if (sl) { e.preventDefault(); Speech.slow(sl.dataset.slow, { btn: sl }); return; }
+      const b = e.target.closest('[data-say]'); if (b) { e.preventDefault(); Speech.say(b.dataset.say, { btn: b, rate: b.dataset.rate ? +b.dataset.rate : undefined }); return; }
+      const w = e.target.closest('[data-w]'); if (w && !w.closest('button, a, .locked-say')) { const t = w.dataset.w.replace(/^[^A-Za-z']+|[^A-Za-z']+$/g, ''); if (t) { w.classList.add('tap'); setTimeout(() => w.classList.remove('tap'), 600); Speech.say(t, { rate: 0.85, voice: Speech.voice(w.closest('.sent') ? w.closest('.sent').textContent : t) }); } }
+    });
+  },
+  // 문제 풀이 키보드: Enter = 확인/다음, 1~4 = 보기 고르기 (입력칸 안에서는 입력칸 규칙을 따름)
+  bindKeys() {
+    document.addEventListener('keydown', (e) => {
+      if (!['play', 'p', 'review', 'placement'].includes(this.cur) || $('#modal')) return; const tag = (e.target.tagName || '').toLowerCase(); if (tag === 'textarea' || tag === 'input' || tag === 'select') return;
+      if (e.key === 'Enter') { const b = $('[data-a=check]'); if (b) { e.preventDefault(); b.click(); } }
+      else if (/^[1-6]$/.test(e.key)) { const o = $$('.opt')[+e.key - 1]; if (o) { e.preventDefault(); o.click(); } }
+    });
+  },
+  // 학습 달력 (최근 weeks 주, 월요일 시작)
+  heatmap(days, weeks = 14) {
+    const today = new Date(); const dow = (today.getDay() + 6) % 7; const start = new Date(today); start.setDate(today.getDate() - dow - (weeks - 1) * 7);
+    let cols = ''; for (let w = 0; w < weeks; w++) { let cells = ''; for (let i = 0; i < 7; i++) { const d = new Date(start); d.setDate(start.getDate() + w * 7 + i); const k = todayKey(d); const n = days[k] || 0; const lv = d > today ? 'f' : n === 0 ? 0 : n < 3 ? 1 : n < 8 ? 2 : n < 15 ? 3 : 4; cells += `<i class="hm l${lv}" title="${k} · ${n}"></i>`; } cols += `<div class="hm-col">${cells}</div>`; }
+    return `<div class="heat">${cols}</div><div class="hm-legend small muted">적게 <i class="hm l1"></i><i class="hm l2"></i><i class="hm l3"></i><i class="hm l4"></i> 많이</div>`;
   },
   // 보상 연출: XP 날아오기·레벨업·뱃지
   reward(r) {
