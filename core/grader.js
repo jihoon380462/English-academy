@@ -2,6 +2,8 @@
 // 필요: CONTRACTIONS(shared/contractions.js), MISTAKES(shared/mistakes.js, 없어도 됨)
 // v0.3.0 보강(QA 제보): 아포스트로피 없는 축약형(dont·im), 's = is/has · 'd = would/had 둘 다, 숫자 낱말 ↔ 숫자(fifteen = 15, seven thirty = 7:30), ok = okay,
 //   문법 낱말(what↔that, never↔ever …)과 같은 말의 다른 어미(closed↔closes)는 오타로 봐주지 않음
+const ORD_WORDS = { first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6, seventh: 7, eighth: 8, ninth: 9, tenth: 10, eleventh: 11, twelfth: 12, thirteenth: 13, fourteenth: 14, fifteenth: 15, sixteenth: 16, seventeenth: 17, eighteenth: 18, nineteenth: 19, twentieth: 20, thirtieth: 30 };
+const ordSfx = (n) => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
 const NUM_WORDS = { zero: 0, oh: null, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
 const NO_TYPO = new Set('what that than then this these those there their they them when were where with will would could should have has had from form your you our here hear does done did went want wants need needs never ever every very any many much more most some same make made take took come came know now not nor new few for four far fat fit sit set get got gets bought brought though through thought tough where were wear way why who how out our its it is in on at an and are as be by do go he me my no of or so to up us we she her his him has had was were one won too two less lest last lost live love leave left right write night might light life lie lay play pray said says sad bad bed bet better bitter'.split(' '));
 const Grader = {
@@ -15,12 +17,17 @@ const Grader = {
       const full = (typeof CONTRACTIONS !== 'undefined' && CONTRACTIONS[w]);
       if (full) { out.push(...full.split(' ')); continue; }
       const m = w.match(/^([a-z]+)-([a-z]+)$/); if (m && NUM_WORDS[m[1]] >= 20 && NUM_WORDS[m[2]] > 0 && NUM_WORDS[m[2]] < 10) { out.push(String(NUM_WORDS[m[1]] + NUM_WORDS[m[2]])); continue; } // twenty-five
+      if (/^\d+(st|nd|rd|th)$/.test(w)) { out.push(ordSfx(parseInt(w))); continue; }
+      const ap = w.match(/^(\d{1,2})(am|pm)$/); if (ap) { out.push(ap[1], ap[2]); continue; } // 7am = 7 am
+      const mo = w.match(/^([a-z]+)-([a-z]+)$/); if (mo && NUM_WORDS[mo[1]] >= 20 && ORD_WORDS[mo[2]] && ORD_WORDS[mo[2]] < 10) { out.push(ordSfx(NUM_WORDS[mo[1]] + ORD_WORDS[mo[2]])); continue; } // twenty-first = 21st
       if (w.includes('-') && !/\d/.test(w)) { out.push(...w.split('-').filter(Boolean)); continue; } // round-trip = round trip, e-mail 은 email 로 따로
       if (NUM_WORDS[w] != null) { out.push(String(NUM_WORDS[w])); continue; }
+      if (ORD_WORDS[w] && w !== 'second') { out.push(ordSfx(ORD_WORDS[w])); continue; } // fifth = 5th (second 는 「초」 뜻이 많아서 그대로)
       out.push(w);
     }
+    for (let i = 1; i < out.length - 1; i++) if (/^\d+$/.test(out[i - 1]) && (out[i] === 'a' || out[i] === 'p') && out[i + 1] === 'm') out.splice(i, 2, out[i] + 'm'); // 7 a.m. = 7 am
     // twenty five(띄어 씀) → 25
-    for (let i = 0; i < out.length - 1; i++) { const a = +out[i], b = +out[i + 1]; if (/^\d+$/.test(out[i]) && /^\d$/.test(out[i + 1]) && a >= 20 && a % 10 === 0 && a < 100 && b > 0) out.splice(i, 2, String(a + b)); }
+    for (let i = 0; i < out.length - 1; i++) { const a = +out[i], b = +out[i + 1]; if (/^\d+$/.test(out[i]) && /^\d$/.test(out[i + 1]) && a >= 20 && a % 10 === 0 && a < 100 && b > 0) out.splice(i, 2, String(a + b)); else if (/^\d+$/.test(out[i]) && /^[1-9](st|nd|rd|th)$/.test(out[i + 1]) && a >= 20 && a % 10 === 0 && a < 100) out.splice(i, 2, ordSfx(a + parseInt(out[i + 1]))); }
     return out;
   },
   // 같은 낱말인가: 'is|has' 처럼 둘 중 하나인 토큰(축약형 's·'d)도 맞음
@@ -40,7 +47,7 @@ const Grader = {
   // 오타로 봐줄 수 있는 차이인가: 4글자 이상, 편집 거리 1, 어미 차이 아님, 문법 낱말·숫자 아님
   typoOk(g, w) { return !g.includes('|') && !w.includes('|') && w.length >= 4 && !/\d/.test(g + w) && !NO_TYPO.has(g) && !NO_TYPO.has(w) && this.dist(g, w) === 1 && !this.inflect(g, w); },
   // 오타 하나만 다르면 near
-  near(a, b) { if (a.length !== b.length) return null; let typo = null; for (let i = 0; i < a.length; i++) { if (this.eq(a[i], b[i])) continue; if (typo || !this.typoOk(a[i], b[i])) return null; typo = { got: a[i], want: b[i] }; } return typo; },
+  near(a, b) { if (this._exact) return null; const avoid = this._avoid; if (a.length !== b.length) return null; let typo = null; for (let i = 0; i < a.length; i++) { if (this.eq(a[i], b[i])) continue; if (typo || !this.typoOk(a[i], b[i]) || (avoid && avoid.has(a[i]))) return null; typo = { got: a[i], want: b[i] }; } return typo; },
   // 낱말 단위 비교: LCS 로 맞은 낱말 표시. 돌려주는 값 got[i] = {w, ok}, missing = 답에만 있는 낱말
   diff(got, want) {
     const m = got.length, n = want.length; const L = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
@@ -53,7 +60,10 @@ const Grader = {
   // 명사 + 's 는 소유격(dad's car)일 수도, is/has 축약(My dad's used to…)일 수도 → 두 갈래로 펼쳐서 비교 (최대 3개)
   expand(t) { const idx = t.map((w, i) => /^[a-z]+'s$/.test(w) ? i : -1).filter(i => i >= 0).slice(0, 3); let out = [t]; for (const i of idx.reverse()) out = out.flatMap(v => [v, [...v.slice(0, i), v[i].slice(0, -2), 'is|has', ...v.slice(i + 1)]]); return out; },
   // 문장 채점. answers: 허용 답 목록(첫째가 대표). 돌려주는 값 {ok, typo?, best, diff}
-  text(input, answers) {
+  text(input, answers, opt = {}) {
+    this._exact = !!opt.exact; this._avoid = opt.avoid ? new Set(this.tokens(opt.avoid)) : null; try { return this._text(input, answers); } finally { this._exact = false; this._avoid = null; } // avoid = 고치기 문제의 틀린 문장: 그 낱말을 그대로 쓰면 오타로 봐주지 않음
+  },
+  _text(input, answers) {
     const got = this.tokens(input); const list = (Array.isArray(answers) ? answers : [answers]).filter(a => a != null); const G = this.expand(got);
     let best = list[0], bestDiff = null;
     for (const a of list) {
@@ -65,7 +75,7 @@ const Grader = {
     return { ok: false, best, diff: bestDiff || this.diff(got, this.tokens(best)) };
   },
   // 한 낱말(빈칸) 채점
-  word(input, answers) { const G = this.tokens(input); for (const a of answers) { const W = this.tokens(a); if (this.same(G, W)) return { ok: true }; const g = G.join(' '), w = W.join(' '); if (G.length === 1 && W.length === 1 && this.typoOk(g, w)) return { ok: true, typo: { got: g, want: w } }; } return { ok: false }; },
+  word(input, answers, opt = {}) { const G = this.tokens(input); for (const a of answers) { const W = this.tokens(a); if (this.same(G, W)) return { ok: true }; const g = G.join(' '), w = W.join(' '); if (!opt.exact && G.length === 1 && W.length === 1 && this.typoOk(g, w)) return { ok: true, typo: { got: g, want: w } }; } return { ok: false }; },
   // 자유 쓰기(free): 정답이 정해지지 않은 쓰기. 조건 = 낱말 수 + 꼭 넣을 표현 묶음(need: [[A 또는 B], [C]]) — 각 묶음에서 하나 이상
   has(tokens, phrase) { const p = this.tokens(phrase); if (!p.length) return true; for (let i = 0; i + p.length <= tokens.length; i++) if (p.every((w, k) => this.eq(tokens[i + k], w))) return true; return false; },
   free(input, need = [], minWords = 4) {

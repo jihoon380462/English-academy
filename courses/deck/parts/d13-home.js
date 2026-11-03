@@ -2,7 +2,7 @@
 SENTENCE_DECKS.push(
   { id: 'home', title: '집·가족·집안일', icon: '🏠', desc: '요리·청소·빨래·가족 대화·반려동물', items: [
     { id: 'home-001', en: "I'm home!", ko: "다녀왔어요!", key: "I'm home", keyko: "(집에) 왔어요, 다녀왔어요", alt: ["I'm back!"] },
-    { id: 'home-002', en: "Dinner is ready.", ko: "저녁 다 됐어요.", key: "be ready", keyko: "준비되다", alt: ["Dinner's ready."] },
+    { id: 'home-002', en: "Dinner is ready.", ko: "저녁 다 됐어요.", key: "be ready", keyko: "준비되다" },
     { id: 'home-003', en: "What's for dinner?", ko: "저녁 메뉴 뭐예요?", key: "what's for dinner", keyko: "저녁은 뭐 먹어요?", alt: ["What are we having for dinner?"] },
     { id: 'home-004', en: "Come and eat.", ko: "와서 먹어요.", key: "come and eat", keyko: "와서 먹다", alt: ["Come eat.", "Come and get it."] },
     { id: 'home-005', en: "Wash your hands first.", ko: "손부터 씻어요.", key: "wash your hands", keyko: "손을 씻다", alt: ["Go wash your hands first."] },
@@ -12,7 +12,7 @@ SENTENCE_DECKS.push(
     { id: 'home-009', en: "Did you feed the dog?", ko: "강아지 밥 줬어요?", key: "feed", keyko: "먹이를 주다", alt: ["Have you fed the dog?"] },
     { id: 'home-010', en: "Your room is a mess.", ko: "방이 엉망이에요.", key: "a mess", keyko: "엉망, 난장판", alt: ["Your room is really messy.", "Your room is so messy."] },
     { id: 'home-011', en: "Please clean up your room.", ko: "방 좀 치워요.", key: "clean up", keyko: "치우다, 정리하다", alt: ["Clean up your room, please.", "Please tidy up your room."] },
-    { id: 'home-012', en: "The laundry is done.", ko: "빨래 다 됐어요.", key: "the laundry", keyko: "빨래(거리)", alt: ["The laundry's done."] },
+    { id: 'home-012', en: "The laundry is done.", ko: "빨래 다 됐어요.", key: "the laundry", keyko: "빨래(거리)" },
     { id: 'home-013', en: "Is there any more rice?", ko: "밥 더 있어요?", key: "any more", keyko: "더 (남은 것)", alt: ["Is there more rice?", "Do we have any more rice?"] },
     { id: 'home-014', en: "Can you take out the trash?", ko: "쓰레기 좀 내다 버려 줄래요?", key: "take out the trash", keyko: "쓰레기를 내다 버리다", alt: ["Could you take out the trash?", "Can you take the trash out?", "Can you take out the garbage?", "Could you take out the garbage?"] },
     { id: 'home-015', en: "Have you seen my keys?", ko: "내 열쇠 봤어요?", key: "have you seen", keyko: "~ 봤어요? (찾을 때)", alt: ["Did you see my keys?"] },
@@ -32,7 +32,7 @@ SENTENCE_DECKS.push(
     { id: 'home-029', en: "I'll be home late tonight.", ko: "오늘 밤 늦게 들어갈 거예요.", key: "be home late", keyko: "집에 늦게 들어오다", alt: ["I'm going to be home late tonight.", "I'll be late tonight.", "I'll come home late tonight."] },
     { id: 'home-030', en: "Don't wait up for me.", ko: "나 기다리지 말고 먼저 자요.", key: "wait up", keyko: "자지 않고 기다리다", alt: ["You don't have to wait up for me."] },
     { id: 'home-031', en: "Who left the door open?", ko: "누가 문 열어 뒀어요?", key: "leave ~ open", keyko: "~을 열어 둔 채로 두다", alt: ["Who left the door open again?"] },
-    { id: 'home-032', en: "Dinner's getting cold, so come sit down.", ko: "밥 식으니까 와서 앉아요.", key: "get cold", keyko: "식다", alt: ["Dinner is getting cold, so come and sit down.", "Dinner's getting cold, so come and sit down."] },
+    { id: 'home-032', en: "Dinner's getting cold, so come sit down.", ko: "밥 식으니까 와서 앉아요.", key: "get cold", keyko: "식다", alt: ["Dinner is getting cold, so come and sit down."] },
     { id: 'home-033', en: "I'm going to do the laundry this afternoon.", ko: "오늘 오후에 빨래할 거예요.", key: "do the laundry", keyko: "빨래하다", alt: ["I'll do the laundry this afternoon."] },
     { id: 'home-034', en: "Can you put the leftovers in the fridge?", ko: "남은 음식 냉장고에 넣어 줄래요?", key: "leftovers", keyko: "남은 음식", alt: ["Could you put the leftovers in the fridge?"] },
     { id: 'home-035', en: "My parents are coming over for dinner.", ko: "부모님이 저녁 드시러 오세요.", key: "come over", keyko: "(집에) 놀러 오다, 들르다", alt: ["My parents are coming for dinner."] },

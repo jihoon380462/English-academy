@@ -1,4 +1,4 @@
-// courses/deck/parts/d12-numbers.js — 숫자·시간·돈·날짜 덱 조각. 채점기(v0.3.0)가 숫자 낱말=숫자(7:30=seven thirty)를 같게 보므로 alt 에는 $·%·서수(3rd)·연도·hundred·시각 다른 표현만 둔다. 스키마는 ../content.js 주석
+// courses/deck/parts/d12-numbers.js — 숫자·시간·돈·날짜 덱 조각. 채점기(v0.3.0)가 숫자 낱말=숫자(7:30=seven thirty)를 같게 보므로 alt 에는 $·%·연도·hundred·시각 다른 표현만 둔다. 스키마는 ../content.js 주석
 SENTENCE_DECKS.push(
   { id: 'numbers', title: '숫자·시간·돈·날짜', icon: '🔢', desc: '시각 말하기·가격·날짜·나이·걸리는 시간·횟수', items: [
     { id: 'numbers-001', en: "What time is it?", ko: "지금 몇 시예요?", key: "what time is it", keyko: "몇 시예요?", alt: ["What's the time?", "Do you have the time?"], note: "Do you have the time? = 지금 몇 시예요? (the 가 없는 Do you have time? 은 「시간 있어요?」)" },
@@ -7,8 +7,8 @@ SENTENCE_DECKS.push(
     { id: 'numbers-004', en: "We have three kids.", ko: "우리는 아이가 셋이에요.", key: "have three kids", keyko: "아이가 셋 있다", alt: ["We have three children."] },
     { id: 'numbers-005', en: "I'm 28 years old.", ko: "저는 스물여덟 살이에요.", key: "~ years old", keyko: "~살", alt: ["I'm twenty-eight."] },
     { id: 'numbers-006', en: "What's the date today?", ko: "오늘 며칠이에요?", key: "what's the date", keyko: "며칠이에요? (날짜 묻기)", alt: ["What's today's date?", "What date is it today?"] },
-    { id: 'numbers-007', en: "It's Friday, October 3rd.", ko: "10월 3일 금요일이에요.", key: "요일, 달 + 날짜", keyko: "~요일, ~월 ~일", alt: ["It's Friday, October third.", "It's Friday, October 3.", "Today is Friday, October 3rd.", "Today is Friday, October third."] },
-    { id: 'numbers-008', en: "My birthday is on May 5th.", ko: "제 생일은 5월 5일이에요.", key: "on + 날짜", keyko: "~월 ~일에", alt: ["My birthday is on May fifth.", "My birthday is on May 5.", "My birthday is May 5th.", "My birthday is May 5.", "My birthday is May fifth.", "My birthday is on the fifth of May."] },
+    { id: 'numbers-007', en: "It's Friday, October 3rd.", ko: "10월 3일 금요일이에요.", key: "요일, 달 + 날짜", keyko: "~요일, ~월 ~일", alt: ["It's Friday, October 3.", "Today is Friday, October 3rd."] },
+    { id: 'numbers-008', en: "My birthday is on May 5th.", ko: "제 생일은 5월 5일이에요.", key: "on + 날짜", keyko: "~월 ~일에", alt: ["My birthday is on May 5.", "My birthday is May 5th.", "My birthday is May 5.", "My birthday is on the fifth of May."] },
     { id: 'numbers-009', en: "There are 30 students in my class.", ko: "우리 반에는 학생이 30명 있어요.", key: "there are", keyko: "~가 있다 (여럿)" },
     { id: 'numbers-010', en: "My room number is 302.", ko: "제 방 번호는 302호예요.", key: "room number", keyko: "방 번호", alt: ["My room number is three oh two.", "My room number is three zero two."] },
     { id: 'numbers-011', en: "It's 20 degrees outside.", ko: "밖은 20도예요.", key: "~ degrees", keyko: "~도 (온도)" },
@@ -42,12 +42,12 @@ SENTENCE_DECKS.push(
     { id: 'numbers-039', en: "We moved here in 2019.", ko: "우리는 2019년에 여기로 이사 왔어요.", key: "move here", keyko: "여기로 이사 오다", alt: ["We moved here in twenty nineteen.", "We moved here in two thousand nineteen.", "We moved here in two thousand and nineteen."] },
     { id: 'numbers-040', en: "I'll be 30 next year.", ko: "저 내년에 서른 돼요.", key: "I'll be + 나이", keyko: "(나이가) ~살이 되다", alt: ["I'm turning thirty next year."] },
     { id: 'numbers-041', en: "Your appointment is at 2:30 on Thursday.", ko: "예약은 목요일 2시 반이에요.", key: "at + 시각 + on + 요일", keyko: "~요일 ~시에", alt: ["Your appointment is on Thursday at 2:30.", "Your appointment is at half past two on Thursday."] },
-    { id: 'numbers-042', en: "The concert is on Saturday, June 14th.", ko: "콘서트는 6월 14일 토요일이에요.", key: "on + 요일, 날짜", keyko: "~요일 ~월 ~일에", alt: ["The concert is on Saturday, June fourteenth.", "The concert is on Saturday, June 14."] },
+    { id: 'numbers-042', en: "The concert is on Saturday, June 14th.", ko: "콘서트는 6월 14일 토요일이에요.", key: "on + 요일, 날짜", keyko: "~요일 ~월 ~일에", alt: ["The concert is on Saturday, June 14."] },
     { id: 'numbers-043', en: "The total comes to 56 dollars.", ko: "합계는 56달러예요.", key: "the total comes to", keyko: "합계가 ~이다", alt: ["The total comes to $56.", "The total is 56 dollars."] },
     { id: 'numbers-044', en: "Can you split it three ways?", ko: "세 명이 나눠서 계산해 줄 수 있어요?", key: "split ~ three ways", keyko: "셋으로 나누다", alt: ["Can we split it three ways?"] },
     { id: 'numbers-045', en: "I have to leave by seven tomorrow morning.", ko: "내일 아침 7시까지 나가야 해요.", key: "by + 시각", keyko: "~시까지", alt: ["I need to leave by 7 tomorrow morning."] },
     { id: 'numbers-046', en: "My flight lands at 11:40 tonight.", ko: "제 비행기는 오늘 밤 11시 40분에 도착해요.", key: "lands at", keyko: "~시에 착륙하다", alt: ["My flight gets in at 11:40 tonight."] },
-    { id: 'numbers-047', en: "The rent is due on the first of every month.", ko: "월세는 매달 1일에 내야 해요.", key: "due on the first", keyko: "1일이 납부일인", alt: ["The rent is due on the 1st of every month.", "Rent is due on the first of every month.", "Rent is due on the 1st of every month.", "The rent is due on the first of each month."] },
+    { id: 'numbers-047', en: "The rent is due on the first of every month.", ko: "월세는 매달 1일에 내야 해요.", key: "due on the first", keyko: "1일이 납부일인", alt: ["Rent is due on the first of every month.", "The rent is due on the first of each month."] },
     { id: 'numbers-048', en: "The store is open 24 hours a day.", ko: "그 가게는 하루 24시간 열어요.", key: "open 24 hours a day", keyko: "하루 24시간 영업하다", alt: ["The store is open 24/7."] },
     { id: 'numbers-049', en: "I spend about 100 dollars a week on food.", ko: "일주일에 식비로 100달러쯤 써요.", key: "spend ~ on", keyko: "~에 (돈을) 쓰다", alt: ["I spend about a hundred dollars a week on food.", "I spend about one hundred dollars a week on food.", "I spend about $100 a week on food."] },
     { id: 'numbers-050', en: "Prices have gone up by about 10 percent.", ko: "가격이 10퍼센트쯤 올랐어요.", key: "go up by", keyko: "~만큼 오르다", alt: ["Prices have gone up by about 10%.", "Prices have gone up about ten percent.", "Prices went up by about 10 percent.", "Prices have gone up about 10%."] },

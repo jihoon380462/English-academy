@@ -72,7 +72,7 @@ W.fill = {
     const inputs = el.querySelectorAll('.blank'); inputs.forEach(x => x.addEventListener('keydown', e => { if (e.key === 'Enter') api.submit(); }));
     if (inputs[0] && inputs[0].tagName === 'INPUT') setTimeout(() => inputs[0].focus(), 50);
     return {
-      check() { const vals = Array.from(inputs).map(x => x.value.trim()); if (vals.every(v => !v)) return null; let ok = true, typo = null; inputs.forEach((x, i) => { const r = Grader.word(vals[i], p.blanks[i].a); x.classList.toggle('good', r.ok); x.classList.toggle('bad', !r.ok); if (!r.ok) ok = false; if (r.typo) typo = r.typo; }); return { ok, typo, best: Content.answerText(p), msg: p.why }; },
+      check() { const vals = Array.from(inputs).map(x => x.value.trim()); if (vals.every(v => !v)) return null; let ok = true, typo = null; inputs.forEach((x, i) => { const r = Grader.word(vals[i], p.blanks[i].a, { exact: !!p.blanks[i].opt || (p.tags || []).includes('철자') }); x.classList.toggle('good', r.ok); x.classList.toggle('bad', !r.ok); if (!r.ok) ok = false; if (r.typo) typo = r.typo; }); return { ok, typo, best: Content.answerText(p), msg: p.why }; },
       reveal() { inputs.forEach((x, i) => { x.value = p.blanks[i].a[0]; x.classList.add('good'); }); },
     };
   },
@@ -83,7 +83,7 @@ function sentenceInput(p, el, api, { pre = '', top = '' } = {}) {
   el.innerHTML = `${top}<textarea class="sent-in" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="영어로 입력하세요">${esc(pre)}</textarea><div class="muted small">Enter = 확인 · 대소문자·마침표는 신경 쓰지 않아도 돼요</div>`;
   const ta = el.querySelector('textarea'); ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); api.submit(); } }); setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 50);
   return {
-    check() { const v = ta.value.trim(); if (!v) return null; if (p.type === 'fix' && Grader.same(Grader.tokens(v), Grader.tokens(p.wrong))) return { ok: false, msg: '아직 그대로예요. 틀린 낱말을 찾아 고쳐 보세요.', soft: true }; const r = Grader.text(v, Content.answers(p)); r.input = v; if (!r.ok) r.explain = Grader.explain(v); return r; },
+    check() { const v = ta.value.trim(); if (!v) return null; if (p.type === 'fix' && Grader.same(Grader.tokens(v), Grader.tokens(p.wrong))) return { ok: false, msg: '아직 그대로예요. 틀린 낱말을 찾아 고쳐 보세요.', soft: true }; const r = Grader.text(v, Content.answers(p), { exact: (p.tags || []).includes('철자'), avoid: p.type === 'fix' ? p.wrong : null }); r.input = v; if (!r.ok) r.explain = Grader.explain(v); return r; },
     reveal() { ta.value = Content.answerText(p); },
   };
 }

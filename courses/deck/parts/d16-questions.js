@@ -19,7 +19,7 @@ SENTENCE_DECKS.push(
     { id: 'questions-016', en: "Is this the right way to do it?", ko: "이렇게 하는 게 맞아요?", key: "the right way to", keyko: "~하는 올바른 방법", alt: ["Is this how you do it?", "Am I doing this right?"] },
     { id: 'questions-017', en: "I have a quick question.", ko: "간단한 질문이 하나 있어요.", key: "a quick question", keyko: "간단한 질문", alt: ["I've got a quick question."] },
     { id: 'questions-018', en: "What's the difference between these two?", ko: "이 둘은 뭐가 달라요?", key: "the difference between", keyko: "~ 사이의 차이", alt: ["What's the difference between the two?"] },
-    { id: 'questions-019', en: "Really? Why is that?", ko: "정말요? 왜 그런 거예요?", key: "Why is that?", keyko: "왜 그런 거예요?", alt: ["Really? Why's that?", "Really? How come?"] },
+    { id: 'questions-019', en: "Really? Why is that?", ko: "정말요? 왜 그런 거예요?", key: "Why is that?", keyko: "왜 그런 거예요?", alt: ["Really? How come?"] },
     { id: 'questions-020', en: "Can you tell me more about it?", ko: "그거 좀 더 얘기해 줄래요?", key: "tell me more", keyko: "더 얘기해 주다", alt: ["Could you tell me more about it?", "Can you tell me a bit more about it?"] },
     { id: 'questions-021', en: "What happened after that?", ko: "그다음엔 어떻게 됐어요?", key: "What happened", keyko: "무슨 일이 있었어요?", alt: ["And then what happened?", "What happened next?"] },
     { id: 'questions-022', en: "Where did you hear about it?", ko: "그거 어디서 들었어요?", key: "hear about", keyko: "~에 대해 듣다", alt: ["Where did you hear about that?"] },
