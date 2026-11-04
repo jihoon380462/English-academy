@@ -221,7 +221,7 @@ WORD_LEVELS.push({
       {"id": "g68-195", "w": "personification", "pos": "n", "ko": "의인법", "en": "\"The wind whispered through the trees\" is an example of personification.", "exko": "「바람이 나무 사이로 속삭였다」는 의인법의 예예요."},
       {"id": "g68-196", "w": "imagery", "pos": "n", "ko": "심상; 이미지 (감각에 호소하는 묘사)", "en": "The poet uses imagery to describe the smell of fresh bread.", "exko": "시인은 감각적인 이미지로 갓 구운 빵 냄새를 묘사해요."},
       {"id": "g68-197", "w": "symbol", "pos": "n", "ko": "상징", "en": "In the story, the locked door is a symbol of her secret.", "exko": "이야기에서 잠긴 문은 그녀의 비밀을 상징해요."},
-      {"id": "g68-198", "w": "alliteration", "pos": "n", "ko": "두운 (첫소리 반복)", "en": "\"Sally sells seashells\" is an example of alliteration.", "exko": "「Sally sells seashells」는 두운의 예예요."},
+      {"id": "g68-198", "w": "alliteration", "pos": "n", "ko": "두운 (첫소리 반복)", "en": "The poet used alliteration in the line \"silver stars slowly slide.\"", "exko": "시인은 「silver stars slowly slide」라는 행에서 두운을 썼어요."},
       {"id": "g68-199", "w": "hyperbole", "pos": "n", "ko": "과장법", "en": "\"I have told you a million times\" is hyperbole.", "exko": "「백만 번은 말했잖아」는 과장법이에요."},
       {"id": "g68-200", "w": "onomatopoeia", "pos": "n", "ko": "의성어", "en": "Words like \"buzz\" and \"crash\" are examples of onomatopoeia.", "exko": "buzz 나 crash 같은 낱말은 의성어의 예예요."},
     ] },
