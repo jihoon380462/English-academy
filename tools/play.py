@@ -204,8 +204,8 @@ def run():
             hits = 0
             for _ in range(40):
                 if not page.locator('.attack-q').count(): break
-                i = page.evaluate('Attack.run && !Attack.run.lock ? Attack.run.cur.opts.indexOf(Attack.run.cur.n) : -1')
-                if i >= 0 and page.locator(f'.opt[data-i="{i}"]').count(): page.click(f'.opt[data-i="{i}"]'); hits += 1
+                # 정답 위치 읽기와 누르기를 한 번에(따로 하면 그 사이 다음 문제로 바뀌어 엉뚱한 보기를 누름 — 봇 경쟁)
+                if page.evaluate("(() => { const r = Attack.run; if (!r || r.lock) return false; const b = document.querySelector('.opt[data-i=\"' + r.cur.opts.indexOf(r.cur.n) + '\"]'); if (!b) return false; b.click(); return true; })()"): hits += 1
                 page.wait_for_timeout(320)
             page.wait_for_selector('.big-score', timeout=8000); check(page.evaluate('Store.data.stats.attackBest') >= 1, f'타임어택 기록 저장 안 됨 (맞힘 {hits})'); shot('attack-end')
             # 실력 확인 (전부 맞히기 → 마지막 챕터 추천)
