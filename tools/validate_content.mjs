@@ -47,7 +47,9 @@ for (const c of courses()) {
         if (!/^[\w-]+$/.test(x.id || '')) F(`${w}: id`); if (wid.has(x.id)) F(`${w}: id 중복`); wid.add(x.id);
         for (const k of ['w', 'pos', 'ko', 'en', 'exko']) if (!x[k]) F(`${w}: ${k} 없음`); if (x.pos && !POS.test(x.pos)) F(`${w}: pos ${x.pos} 모름`);
         const key = (x.w || '').toLowerCase() + '|' + x.pos; if (seenW.has(key)) Wn(`${w}: 같은 레벨에 같은 낱말·품사 두 번`); seenW.add(key);
-        if (x.en && x.w) { const T = Grader.tokens(x.en).join(' '); const forms = [x.w].concat(x.forms || []); const hit = forms.some(f => { const ft = Grader.tokens(f).join(' '); return (' ' + T + ' ').includes(' ' + ft + ' ') || T.split(' ').some(t => t === ft || Grader.stems(t).has(ft) || Grader.stems(ft).has(t) || t.startsWith(ft) && t.length - ft.length <= 3); }); if (!hit) F(`${w}: 예문에 낱말(또는 forms)이 없어요 — 「${x.en}」`); } } } }
+        if (x.en && x.w) { const T = Grader.tokens(x.en).join(' '); const forms = [x.w].concat(x.forms || []); const hit = forms.some(f => { const ft = Grader.tokens(f).join(' '); return (' ' + T + ' ').includes(' ' + ft + ' ') || T.split(' ').some(t => t === ft || Grader.stems(t).has(ft) || Grader.stems(ft).has(t) || t.startsWith(ft) && t.length - ft.length <= 3); }); if (!hit) F(`${w}: 예문에 낱말(또는 forms)이 없어요 — 「${x.en}」`); } for (const f of x.forms || []) if (!/^[A-Za-z][A-Za-z' -]*$/.test(f)) F(`${w}: forms 에 이상한 글자 「${f}」`); } } }
+    { const seen = {}; for (const L of WORD_LEVELS.slice().sort((a, b) => (a.order || 0) - (b.order || 0))) for (const g of L.groups || []) for (const x of g.words || []) { const k = String(x.w).toLowerCase(); if (seen[k] && !/새 뜻/.test(x.note || '')) F(`단어장 ${x.id}: 「${x.w}」 가 아래 레벨(${seen[k]})에 이미 있어요 (다의어면 note 에 「새 뜻」)`); else if (!seen[k]) seen[k] = L.id; } }
+    { const ko = {}; for (const L of WORD_LEVELS) for (const g of L.groups || []) for (const x of g.words || []) { const k = L.id + '|' + x.ko; if (ko[k]) W(`단어장 ${x.id}: 같은 레벨 ${ko[k]} 와 뜻이 똑같아요 「${x.ko}」 (퀴즈 보기 겹침)`); else ko[k] = x.id; } }
     console.log(`  단어장 레벨 ${WORD_LEVELS.length}개 · 낱말 ${total}개`); }
   console.log(`  챕터 ${CHAPTERS.length} · 레슨 ${LESSONS.length} · 문제 ${PROBLEMS.length}`);
 }

@@ -71,7 +71,7 @@ const Review = {
   pid(id) { return `p:${Store.course}:${id}`; },
   due() { return Cards.due(`p:${Store.course}:`).map(id => id.split(':')[2]).filter(id => Content.problem(id)); },
   dueCount(course) { return Cards.due(`p:${course}:`).length; },
-  allDue() { return Cards.due('p:').length + Cards.due('s:').length; },
+  allDue() { return Cards.due('p:').length + Cards.due('s:').length + Cards.due('w:').length; },
 };
 
 // ---------- 뱃지 ----------
