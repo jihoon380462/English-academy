@@ -233,6 +233,8 @@ def run():
             bad = page.evaluate("Words.levels().flatMap(L => Words.all(L).filter(w => !Words.find(w)).map(w => w.id))"); check(not bad, f'단어장: 예문에서 낱말을 못 찾음 {bad[:8]}')
             dup = page.evaluate("(() => { const seen = {}; const out = []; for (const L of Words.levels()) for (const w of Words.all(L)) { const k = w.w.toLowerCase() + '/' + w.pos; if (seen[k] && !/새 뜻/.test(w.note || '')) out.push(k + ' ' + seen[k] + '→' + L.id); else seen[k] = seen[k] || L.id; } return out; })()")
             check(not dup, f'단어장: 다른 레벨에 같은 낱말·품사 {len(dup)}개 {dup[:8]}')
+            leak = page.evaluate("""Words.levels().flatMap(L => Words.all(L)).filter(w => { const d = document.createElement('div'); d.innerHTML = Words.mark(w, true); const ans = Words.answerForm(w).toLowerCase(); const txt = ' ' + d.textContent.toLowerCase().replace(/[^a-z' ]+/g, ' ') + ' '; return !d.querySelector('.blank-w') || (!ans.includes(' ') && txt.includes(' ' + ans + ' ')) || (ans.includes(' ') && txt.includes(ans)); }).map(w => w.id + ' ' + w.en)""")
+            check(not leak, f'단어장: 빈칸 문제에서 답이 보이거나 빈칸이 없음 {len(leak)}개 {leak[:6]}')
             for L in lv:
                 nav(BASE + f'courses/words/#level/{L}'); page.wait_for_selector('.wlist'); layout(f'단어장 {L} 레벨'); shot(f'words-{L}')
                 n = page.locator('.wrow').count(); total = page.evaluate(f'Words.all(Words.level("{L}")).length'); check(n == total, f'{L}: 화면 단어 {n} ≠ {total}')

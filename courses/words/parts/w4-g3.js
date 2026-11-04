@@ -41,10 +41,6 @@ WORD_LEVELS.push({
       { id: "g3-028", w: "own", pos: "adj", ko: "자기 자신의", en: "Now I have my own room!", exko: "이제 저도 제 방이 생겼어요!", note: "my own … = 나만의 ~" },
       { id: "g3-029", w: "small", pos: "adj", ko: "작은", en: "A small mouse lived in the wall.", exko: "작은 생쥐 한 마리가 벽 속에 살았어요." },
       { id: "g3-030", w: "warm", pos: "adj", ko: "따뜻한", en: "The soup kept us warm on that cold night.", exko: "그 추운 밤, 수프 덕분에 몸이 따뜻했어요." },
-      { id: "g3-031", w: "six", pos: "num", ko: "여섯, 6", en: "An insect has six legs.", exko: "곤충은 다리가 여섯 개예요." },
-      { id: "g3-032", w: "seven", pos: "num", ko: "일곱, 7", en: "There are seven days in a week.", exko: "일주일은 7일이에요." },
-      { id: "g3-033", w: "eight", pos: "num", ko: "여덟, 8", en: "An octopus has eight arms.", exko: "문어는 팔이 여덟 개예요." },
-      { id: "g3-034", w: "ten", pos: "num", ko: "열, 10", en: "Count to ten and then come find me.", exko: "열까지 세고 나서 저를 찾으러 와요." },
     ] },
     { title: "Dolch 3학년 ③ 작은 낱말", words: [
       { id: "g3-035", w: "about", pos: "prep", ko: "~에 관한; 약, 대략", en: "This book is about a girl who loves the sea.", exko: "이 책은 바다를 사랑하는 소녀에 관한 이야기예요." },
