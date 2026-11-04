@@ -11,7 +11,7 @@ import sys, os, json, time, threading, http.server, socketserver, functools, tem
 from playwright.sync_api import sync_playwright
 
 ap = argparse.ArgumentParser(); ap.add_argument('--course', action='append'); ap.add_argument('--shots'); ap.add_argument('--sample', type=int, default=0)
-ap.add_argument('--font', type=int, default=1); ap.add_argument('--theme', default='dark'); ap.add_argument('--width', type=int, default=390); ap.add_argument('--json'); ap.add_argument('--extras', action='store_true', help='덱·허브·실력 확인·저장 유지 시나리오도')
+ap.add_argument('--font', type=int, default=1); ap.add_argument('--theme', default='dark'); ap.add_argument('--width', type=int, default=390); ap.add_argument('--json'); ap.add_argument('--extras', action='store_true', help='덱·허브·실력 확인·저장 유지 시나리오도'); ap.add_argument('--words', action='store_true', help='단어장(레벨 목록·레벨 화면·Anki 단어 공부·퀴즈) 시나리오')
 A = ap.parse_args()
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 fails = []; stats = {'problems': 0, 'by_type': {}, 'wrong_checked': 0, 'lessons': 0, 'pages': 0, 'audio_checks': 0, 'shots': 0}
@@ -223,11 +223,66 @@ def run():
             for v in ('terms', 'badges', 'settings'):
                 page.goto(BASE + f'courses/basic/#{v}'); page.wait_for_selector('#view .page'); layout(v); shot(v)
 
+
+        def words():
+            page.goto(BASE + 'courses/words/'); page.wait_for_selector('.words-home'); shot('words-home'); layout('단어장 홈')
+            lv = page.evaluate('Words.levels().map(L => L.id)'); check(len(lv) == 7, f'단어장: 레벨 {len(lv)}개 (7개여야 함)')
+            bad = page.evaluate("Words.levels().flatMap(L => Words.all(L).filter(w => !Words.find(w)).map(w => w.id))"); check(not bad, f'단어장: 예문에서 낱말을 못 찾음 {bad[:8]}')
+            dup = page.evaluate("(() => { const seen = {}; const out = []; for (const L of Words.levels()) for (const w of Words.all(L)) { const k = w.w.toLowerCase() + '/' + w.pos; if (seen[k] && !/새 뜻/.test(w.note || '')) out.push(k + ' ' + seen[k] + '→' + L.id); else seen[k] = seen[k] || L.id; } return out; })()")
+            check(not dup, f'단어장: 다른 레벨에 같은 낱말·품사 {len(dup)}개 {dup[:8]}')
+            for L in lv:
+                nav(BASE + f'courses/words/#level/{L}'); page.wait_for_selector('.wlist'); layout(f'단어장 {L} 레벨'); shot(f'words-{L}')
+                n = page.locator('.wrow').count(); total = page.evaluate(f'Words.all(Words.level("{L}")).length'); check(n == total, f'{L}: 화면 단어 {n} ≠ {total}')
+                check(page.locator('.wr-ex .hl').count() == total, f'{L}: 예문 강조 {page.locator(".wr-ex .hl").count()}/{total}')
+                page.evaluate('window.__said = []'); page.locator('.wr-ex .w').first.click(); page.wait_for_timeout(30); check(len(page.evaluate('window.__said')) >= 1, f'{L}: 예문 낱말 누르기 소리 없음')
+                nav(BASE + f'courses/words/#level/{L}/1'); page.wait_for_selector('.wlist'); check(page.locator('.grp-h').count() == 1, f'{L}: 묶음 탭 동작 안 함')
+                # 퀴즈 10문제: 처음 2개는 일부러 틀리고 나머지는 맞힘
+                nav(BASE + f'courses/words/#quiz/{L}'); page.wait_for_selector('.attack-q')
+                for i in range(10):
+                    if i == 0: layout(f'{L} 퀴즈')
+                    k = page.evaluate('WQuiz.run.items[WQuiz.run.i].opts.indexOf(WQuiz.run.items[WQuiz.run.i].w)')
+                    opts = page.evaluate('WQuiz.run.items[WQuiz.run.i].opts.map(o => o.id)'); check(len(set(opts)) == 4, f'{L} 퀴즈: 보기 {len(set(opts))}개')
+                    labels = page.evaluate("[...document.querySelectorAll('.opt-t')].map(e => e.textContent)"); check(len(set(labels)) == 4, f'{L} 퀴즈: 같은 글자 보기 {labels}')
+                    page.click(f'.opt[data-i="{(k + 1) % 4 if i < 2 else k}"]'); check(fb() == ('bad' if i < 2 else 'good'), f'{L} 퀴즈 {i}: 피드백 {fb()}')
+                    page.click('#qNext')
+                page.wait_for_selector('#addWrong'); check('8 / 10' in page.inner_text('#view'), f'{L} 퀴즈: 점수 표시 이상'); layout(f'{L} 퀴즈 결과')
+                page.click('#addWrong'); check(page.evaluate("Object.keys(Store.cards).filter(k => k.startsWith('w:')).length") >= 2, f'{L} 퀴즈: 틀린 단어 카드 안 생김')
+            # 매일 복습 켜기 → Anki 공부 (뜻 카드)
+            page.evaluate("Object.keys(Store.cards).forEach(k => delete Store.cards[k]); Store.data.settings.wordCards = 'F'; Store.save()")
+            nav(BASE + 'courses/words/#level/prek'); page.wait_for_selector('#lvOn'); page.click('#lvOn'); page.wait_for_timeout(60); check(page.evaluate('!!Store.data.settings.wordLevels.prek'), '단어장: 매일 복습 켜기 저장 안 됨')
+            nav(BASE + 'courses/words/'); page.wait_for_selector('.words-home'); check(page.locator('a[href="#study"]').count() == 1, '단어장 홈: 오늘의 단어 버튼 없음')
+            nav(BASE + 'courses/words/#study'); page.wait_for_selector('.scard'); shot('words-study'); layout('단어 공부 앞면')
+            for k in range(20):
+                if not page.locator('.scard').count(): break
+                page.keyboard.press('Space'); page.wait_for_selector('.grades')
+                if k == 0: layout('단어 공부 뒷면'); covered('단어 공부 뒷면'); shot('words-study-back')
+                if k == 2:
+                    b = page.evaluate("Object.keys(Store.cards).filter(k => k.startsWith('w:')).length"); page.keyboard.press('3'); page.wait_for_timeout(40); page.keyboard.press('z'); page.wait_for_timeout(40)
+                    a = page.evaluate("Object.keys(Store.cards).filter(k => k.startsWith('w:')).length"); check(a == b, f'단어 되돌리기: 카드 {b} → {a}'); page.keyboard.press('Space'); page.wait_for_selector('.grades')
+                if k == 4: page.click('#susp'); page.wait_for_timeout(40); continue
+                page.keyboard.press(str([3, 4, 3, 1, 3, 4][k % 6])); page.wait_for_timeout(30)
+            check(page.evaluate("Object.entries(Store.cards).some(([k, c]) => k.startsWith('w:') && c.susp)"), '단어 그만 보기 저장 안 됨')
+            check(page.evaluate('(Store.data.stats.wordReviews || 0) >= 10'), '단어 복습 횟수 기록 안 됨')
+            # 철자 카드: 맞게·틀리게 입력
+            page.evaluate("Store.data.settings.wordCards = 'R'; Store.data.settings.wordsPerDay = 30; Store.save()")
+            for L in lv:
+                nav(BASE + f'courses/words/#study/{L}'); page.wait_for_selector('.scard'); page.wait_for_timeout(80)
+                for k in range(12):
+                    if not page.locator('#typeIn').count(): break
+                    w = page.evaluate("(() => { const w = Words.map()[WStudy.cur.split(':')[1]]; return { ans: Words.answerForm(w), id: w.id }; })()")
+                    page.fill('#typeIn', w['ans'] if k % 4 else 'zzzz'); page.keyboard.press('Enter'); page.wait_for_selector('.grades')
+                    check(fb() == ('good' if k % 4 else 'bad'), f'{L} 철자 카드 {w["id"]}: 입력 {"zzzz" if k % 4 == 0 else w["ans"]} → {fb()}')
+                    if k == 1: layout(f'{L} 철자 카드 뒷면')
+                    page.click('.grade.good'); page.wait_for_timeout(30)
+            # 허브 카드
+            page.goto(BASE); page.wait_for_selector('.hub-courses'); check('단어장' in page.inner_text('.hub-courses'), '허브: 단어장 카드 없음'); layout('허브(단어장 포함)')
+
         courses = A.course or ['basic', 'talk', 'grammar', 'read', 'dev', 'pattern', 'write', 'travel', 'work', 'phrasal']
         t0 = time.time()
-        for c in courses:
+        for c in ([] if A.words and not A.course else courses):
             if os.path.exists(os.path.join(ROOT, 'courses', c, 'content.js')): play_course(c)
         if A.extras: extras()
+        if A.words: words()
         check(not errs, '콘솔 오류: ' + ' | '.join(errs[:4]))
         stats['seconds'] = round(time.time() - t0)
         ctx.close(); br.close()

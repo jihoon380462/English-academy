@@ -10,5 +10,5 @@ export function load(course) {
   for (const f of SHARED) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
   const file = `courses/${course}/content.js`; vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), ctx, { filename: file });
   for (const f of parts(course)) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
-  return vm.runInContext(`({ CONFIG, COURSE, CHAPTERS, LESSONS, PROBLEMS, SENTENCE_DECKS: typeof SENTENCE_DECKS === 'undefined' ? null : SENTENCE_DECKS, Grader, Content, MISTAKES, Anki, ANKI })`, ctx);
+  return vm.runInContext(`({ CONFIG, COURSE, CHAPTERS, LESSONS, PROBLEMS, SENTENCE_DECKS: typeof SENTENCE_DECKS === 'undefined' ? null : SENTENCE_DECKS, WORD_LEVELS: typeof WORD_LEVELS === 'undefined' ? null : WORD_LEVELS, Grader, Content, MISTAKES, Anki, ANKI })`, ctx);
 }

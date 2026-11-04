@@ -56,10 +56,13 @@ const Cards = {
     let c = Anki.next(before, g, now);
     if (id.startsWith('p:') && wasNew && g >= 3) c = Anki.next(c, 3, now); // 문제는 처음 맞히면 바로 졸업(1일 뒤)
     Store.cards[id] = c; if (wasNew && id.startsWith('s:')) { /* 하루 새 카드 한도는 문장 카드만 (문제 카드는 풀면 생김) */ const t = Store.anki(); t.newToday = t.newDay === Anki.dayKey(now) ? t.newToday + 1 : 1; t.newDay = Anki.dayKey(now); }
+    if (wasNew && id.startsWith('w:')) { const t = Store.anki(); t.wNewToday = t.wNewDay === Anki.dayKey(now) ? (t.wNewToday || 0) + 1 : 1; t.wNewDay = Anki.dayKey(now); } // 단어 카드는 따로 셈
     Store.ankiLog(id, g, before, c); return c;
   },
   due(prefix, now = Date.now()) { return Object.entries(Store.cards).filter(([id, c]) => id.startsWith(prefix) && Anki.isDue(c, now)).sort((a, b) => a[1].due - b[1].due).map(([id]) => id); },
   newLeft(now = Date.now()) { const t = Store.anki(); const day = Anki.dayKey(now); const extra = t.extraDay === day ? (t.extraNew || 0) : 0; return Math.max(0, (Store.data.settings.newPerDay ?? ANKI.newPerDay) + extra - (t.newDay === day ? t.newToday : 0)); },
+  wordsLeft(now = Date.now()) { const t = Store.anki(); const day = Anki.dayKey(now); const extra = t.wExtraDay === day ? (t.wExtraNew || 0) : 0; return Math.max(0, (Store.data.settings.wordsPerDay ?? 15) + extra - (t.wNewDay === day ? (t.wNewToday || 0) : 0)); },
+  moreWords(n = 10, now = Date.now()) { const t = Store.anki(); const day = Anki.dayKey(now); if (t.wExtraDay !== day) { t.wExtraDay = day; t.wExtraNew = 0; } t.wExtraNew += n; Store.save(); },
   moreNew(n = 10, now = Date.now()) { const t = Store.anki(); const day = Anki.dayKey(now); if (t.extraDay !== day) { t.extraDay = day; t.extraNew = 0; } t.extraNew += n; Store.save(); }, // Anki 「맞춤 학습: 새 카드 더」
   suspend(id, on = true) { const c = Store.cards[id] || Anki.newCard(); c.susp = on || undefined; if (!on) delete c.susp; Store.cards[id] = c; Store.save(); },
   count(prefix, pred = () => true) { return Object.entries(Store.cards).filter(([id, c]) => id.startsWith(prefix) && pred(c)).length; },

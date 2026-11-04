@@ -5,7 +5,7 @@ const ver = (fs.readFileSync(path.join(ROOT, 'core/config.js'), 'utf8').match(/A
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.name.startsWith('.') || e.name === 'node_modules' ? [] : e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
 // core/meta.js 생성: 허브가 코스 콘텐츠를 읽지 않고도 코스별 문제·레슨 수와 「오늘의 문장」을 알 수 있게
 { const meta = {}; let daily = [];
-  for (const c of courses()) { try { const C = load(c); meta[c] = { problems: C.PROBLEMS.length, lessons: C.LESSONS.length, chapters: C.CHAPTERS.length, sentences: (C.SENTENCE_DECKS || []).reduce((a, d) => a + d.items.length, 0) }; if (C.SENTENCE_DECKS) for (const d of C.SENTENCE_DECKS) for (const it of d.items) daily.push([it.en, it.ko, it.key || '', it.keyko || '', d.id]); } catch (e) { console.warn('meta: ' + c + ' 로드 실패 ' + e.message); } }
+  for (const c of courses()) { try { const C = load(c); meta[c] = { problems: C.PROBLEMS.length, lessons: C.LESSONS.length, chapters: C.CHAPTERS.length, sentences: (C.SENTENCE_DECKS || []).reduce((a, d) => a + d.items.length, 0), words: (C.WORD_LEVELS || []).reduce((a, L) => a + L.groups.reduce((b, g) => b + g.words.length, 0), 0) }; if (C.SENTENCE_DECKS) for (const d of C.SENTENCE_DECKS) for (const it of d.items) daily.push([it.en, it.ko, it.key || '', it.keyko || '', d.id]); } catch (e) { console.warn('meta: ' + c + ' 로드 실패 ' + e.message); } }
   const js = '// core/meta.js — tools/stamp.mjs 가 만든다 (직접 고치지 말 것)\nconst COURSE_META = ' + JSON.stringify(meta) + ';\nconst DAILY_SENTENCES = ' + JSON.stringify(daily) + ';\n';
   fs.writeFileSync(path.join(ROOT, 'core/meta.js'), js); }
 // 코스 페이지의 조각(parts/*.js) 스크립트 태그를 <!--PARTS--> … <!--/PARTS--> 사이에 다시 만든다

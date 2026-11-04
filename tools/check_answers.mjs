@@ -16,6 +16,7 @@ for (const c of courses()) {
     if (p.type === 'speak' || p.type === 'dictation') { const r = Grader.speak(p.say, p.say); if (r.rate < 1) F(`${w}: say 자기 자신 일치율 ${r.rate}`); }
     if (p.type === 'choice' && p.q && /___/.test(p.q) && p.opts.every(o => /^[\w' -]+$/.test(o))) { const s = p.q.replace(/\|/g, ' ').replace('___', p.opts[p.ans]); mist(s, w); }
   }
+  const { WORD_LEVELS } = load(c); if (WORD_LEVELS) for (const L of WORD_LEVELS) for (const g of L.groups) for (const x of g.words) { n++; mist(x.en, `단어장 ${x.id}`); }
   if (SENTENCE_DECKS) for (const d of SENTENCE_DECKS) for (const it of d.items) { n++; const all = [it.en].concat(it.alt || []); for (const a of all) if (!Grader.text(a, all).ok) F(`덱 ${it.id}: 「${a}」 통과 못 함`); mist(Content.plain(it.en), `덱 ${it.id}`); }
 }
 // 채점기 자체 테스트

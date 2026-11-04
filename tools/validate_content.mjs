@@ -9,7 +9,7 @@ const ver = (fs.readFileSync(path.join(ROOT, 'core/config.js'), 'utf8').match(/A
 const ids = new Set();
 for (const c of courses()) {
   console.log(`[${c}]`); let C; try { C = load(c); } catch (e) { F(`content.js 로드 실패: ${e.message}`); continue; }
-  const { COURSE, CHAPTERS, LESSONS, PROBLEMS, SENTENCE_DECKS, Content } = C;
+  const { COURSE, CHAPTERS, LESSONS, PROBLEMS, SENTENCE_DECKS, WORD_LEVELS, Content, Grader } = C;
   if (!COURSE || COURSE.id !== c) F(`COURSE.id 가 폴더 이름(${c})과 달라요`);
   const lids = new Set(LESSONS.map(l => l.id)); const chs = new Set(CHAPTERS.map(x => x.n));
   const checkEx = (e, where) => { if (!e.en) F(`${where}: en 없음`); if (e.roles) { const n = Content.chunks(e.en, e.roles).length; const r = e.roles.trim().split(/\s+/); if (r.length !== n) F(`${where}: roles ${r.length}개 ≠ 덩어리 ${n}개 (${e.en})`); r.forEach(x => ROLE.test(x) || F(`${where}: 성분 글자 ${x} 모름`)); } };
@@ -40,6 +40,15 @@ for (const c of courses()) {
     }
   }
   if (SENTENCE_DECKS) { const sids = new Set(); for (const d of SENTENCE_DECKS) { if (!/^[\w-]+$/.test(d.id)) F(`덱 ${d.id}: id 문자`); for (const it of d.items) { const w = `덱 ${d.id} ${it.id}`; if (!/^[\w-]+$/.test(it.id)) F(`${w}: id 에 쓸 수 없는 글자`); if (sids.has(it.id)) F(`${w}: id 중복`); sids.add(it.id); if (!it.en || !it.ko) F(`${w}: en·ko 필요`); checkEx(it, w); } } console.log(`  덱 ${SENTENCE_DECKS.length}개 · 문장 ${sids.size}개`); }
+  if (WORD_LEVELS) { const wid = new Set(), lid = new Set(); const POS = /^(n|v|adj|adv|prep|pron|conj|det|num|int|phr)$/; let total = 0;
+    for (const L of WORD_LEVELS) { const w0 = `단어장 ${L.id}`; if (!/^[\w-]+$/.test(L.id || '')) F(`${w0}: id`); if (lid.has(L.id)) F(`${w0}: 레벨 id 중복`); lid.add(L.id); for (const k of ['title', 'age', 'grade', 'icon', 'desc']) if (!L[k]) F(`${w0}: ${k} 없음`); if (!Array.isArray(L.groups) || !L.groups.length) F(`${w0}: groups 없음`);
+      const seenW = new Set();
+      for (const g of L.groups || []) { if (!g.title) F(`${w0}: 묶음 title 없음`); for (const x of g.words || []) { total++; const w = `${w0} ${x.id}(${x.w})`;
+        if (!/^[\w-]+$/.test(x.id || '')) F(`${w}: id`); if (wid.has(x.id)) F(`${w}: id 중복`); wid.add(x.id);
+        for (const k of ['w', 'pos', 'ko', 'en', 'exko']) if (!x[k]) F(`${w}: ${k} 없음`); if (x.pos && !POS.test(x.pos)) F(`${w}: pos ${x.pos} 모름`);
+        const key = (x.w || '').toLowerCase() + '|' + x.pos; if (seenW.has(key)) Wn(`${w}: 같은 레벨에 같은 낱말·품사 두 번`); seenW.add(key);
+        if (x.en && x.w) { const T = Grader.tokens(x.en).join(' '); const forms = [x.w].concat(x.forms || []); const hit = forms.some(f => { const ft = Grader.tokens(f).join(' '); return (' ' + T + ' ').includes(' ' + ft + ' ') || T.split(' ').some(t => t === ft || Grader.stems(t).has(ft) || Grader.stems(ft).has(t) || t.startsWith(ft) && t.length - ft.length <= 3); }); if (!hit) F(`${w}: 예문에 낱말(또는 forms)이 없어요 — 「${x.en}」`); } } } }
+    console.log(`  단어장 레벨 ${WORD_LEVELS.length}개 · 낱말 ${total}개`); }
   console.log(`  챕터 ${CHAPTERS.length} · 레슨 ${LESSONS.length} · 문제 ${PROBLEMS.length}`);
 }
 // HTML ?v= 일치

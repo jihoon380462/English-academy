@@ -10,6 +10,7 @@ const CONFIG = {
   // 허브 카드 순서. ready=false 는 「준비 중」. space=true 는 「공간」 구역(코스 순서와 무관)
   COURSES: [
     { id: 'basic', name: '영어 다시 시작', icon: '🔤', desc: '문장 뼈대부터 시제·꾸밈말까지, 카드로 조립하며', path: 'courses/basic/', color: '#3d8bfd', ready: true },
+    { id: 'words', name: '단어장', icon: '📖', desc: '미국 나이·학년별 필수 단어 — 미취학 동화책 단어부터 고등학생 어휘까지, 예문과 함께 Anki 방식으로', path: 'courses/words/', color: '#0891b2', ready: true, space: true },
     { id: 'deck', name: '문장 덱', icon: '🃏', desc: 'Anki 방식 복습 — 듣고 뜻 떠올리기 · 뜻 보고 영어로 말하기. 레슨에서 배운 문장이 자동으로 쌓여요', path: 'courses/deck/', color: '#f5a623', ready: true, space: true },
     { id: 'talk', name: '듣기·말하기', icon: '🎧', desc: '따라 말하기·받아쓰기·상황 회화 미션', path: 'courses/talk/', color: '#2bb673', ready: true },
     { id: 'grammar', name: '문법 더 깊게', icon: '🧩', desc: '완료·수동태·관계사·가정법', path: 'courses/grammar/', color: '#9b59b6', ready: true, requires: { course: 'basic', boss: 'B4', label: '기초 코스 챕터 4까지 끝내면 열려요' } },

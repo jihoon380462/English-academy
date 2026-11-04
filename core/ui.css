@@ -153,3 +153,10 @@ code{background:var(--surface2);padding:1px 6px;border-radius:6px;font-size:.92e
 .terms-list{display:flex;flex-direction:column}.term-row{padding:10px 0;border-bottom:1px solid var(--border)}.term-row b{color:var(--primary)}
 .undo-row{display:flex;justify-content:center;margin-top:-4px;margin-bottom:8px}
 .free-need{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}.free-need .chip{white-space:normal;text-align:left}
+
+/* 단어장 */
+.levels{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}.lvcard{display:flex;gap:12px;align-items:center;color:var(--text);text-decoration:none;margin:0}.lv-icon{font-size:2.2em;width:52px;text-align:center;flex:none}
+.lv-t{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}.lv-bar{height:8px;background:var(--surface2);border-radius:6px;overflow:hidden;margin:6px 0 2px}.lv-bar div{height:100%;background:var(--good)}
+.grp-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.grp-tabs .chip{text-decoration:none;color:var(--text);white-space:normal}.grp-tabs .chip.on{background:var(--primary);color:#fff}
+.grp-h{margin:16px 0 6px}.wlist{display:flex;flex-direction:column}.wrow{padding:10px 0;border-bottom:1px solid var(--border)}.wr-top{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}.wr-w{font-size:1.15em}.wr-ko{font-weight:600}
+.wr-ex{margin:4px 0 2px}.hl{color:var(--primary)}.wc-word{font-size:2em;font-weight:800;margin:8px 0 2px;word-break:break-word}.wc-ex{font-size:1.15em;margin:10px 0 4px}.blank-w{color:var(--primary);font-weight:800;letter-spacing:1px}
