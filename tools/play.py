@@ -11,7 +11,7 @@ import sys, os, json, time, threading, http.server, socketserver, functools, tem
 from playwright.sync_api import sync_playwright
 
 ap = argparse.ArgumentParser(); ap.add_argument('--course', action='append'); ap.add_argument('--shots'); ap.add_argument('--sample', type=int, default=0)
-ap.add_argument('--font', type=int, default=1); ap.add_argument('--theme', default='dark'); ap.add_argument('--width', type=int, default=390); ap.add_argument('--json'); ap.add_argument('--extras', action='store_true', help='덱·허브·실력 확인·저장 유지 시나리오도'); ap.add_argument('--words', action='store_true', help='단어장(레벨 목록·레벨 화면·Anki 단어 공부·퀴즈) 시나리오')
+ap.add_argument('--font', type=int, default=1); ap.add_argument('--theme', default='dark'); ap.add_argument('--width', type=int, default=390); ap.add_argument('--json'); ap.add_argument('--extras', action='store_true', help='덱·허브·실력 확인·저장 유지 시나리오도'); ap.add_argument('--combo', action='store_true', help='조합 말하기(표 보고 스스로 문장) 시나리오'); ap.add_argument('--words', action='store_true', help='단어장(레벨 목록·레벨 화면·Anki 단어 공부·퀴즈) 시나리오')
 A = ap.parse_args()
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 fails = []; stats = {'problems': 0, 'by_type': {}, 'wrong_checked': 0, 'lessons': 0, 'pages': 0, 'audio_checks': 0, 'shots': 0}
@@ -284,12 +284,52 @@ def run():
             # 허브 카드
             page.goto(BASE); page.wait_for_selector('.hub-courses'); check(page.locator('.hub-courses a[href*="courses/words/"]').count() >= 1, '허브: 단어장 카드 없음'); layout('허브(단어장 포함)')
 
+        def combo():
+            page.goto(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); layout('조합 홈'); shot('combo-home')
+            ids = page.evaluate('Combo.patterns.map(p => p.id)'); check(page.locator('.combo-row').count() == len(ids) >= 15, f'조합: 문법 목록 {page.locator(".combo-row").count()}개')
+            for pid in ids:
+                nav(BASE + f'courses/combo/#p/{pid}'); page.wait_for_selector('.ctab'); page.wait_for_timeout(40)
+                if pid in ('be-adj', 'svom', 'past-q', 'there'): shot(f'combo-{pid}')
+                layout(f'조합 {pid} 표')
+                tw = page.evaluate("(() => { const w = document.querySelector('.ctab-wrap'); return w.scrollWidth - w.clientWidth; })()"); check(tw <= 2, f'조합 {pid}: 표가 옆으로 {tw}px 넘침')
+                cols = page.evaluate(f'Combo.pattern("{pid}").cols.length'); check(page.locator('.ctab th').count() == cols, f'{pid}: 열 수')
+                txt = page.inner_text('#view')
+                ex = page.evaluate(f'Combo.pattern("{pid}").ex'); check(ex not in txt, f'{pid}: 예문(정답 같은 문장) 「{ex}」 이 화면에 보임')
+                made = 0
+                for k in range(9):
+                    # 사람처럼: 표에서 칸을 고르고 → 맞는 문장 / 흔한 실수 / 같은 조합 반복 을 섞어서 씀
+                    case = page.evaluate(r"""(() => { const p = CPlay.p, t = CPlay.table; const pick = {}; for (const c of p.cols) { const a = t[c.k]; pick[c.k] = a[Math.floor(Math.random() * a.length)]; } const r = p.make(pick); const good = Combo.sentence(r);
+                      let bad = good; const V = pick.V, S = pick.S;
+                      if (V) { const forms = [V.v, Inflect.s3(V.v), Inflect.past(V), Inflect.ing(V)]; const hit = forms.find(f => new RegExp('\\b' + f + '\\b').test(good)); const alt = forms.find(f => f !== hit && !new RegExp('\\b' + f + '\\b').test(good)); if (hit && alt) bad = good.replace(new RegExp('\\b' + hit + '\\b'), alt); }
+                      if (bad === good) bad = good.replace(/\b(am|is|are|was|were)\b/, m => ({ am: 'is', is: 'are', are: 'is', was: 'were', were: 'was' })[m]);
+                      return { good, bad, key: Object.values(pick).map(x => x.w || x.v).join('|') }; })()""")
+                    if k == 2 and case['bad'] != case['good']:
+                        page.fill('#cin', case['bad']); page.keyboard.press('Enter'); page.wait_for_timeout(40)
+                        check(page.locator('#cfb .fb.fix').count() == 1, f'{pid}: 틀린 「{case["bad"]}」 인데 고칠 곳이 안 나옴 ({page.inner_text("#cfb")[:80]})')
+                        check(page.input_value('#cin') == case['bad'], f'{pid}: 틀린 뒤 입력이 지워짐')
+                        check(case['good'] not in page.inner_text('#cfb'), f'{pid}: 틀렸을 때 정답 문장을 바로 보여 줌')
+                        if pid == 'svo': layout('조합 고칠 곳'); shot('combo-fix')
+                        page.click('#cshow'); page.wait_for_timeout(30); check(case['good'] in page.inner_text('#cfb'), f'{pid}: 맞는 문장 보기 안 됨')
+                        page.fill('#cin', case['good']); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
+                        check(page.evaluate('CPlay.made.length') == made, f'{pid}: 정답 보고 쓴 조합이 개수에 들어감'); continue
+                    page.fill('#cin', case['good'].lower().rstrip('.?')); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
+                    fbt = page.inner_text('#cfb'); check(page.locator('#cfb .fb.good').count() == 1, f'{pid}: 맞는 문장 「{case["good"]}」 이 안 맞다고 함 — {fbt[:120]}')
+                    n2 = page.evaluate('CPlay.made.length'); check(n2 in (made, made + 1), f'{pid}: 개수 이상 {made}→{n2}'); made = n2
+                    if k == 4:
+                        page.fill('#cin', case['good']); page.keyboard.press('Enter'); page.wait_for_timeout(40); check('이미 만든 조합' in page.inner_text('#cfb'), f'{pid}: 같은 조합 두 번인데 안내 없음'); check(page.evaluate('CPlay.made.length') == made, f'{pid}: 같은 조합이 두 번 셈')
+                page.fill('#cin', 'hello my good world'); page.keyboard.press('Enter'); page.wait_for_timeout(30); check('표에 있는 낱말로' in page.inner_text('#cfb'), f'{pid}: 표 밖 낱말 안내 없음')
+                page.click('#shuffle'); page.wait_for_timeout(40); check(page.evaluate('CPlay.made.length') == 0, f'{pid}: 새 표인데 개수 그대로')
+            check(page.evaluate('(Store.data.stats.comboMade || 0) >= 50'), f'조합: 만든 문장 통계 {page.evaluate("Store.data.stats.comboMade")}')
+            page.reload(); page.wait_for_timeout(200); nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); check('내가 만든 문장 0개' not in page.inner_text('.hero-card'), '조합: 새로고침 뒤 기록 사라짐')
+            page.goto(BASE); page.wait_for_selector('.hub-courses'); check(page.locator('.hub-courses a[href*="courses/combo/"]').count() >= 1, '허브: 조합 말하기 카드 없음')
+
         courses = A.course or ['basic', 'talk', 'grammar', 'read', 'dev', 'pattern', 'write', 'travel', 'work', 'phrasal']
         t0 = time.time()
-        for c in ([] if A.words and not A.course else courses):
+        for c in ([] if (A.words or A.combo) and not A.course else courses):
             if os.path.exists(os.path.join(ROOT, 'courses', c, 'content.js')): play_course(c)
         if A.extras: extras()
         if A.words: words()
+        if A.combo: combo()
         check(not errs, '콘솔 오류: ' + ' | '.join(errs[:4]))
         stats['seconds'] = round(time.time() - t0)
         ctx.close(); br.close()

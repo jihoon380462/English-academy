@@ -1,7 +1,7 @@
 // core/config.js — 버전·코스 목록·수치·문구 (수정할 때 APP_VERSION 을 올리고 node tools/stamp.mjs)
 // 저장 키는 eng.* / 캐시는 english-shell-* — 같은 출처의 파이썬 아카데미(academy.*, academy-shell-*)와 절대 겹치면 안 된다 (SPEC 6절)
 const CONFIG = {
-  APP_VERSION: '0.4.0',
+  APP_VERSION: '0.5.0',
   SCHEMA_VERSION: 1,
   KEY_PREFIX: 'eng.',
   HUB_PATH: '../../index.html',
@@ -10,6 +10,7 @@ const CONFIG = {
   // 허브 카드 순서. ready=false 는 「준비 중」. space=true 는 「공간」 구역(코스 순서와 무관)
   COURSES: [
     { id: 'basic', name: '영어 다시 시작', icon: '🔤', desc: '문장 뼈대부터 시제·꾸밈말까지, 카드로 조립하며', path: 'courses/basic/', color: '#3d8bfd', ready: true },
+    { id: 'combo', name: '조합 말하기', icon: '🧩', desc: '문법 하나 + 원형 낱말 표 — 칸을 골라 스스로 문장을 만들어요. 정답은 안 보여 줘요', path: 'courses/combo/', color: '#7c3aed', ready: true, space: true },
     { id: 'words', name: '단어장', icon: '📖', desc: '미국 나이·학년별 필수 단어 — 미취학 동화책 단어부터 고등학생 어휘까지, 예문과 함께 Anki 방식으로', path: 'courses/words/', color: '#0891b2', ready: true, space: true },
     { id: 'deck', name: '문장 덱', icon: '🃏', desc: 'Anki 방식 복습 — 듣고 뜻 떠올리기 · 뜻 보고 영어로 말하기. 레슨에서 배운 문장이 자동으로 쌓여요', path: 'courses/deck/', color: '#f5a623', ready: true, space: true },
     { id: 'talk', name: '듣기·말하기', icon: '🎧', desc: '따라 말하기·받아쓰기·상황 회화 미션', path: 'courses/talk/', color: '#2bb673', ready: true },
@@ -45,6 +46,7 @@ const CONFIG = {
   COMBO_MULT: [[10, 1.5], [5, 1.3], [3, 1.15]],
   REVIEW_XP: 5,
   CARD_XP: 2,
+  COMBO_XP: 6, // 🧩 조합 말하기: 스스로 만든 문장 1개
   MAX_LEVEL: 60,
   xpForLevel: (L) => 60 + L * 25,
   TITLES: ['첫걸음', '알파벳 탐험가', '문장 조립공', '단어 수집가', '대화 견습생', '여행 회화러', '문장 장인', '영어 모험가', '자신감 스피커', '영어 달인', '마스터', '전설'],
