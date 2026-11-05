@@ -22,7 +22,7 @@ jobs:
       - name: validate_content
         run: node tools/validate_content.mjs
       - name: check_answers
-        run: node tools/check_answers.mjs
+        run: node tools/check_answers.mjs && node tools/check_combo.mjs
   deploy:
     needs: verify
     runs-on: ubuntu-latest

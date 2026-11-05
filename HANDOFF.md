@@ -7,8 +7,8 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| **현재 버전** | v0.4.0 (2026-11-04) |
-| **마지막 작업** | (Opus) **v0.4.0 📖 단어장** — 미국 나이·학년별 필수 단어 7레벨 1,204단어(미취학 그림책 단어 ~ 고등학생 어휘, Dolch 뼈대), 단어마다 예문, Anki 단어 카드(뜻·철자), 레벨 퀴즈. QA: 레벨별 독립 검수 + 검사기 단어장 검사 + `play.py --words`. 그 전(v0.3.0): 새 코스 5개·덱 803문장·자유 쓰기 등. 전체 12개 코스·공간. 자세히는 CHANGELOG. |
+| **현재 버전** | v0.5.0 (2026-11-06) |
+| **마지막 작업** | (Opus) **v0.5.0 🧩 조합 말하기** — 문법 표(원형 낱말) + 문법 설명만 보고 스스로 문장 쓰기, 17문법, 칸 알아보기 채점(`core/combo.js`, 검사 `tools/check_combo.mjs`, 봇 `play.py --combo`). 방향: `specs/create-first.md`. 그 전 **v0.4.0 📖 단어장** — 미국 나이·학년별 필수 단어 7레벨 1,204단어(미취학 그림책 단어 ~ 고등학생 어휘, Dolch 뼈대), 단어마다 예문, Anki 단어 카드(뜻·철자), 레벨 퀴즈. QA: 레벨별 독립 검수 + 검사기 단어장 검사 + `play.py --words`. 그 전(v0.3.0): 새 코스 5개·덱 803문장·자유 쓰기 등. 전체 12개 코스·공간. 자세히는 CHANGELOG. |
 | **다음 후보** | ① **사용자 답변 대기: `QUESTIONS.md` 14개**(발음 기준·교재식 vs 구어·번역 말투 등 — 지금은 추천 기본값) ② 실기기 음성(크롬 안드로이드·아이폰 사파리) 확인 ③ 그림(IMAGES.md) ④ 콘텐츠 2회차 QA(플레이 봇 결과·사용자 피드백 기반) ⑤ 다른 코스에도 자유 쓰기 늘리기 ⑥ 단어장: 레벨 단어로 문장 덱 만들기·단어 그림 |
 
 ## 1. 이게 뭔가
@@ -21,9 +21,9 @@
 2. 권한: 영어 아카데미는 **Opus 가 전부**(설계·core·콘텐츠·배포) — `specs/workflow.md` 1절.
 3. 배포하는 커밋에는 이 파일 0절 상태판 + `CHANGELOG.md` 새 항목을 같은 커밋에.
 4. 버전은 `core/config.js` 의 `APP_VERSION`(허브·설정 맨 아래 표시)로 사용자가 반영 여부를 확인해요. 올린 뒤 `node tools/stamp.mjs`. 배포 후 "vX.Y.Z 배포 완료, Ctrl+F5" 안내.
-5. 파일 지도: `core/config.js`(버전·코스 목록·성분 색·수치) · `util.js` · `grader.js`(채점, Node 겸용) · `content.js`(인덱스) · `storage.js`(eng.*) · `anki.js`(스케줄러) · `game.js`(XP·뱃지·Cards·Review) · `fx.js`(효과음·색종이·부엉이 마스코트) · `speech.js` · `ui.js`(라우터·모달·🔊) · `cards.js`(문제 유형 10종 화면) · `views.js`(지도·레슨·문제·복습·뱃지·설정) · `deck.js`(문장 수집·대기열) · `deck-views.js`(덱 페이지 전용) · `words-views.js`(단어장 페이지 전용: 레벨·Anki 단어 카드·퀴즈) · `hub.js` · `boot.js` · `ui.css`. 공유 데이터 `shared/`(contractions·mistakes·badges). 코스 `courses/<id>/{index.html,content.js}` — **스키마는 `courses/basic/content.js` 맨 위 주석**, 덱은 `courses/deck/content.js` 주석, 단어장은 `courses/words/content.js` 주석 + `specs/words-brief.md`.
+5. 파일 지도: `core/config.js`(버전·코스 목록·성분 색·수치) · `util.js` · `grader.js`(채점, Node 겸용) · `content.js`(인덱스) · `storage.js`(eng.*) · `anki.js`(스케줄러) · `game.js`(XP·뱃지·Cards·Review) · `fx.js`(효과음·색종이·부엉이 마스코트) · `speech.js` · `ui.js`(라우터·모달·🔊) · `cards.js`(문제 유형 10종 화면) · `views.js`(지도·레슨·문제·복습·뱃지·설정) · `deck.js`(문장 수집·대기열) · `deck-views.js`(덱 페이지 전용) · `words-views.js`(단어장 페이지 전용: 레벨·Anki 단어 카드·퀴즈) · `combo.js`(조합 말하기 엔진: 문법 패턴·활용·칸 알아보기·채점, DOM 없음) · `combo-views.js`(조합 말하기 페이지) · `hub.js` · `boot.js` · `ui.css`. 공유 데이터 `shared/`(contractions·mistakes·badges). 코스 `courses/<id>/{index.html,content.js}` — **스키마는 `courses/basic/content.js` 맨 위 주석**, 덱은 `courses/deck/content.js` 주석, 단어장은 `courses/words/content.js` 주석 + `specs/words-brief.md`.
 6. 검증: `node tools/stamp.mjs && node tools/validate_content.mjs && node tools/check_answers.mjs && python3 tools/regress.py` (regress = 헤드리스 크롬, 정답 보기로 전 문제 통과, `--shots 폴더` 로 스크린샷).
-7. **직접 플레이 QA**: `python3 tools/play.py [--course id] [--extras] [--shots 폴더] [--font 3] [--theme light] [--width 390] [--words]` — 사람처럼 카드 클릭·입력·보기 선택으로 풀고, 일부러 틀려 보고, 🔊·🐢·낱말 소리, 가로 넘침·고정 바 가림, Anki 공부·되돌리기·그만 보기, 타임어택, 허브, 실력 확인, 새로고침 저장까지 확인. `--words` = 단어장(7레벨 화면·퀴즈·철자 카드·되돌리기·그만 보기). **배포 전에 반드시**(사용자 선호: QA 먼저, 다방면으로).
+7. **직접 플레이 QA**: `python3 tools/play.py [--course id] [--extras] [--shots 폴더] [--font 3] [--theme light] [--width 390] [--words]` — 사람처럼 카드 클릭·입력·보기 선택으로 풀고, 일부러 틀려 보고, 🔊·🐢·낱말 소리, 가로 넘침·고정 바 가림, Anki 공부·되돌리기·그만 보기, 타임어택, 허브, 실력 확인, 새로고침 저장까지 확인. `--words` = 단어장(7레벨 화면·퀴즈·철자 카드·되돌리기·그만 보기). `--combo` = 조합 말하기(17문법 표·채점 흐름). **배포 전에 반드시**(사용자 선호: QA 먼저, 다방면으로).
 8. 콘텐츠를 에이전트에게 맡길 때: `specs/agent-brief.md`(공통 안내·함정) + `specs/content-guide.md`(품질) + 검수는 `specs/qa-checklist.md`. 검수 기록은 `qa/<코스>.md`(질문 절 포함). `core/meta.js` 는 stamp 가 만드는 파일(허브의 코스별 문제 수·오늘의 문장).
 
 ## 3. 주의 — 파이썬 아카데미와 같은 출처
