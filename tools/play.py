@@ -320,7 +320,16 @@ def run():
                 page.fill('#cin', 'hello my good world'); page.keyboard.press('Enter'); page.wait_for_timeout(30); check('표에 있는 낱말로' in page.inner_text('#cfb'), f'{pid}: 표 밖 낱말 안내 없음')
                 page.click('#shuffle'); page.wait_for_timeout(40); check(page.evaluate('CPlay.made.length') == 0, f'{pid}: 새 표인데 개수 그대로')
             check(page.evaluate('(Store.data.stats.comboMade || 0) >= 50'), f'조합: 만든 문장 통계 {page.evaluate("Store.data.stats.comboMade")}')
-            page.reload(); page.wait_for_timeout(200); nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); check('내가 만든 문장 0개' not in page.inner_text('.hero-card'), '조합: 새로고침 뒤 기록 사라짐')
+            page.reload(); page.wait_for_timeout(200); nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home')
+            home = page.inner_text('#view'); check('내가 만든 문장' not in home and '만든 문장' not in home, '조합 홈: 「만든 문장」 개수가 아직 보임')
+            check(page.locator('.combo-row').filter(has_text='마지막 학습 오늘').count() == len(ids), f'조합 홈: 마지막 학습 날짜 {page.locator(".combo-row").filter(has_text="마지막 학습 오늘").count()}/{len(ids)}')
+            check(page.locator('.combo-row.latest').count() == 1 and ids[-1] in page.get_attribute('.combo-row.latest', 'href'), '조합 홈: 마지막으로 한 문법 표시(📍) 이상')
+            check(ids[-1] in (page.get_attribute('.hero-card a.btn', 'href') or ''), '조합 홈: 이어서 하기 버튼이 마지막 문법으로 안 감')
+            page.evaluate("(() => { const d = new Date(Date.now() - 3 * 86400000); const r = Store.data.combo['be-adj']; r.last = todayKey(d); r.lastAt = d.getTime(); Store.save(); })()"); nav(BASE + 'courses/combo/#p/sv'); nav(BASE + 'courses/combo/')
+            page.wait_for_selector('.combo-home'); check('3일 전' in page.locator('.combo-row[href="#p/be-adj"]').inner_text(), '조합 홈: 3일 전 날짜 표시 안 됨')
+            nav(BASE + 'courses/combo/#p/be-adj'); page.wait_for_selector('.combo-last'); check('3일 전' in page.inner_text('.combo-last'), '조합 표: 들어가면 마지막 학습 날짜 안 보임'); layout('조합 표(마지막 학습)')
+            page.evaluate("delete Store.data.combo['there']; Store.save()"); nav(BASE + 'courses/combo/#p/there'); page.wait_for_selector('.combo-last'); check('처음' in page.inner_text('.combo-last'), '조합 표: 처음 문법 안내 없음')
+            nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); check('아직 안 함' in page.locator('.combo-row[href="#p/there"]').inner_text(), '조합 홈: 안 한 문법 표시'); layout('조합 홈(날짜)'); shot('combo-home-dates')
             page.goto(BASE); page.wait_for_selector('.hub-courses'); check(page.locator('.hub-courses a[href*="courses/combo/"]').count() >= 1, '허브: 조합 말하기 카드 없음')
 
         courses = A.course or ['basic', 'talk', 'grammar', 'read', 'dev', 'pattern', 'write', 'travel', 'work', 'phrasal']

@@ -8,15 +8,20 @@ const CV = {
   rec(id) { const s = this.st(); s[id] = s[id] || { made: 0, best: 0 }; return s[id]; },
   groups() { const g = []; for (const p of Combo.patterns) { let x = g.find(y => y.name === p.group); if (!x) g.push(x = { name: p.group, list: [] }); x.list.push(p); } return g; },
   hint(n) { return n.replace(/ → <b>[^<]*<\/b>/, ' → <b>?</b>').replace(/ 그대로 /, ' → <b>?</b> ').replace(/원형 <b>[^<]*<\/b>/, '<b>원형</b>'); },
+  // 마지막 학습 날짜(사용자 요청 11/6: 어디까지 했는지 보이게). rec.last = 'YYYY-MM-DD', rec.lastAt = 시각
+  when(key) { if (!key) return ''; const n = daysBetween(key, todayKey()); const [, m, d] = key.split('-').map(Number); return `${n <= 0 ? '오늘' : n === 1 ? '어제' : n + '일 전'} (${m}월 ${d}일)`; },
+  latest() { let best = null; for (const p of Combo.patterns) { const r = this.st()[p.id]; if (r && r.lastAt && (!best || r.lastAt > best.r.lastAt)) best = { p, r }; } return best; },
+  touch(id) { const r = this.rec(id); r.last = todayKey(); r.lastAt = Date.now(); },
   formula(p) { return p.cols.map(c => `<span class="cf r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</span>`).join('<span class="cf-plus">+</span>'); },
 };
 
 Views.home = () => {
-  const s = Store.data.settings; const total = Combo.patterns.reduce((a, p) => a + CV.rec(p.id).made, 0);
+  const s = Store.data.settings; const L = CV.latest();
   $('#view').innerHTML = `<div class="page combo-home">
-    <div class="card hero-card"><div class="hc-row"><div>${myMascot({ size: 60, mood: 'happy' })}</div><div class="grow"><div class="muted small">🧩 조합 말하기 · 표를 보고 스스로 문장 만들기</div><div class="hero-title">내가 만든 문장 ${total}개</div></div></div>
+    <div class="card hero-card"><div class="hc-row"><div>${myMascot({ size: 60, mood: 'happy' })}</div><div class="grow"><div class="muted small">🧩 조합 말하기 · 표를 보고 스스로 문장 만들기</div><div class="hero-title">${L ? '마지막으로 한 문법' : '처음이에요'}</div>${L ? `<div class="combo-f">${CV.formula(L.p)}</div><div class="small muted">${CV.when(L.r.last)}</div>` : ''}</div></div>
+      ${L ? `<a class="btn primary wide" href="#p/${L.p.id}">▶ 이어서 하기</a>` : ''}
       <p class="small muted">문법을 고르면 그 문법의 칸만 있는 단어 표가 나와요. 낱말은 <b>원형</b>으로만 있어요 — 문법에 맞게 바꿔서(like → likes) <b>스스로</b> 문장을 만들어 쓰세요. 정답은 보여 주지 않아요.</p></div>
-    ${CV.groups().map(g => `<div class="card"><div class="card-h">${esc(g.name)}</div><div class="combo-list">${g.list.map(p => { const r = CV.rec(p.id); return `<a class="combo-row" href="#p/${p.id}"><div class="combo-f">${CV.formula(p)}</div><div class="small muted">${r.made ? `만든 문장 ${r.made}개` : '아직 안 함'}</div></a>`; }).join('')}</div></div>`).join('')}
+    ${CV.groups().map(g => `<div class="card"><div class="card-h">${esc(g.name)}</div><div class="combo-list">${g.list.map(p => { const r = CV.st()[p.id] || {}; const isL = L && L.p.id === p.id; return `<a class="combo-row${isL ? ' latest' : ''}" href="#p/${p.id}"><div class="combo-f">${CV.formula(p)}</div><div class="small ${r.last ? '' : 'muted'}">${r.last ? `${isL ? '📍 ' : ''}마지막 학습 ${CV.when(r.last)}` : '아직 안 함'}</div></a>`; }).join('')}</div></div>`).join('')}
     <div class="card"><div class="card-h">⚙ 설정</div>
       <div class="set-row"><span>표에 뜻 보이기</span><div class="seg" id="cko">${[[true, '보이기'], [false, '숨기기']].map(([v, t]) => `<button class="${(s.comboKo ?? true) === v ? 'on' : ''}" data-v="${v}">${t}</button>`).join('')}</div></div>
       <div class="set-row"><span>표 줄 수</span><div class="seg" id="crows">${[4, 6, 8].map(n => `<button class="${(s.comboRows ?? 6) === n ? 'on' : ''}" data-v="${n}">${n}</button>`).join('')}</div></div>
@@ -29,7 +34,7 @@ Views.home = () => {
 const CPlay = {
   start(id) {
     const p = Combo.pattern(id); if (!p) { UI.go(''); return; }
-    this.p = p; this.made = []; this.last = null; this.newTable(); this.render();
+    this.p = p; this.prevDay = (CV.st()[id] || {}).last || null; this.made = []; this.last = null; this.newTable(); this.render();
   },
   newTable() { this.table = Combo.table(this.p, COMBO_LEX, Store.data.settings.comboRows ?? 6); this.made = []; this.last = null; },
   cell(c, x) { const w = x.w || x.v; const ko = Store.data.settings.comboKo ?? true; return `<button class="cc${x.fixed ? ' fixed' : ''}" data-ko="${esc(x.ko || '')}"><span class="cc-w">${esc(w)}</span>${x.ko && ko ? `<span class="cc-ko">${esc(x.ko)}</span>` : ''}</button>`; },
@@ -39,6 +44,7 @@ const CPlay = {
     const n = this.made.length;
     $('#view').innerHTML = `<div class="page combo-play">
       <div class="combo-top"><a class="btn xs" href="#">← 문법 목록</a><span class="combo-count">이 표로 만든 문장 <b>${n}</b> / ${COMBO_GOAL}</span></div>
+      <div class="small muted combo-last">${this.prevDay ? `마지막 학습 ${CV.when(this.prevDay)}` : '이 문법은 처음이에요'}</div>
       <div class="card"><div class="combo-f big">${CV.formula(p)}</div>
         <div class="ctab-wrap"><table class="ctab${p.cols.length >= 5 ? ' wide' : ''}"><colgroup>${p.cols.map(c => `<col${c.fixed ? ' class="fixed-col"' : ''}>`).join('')}</colgroup><thead><tr>${p.cols.map(c => `<th class="r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${body.join('')}</tbody></table></div>
         <div class="combo-tools"><button class="btn sm" id="shuffle">🔀 새 표</button></div></div>
@@ -65,11 +71,11 @@ const CPlay = {
     const diff = r.diff ? `<div class="diffline">${r.diff.got.map(w => `<span class="${w.ok ? 'w-ok' : 'w-bad'}">${esc(w.w)}</span>`).join(' ')}</div>${r.reveal && r.diff.missing.length ? `<div class="small">빠졌거나 모양이 다른 낱말: ${r.diff.missing.map(w => `<b>${esc(w)}</b>`).join(', ')}</div>` : ''}` : '';
     const hints = `<ul class="combo-notes">${r.notes.map(n => `<li>${r.reveal ? n : CV.hint(n)}</li>`).join('')}</ul>`;
     return `<div class="fb fix"><b>✏️ 고칠 곳이 있어요</b>${diff}${hints}${(r.explain || []).map(e => `<div class="small">💡 ${e}</div>`).join('')}
-      ${r.reveal ? `<div class="combo-sent">${esc(r.expect)}</div><div class="small muted">보고 따라 쓰면 안 세요 — 다른 조합으로 하나 더 만들어 봐요.</div>` : `<div class="small muted">같은 칸으로 다시 써서 맞히면 「만든 문장」에 들어가요. <button class="btn xs" id="cshow">맞는 문장 보기</button></div>`}</div>`;
+      ${r.reveal ? `<div class="combo-sent">${esc(r.expect)}</div><div class="small muted">보고 따라 쓰면 안 세요 — 다른 조합으로 하나 더 만들어 봐요.</div>` : `<div class="small muted">같은 칸으로 다시 써서 맞히면 이 표 개수에 들어가요. <button class="btn xs" id="cshow">맞는 문장 보기</button></div>`}</div>`;
   },
   check() {
     const v = $('#cin').value.trim(); if (!v) return;
-    const prev = this.last; const r = Combo.judge(this.p, this.table, v); this.last = r; this.scrollFb = true;
+    const prev = this.last; const r = Combo.judge(this.p, this.table, v); this.last = r; this.scrollFb = true; if (!r.empty) CV.touch(this.p.id);
     if (r.ok) {
       const seen = this.made.some(m => Combo.judge(this.p, this.table, m).key === r.key);
       const peeked = prev && prev.reveal && prev.key === r.key; // 정답을 보고 같은 조합을 쓴 건 안 셈
