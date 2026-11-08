@@ -125,6 +125,10 @@ const Combo = {
     if (c.notN) pool = pool.filter(x => !c.notN.includes(x.n));
     if (c.noStative) pool = pool.filter(x => !STATIVE.includes(x.v));
     if (c.pp) pool = pool.filter(x => !x.noPP);
+    if (c.not) pool = pool.filter(x => !c.not.includes(x.w)); // 낱말 빼기(everyone 등)
+    if (c.verbs) pool = pool.filter(x => c.verbs.includes(x.v)); // 이 동사들만
+    if (c.notV) pool = pool.filter(x => !c.notV.includes(x.v)); // 이 동사들 빼기
+    if (c.noPoss) pool = pool.filter(x => !/^my /.test(x.w)); // my … 빼기(관계절 앞 특정한 말)
     return pool;
   },
   // 표 만들기: 열마다 따로 섞어 rows 줄. 동사 열(V)이 있으면 목적어 열(O)에 그 동사와 어울리는 목적어를 하나씩 넣음 (V2·O2 도 같은 방식)
@@ -148,9 +152,10 @@ const Combo = {
     return t;
   },
   // 낱말 하나가 쓸 수 있는 모양들 (칸 알아보기용)
-  forms(c, x) { if (c.from === 'adjEmo') return [x.ed, x.ing]; if (VERB_LISTS.includes(c.from)) return [x.v, Inflect.s3(x.v), Inflect.past(x), Inflect.ing(x), Inflect.pp(x)]; return [x.w]; },
+  forms(c, x) { if (c.from === 'adjEmo') return [x.ed, x.ing]; if (VERB_LISTS.includes(c.from)) return [x.v, Inflect.s3(x.v), Inflect.past(x), Inflect.ing(x), Inflect.pp(x)].concat(x.alt ? [x.alt] : []); return [x.w]; },
   // 학습자 문장 → { pick: 열별 칸, missing: [못 찾은 열], expect, ok, diff, notes }
   judge(p, table, input) {
+    if (p.norm) input = p.norm(input); // 절 순서를 바꿔 쓴 문장을 기본 순서로(if 문장)
     const T = Grader.tokens(input); if (!T.length) return { empty: true };
     const STOP = new Set(['a', 'an', 'the', 'my', 'your', 'our', 'his', 'her', 'their', 'to', 'in', 'on', 'at', 'of', 'some', 'and', 'a lot']);
     const wt = (t) => (STOP.has(t) ? 0.3 : 1);
@@ -190,7 +195,8 @@ const Combo = {
     // 동사·be·do 의 다른 모양은 오타로 봐주지 않음 (drank ↔ drink, sent ↔ send)
     const avoid = ['am is are was were be been being do does did has have had'];
     for (const c of p.cols) if (VERB_LISTS.includes(c.from) && pick[c.k]) avoid.push(this.forms(c, pick[c.k]).join(' '));
-    const answers = [expect].concat((r.alts || []).map(a => this.sentence({ parts: a, q: r.q }))); // 다른 맞는 문장(that 생략·who/that …)
+    let answers = [expect].concat((r.alts || []).map(a => this.sentence({ parts: a, q: r.q }))); // 다른 맞는 문장(that 생략·who/that …)
+    for (const c of p.cols) { const x = pick[c.k]; if (x && x.alt && VERB_LISTS.includes(c.from)) { const re = new RegExp('\\b' + Inflect.past(x) + '\\b', 'g'); answers = answers.concat(answers.map(a => a.replace(re, x.alt))); } } // 영국식 철자(travelled · learnt)
     const g = Grader.text(input, answers, { avoid: avoid.join(' ') });
     return { pick, expect, ok: g.ok, typo: g.typo, diff: g.diff, notes: r.notes, explain: g.ok ? [] : Grader.explain(input) };
   },

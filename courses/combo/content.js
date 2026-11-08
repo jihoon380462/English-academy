@@ -109,16 +109,28 @@ const COMBO_LEX = {
     { w: 'but I changed my mind', ko: '그런데 마음을 바꿨어요' }, { w: 'but I was too tired', ko: '그런데 너무 피곤했어요' }, { w: 'but my phone died', ko: '그런데 폰이 꺼졌어요' }, { w: 'but I got busy', ko: '그런데 바빠졌어요' }];
 })();
 
+// ── v0.8.0 낱말 정리 (독립 검수 반영: 어색한 동사-목적어 짝 · 과거형 · 영국식 철자) ──
+(function () {
+  const L = COMBO_LEX; const V = (v) => L.vt.find(x => x.v === v);
+  const cat = (w, c) => { L.obj.find(o => o.w === w).cat = c; };
+  cat('my homework', 'homework'); cat('the news', 'news'); cat('my room', 'room'); cat('the bathroom', 'room'); cat('an apple', 'snack'); cat('a sandwich', 'snack');
+  V('study').obj = ['study']; V('learn').obj = ['study', 'music', 'sport']; V('finish').obj = ['homework', 'book', 'food', 'snack']; V('check').obj = ['message', 'homework']; V('forget').obj = ['thing', 'homework'];
+  V('wash').obj = ['house']; V('clean').obj = ['house', 'room']; V('watch').obj = ['media', 'sport', 'news']; V('read').obj = ['book', 'message', 'news'];
+  V('see').obj = ['people', 'media']; V('cook').obj = ['food']; V('order').obj = ['food', 'drink'];
+  for (const v of L.vt) if (v.obj.includes('food') && !['cook', 'order'].includes(v.v)) v.obj.push('snack'); // 사과·샌드위치는 먹고 사고 만드는 것(요리·주문은 아님)
+  L.vt.find(x => x.v === 'learn').alt = 'learnt'; L.vi.find(x => x.v === 'travel').alt = 'travelled'; // 영국식 철자도 정답
+})();
+
 // ── v0.8.0 추가 낱말 (문법 더 깊게: 현재완료·수동태·관계사·가정법·to부정사·동명사·분사) ──
 (function () {
   const L = COMBO_LEX;
   L.tDur = [{ w: 'for two years', ko: '2년 동안' }, { w: 'for a long time', ko: '오랫동안' }, { w: 'for three hours', ko: '세 시간 동안' }, { w: 'for a week', ko: '일주일 동안' },
     { w: 'since Monday', ko: '월요일부터' }, { w: 'since 2020', ko: '2020년부터' }, { w: 'since last year', ko: '작년부터' }, { w: 'since this morning', ko: '오늘 아침부터' }];
   // 때를 나타내는 말: t = 'pf'(지금까지 · 현재완료) | 'past'(끝난 때 · 과거)
-  L.tMix = [{ w: 'so far', ko: '지금까지', t: 'pf' }, { w: 'many times', ko: '여러 번', t: 'pf' }, { w: 'before', ko: '전에(경험)', t: 'pf' }, { w: 'yesterday', ko: '어제', t: 'past' }, { w: 'last night', ko: '어젯밤', t: 'past' },
+  L.tMix = [{ w: 'so far', ko: '지금까지', t: 'pf' }, { w: 'up to now', ko: '지금까지', t: 'pf' }, { w: 'since Monday', ko: '월요일부터', t: 'pf' }, { w: 'for two years', ko: '2년 동안', t: 'pf' }, { w: 'yesterday', ko: '어제', t: 'past' }, { w: 'last night', ko: '어젯밤', t: 'past' },
     { w: 'two days ago', ko: '이틀 전', t: 'past' }, { w: 'last week', ko: '지난주', t: 'past' }, { w: 'in 2019', ko: '2019년에', t: 'past' }];
-  L.person = [{ w: 'a man', ko: '한 남자', n: 'sg' }, { w: 'a woman', ko: '한 여자', n: 'sg' }, { w: 'a girl', ko: '한 소녀', n: 'sg' }, { w: 'a boy', ko: '한 소년', n: 'sg' }, { w: 'my friend', ko: '내 친구', n: 'sg' }, { w: 'a neighbor', ko: '이웃 한 명', n: 'sg' },
-    { w: 'a doctor', ko: '의사 한 분', n: 'sg' }, { w: 'a student', ko: '학생 한 명', n: 'sg' }, { w: 'my friends', ko: '내 친구들', n: 'pl' }, { w: 'two girls', ko: '소녀 두 명', n: 'pl' }, { w: 'some students', ko: '몇몇 학생', n: 'pl' }, { w: 'many people', ko: '많은 사람들', n: 'pl' }];
+  L.person = [{ w: 'a man', ko: '한 남자', n: 'sg' }, { w: 'a woman', ko: '한 여자', n: 'sg' }, { w: 'a girl', ko: '한 소녀', n: 'sg' }, { w: 'a boy', ko: '한 소년', n: 'sg' }, { w: 'a teacher', ko: '선생님 한 분', n: 'sg' }, { w: 'a neighbor', ko: '이웃 한 명', n: 'sg' },
+    { w: 'a doctor', ko: '의사 한 분', n: 'sg' }, { w: 'a student', ko: '학생 한 명', n: 'sg' }, { w: 'some teachers', ko: '몇몇 선생님', n: 'pl' }, { w: 'two girls', ko: '소녀 두 명', n: 'pl' }, { w: 'some students', ko: '몇몇 학생', n: 'pl' }, { w: 'many people', ko: '많은 사람들', n: 'pl' }];
   L.placeN = [{ w: 'the park', ko: '공원' }, { w: 'the cafe', ko: '카페' }, { w: 'the library', ko: '도서관' }, { w: 'the restaurant', ko: '식당' }, { w: 'the beach', ko: '해변' }, { w: 'the school', ko: '학교' }, { w: 'the gym', ko: '체육관' }, { w: 'the house', ko: '그 집' }];
   L.dayN = [{ w: 'the day', ko: '그날' }, { w: 'the night', ko: '그날 밤' }, { w: 'the morning', ko: '그날 아침' }, { w: 'the summer', ko: '그 여름' }, { w: 'the year', ko: '그해' }, { w: 'the weekend', ko: '그 주말' }];
   L.resFut = [{ w: 'I will be happy', ko: '나는 기쁠 거예요' }, { w: 'we will stay home', ko: '우리는 집에 있을 거예요' }, { w: 'I will text you', ko: '내가 문자할게요' }, { w: 'you will feel better', ko: '기분이 나아질 거예요' },
@@ -126,8 +138,8 @@ const COMBO_LEX = {
   L.resWould = [{ w: 'I would be happy', ko: '나는 기쁠 텐데요' }, { w: 'I would travel the world', ko: '세계를 여행할 텐데요' }, { w: 'we would go to the beach', ko: '우리는 해변에 갈 텐데요' }, { w: 'I would sleep all day', ko: '하루 종일 잘 텐데요' },
     { w: 'she would be surprised', ko: '그녀는 놀랄 텐데요' }, { w: 'they would join us', ko: '그들이 우리와 함께할 텐데요' }, { w: 'I would text you', ko: '내가 문자할 텐데요' }, { w: 'my mom would be proud', ko: '엄마가 자랑스러워할 텐데요' }];
   // 「to + 동사원형」을 쓰는 동사 / 「동사-ing」를 쓰는 동사
-  L.vTo = [{ v: 'want', ko: '원하다' }, { v: 'need', ko: '필요하다' }, { v: 'decide', ko: '결정하다' }, { v: 'plan', ko: '계획하다', ing: 'planning' }, { v: 'hope', ko: '바라다' }, { v: 'learn', ko: '배우다' }, { v: 'try', ko: '노력하다' }, { v: 'promise', ko: '약속하다' }];
-  L.vIng = [{ v: 'enjoy', ko: '즐기다' }, { v: 'finish', ko: '끝내다' }, { v: 'practice', ko: '연습하다' }, { v: 'avoid', ko: '피하다' }, { v: 'keep', ko: '계속하다' }, { v: 'suggest', ko: '제안하다' }];
+  L.vTo = [{ v: 'want', ko: '원하다' }, { v: 'need', ko: '필요하다' }, { v: 'decide', ko: '결정하다' }, { v: 'plan', ko: '계획하다', past: 'planned', ing: 'planning' }, { v: 'hope', ko: '바라다' }, { v: 'learn', ko: '배우다', alt: 'learnt' }, { v: 'try', ko: '노력하다' }, { v: 'promise', ko: '약속하다' }];
+  L.vIng = [{ v: 'enjoy', ko: '즐기다' }, { v: 'finish', ko: '끝내다' }, { v: 'practice', ko: '연습하다' }, { v: 'avoid', ko: '피하다' }, { v: 'keep', ko: '계속하다', past: 'kept' }, { v: 'suggest', ko: '제안하다' }];
   // -ed / -ing 형용사: 원형(w)을 보고 주어에 맞게 고름
   L.adjEmo = [{ w: 'bore', ko: '지루하게 하다', ed: 'bored', ing: 'boring' }, { w: 'excite', ko: '신나게 하다', ed: 'excited', ing: 'exciting' }, { w: 'interest', ko: '흥미를 끌다', ed: 'interested', ing: 'interesting' },
     { w: 'surprise', ko: '놀라게 하다', ed: 'surprised', ing: 'surprising' }, { w: 'confuse', ko: '헷갈리게 하다', ed: 'confused', ing: 'confusing' }, { w: 'tire', ko: '피곤하게 하다', ed: 'tired', ing: 'tiring' },

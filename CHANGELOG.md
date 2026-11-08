@@ -4,6 +4,14 @@
 
 ## 미배포 (다음 릴리스에 들어갈 것 — 팀 PR 은 여기에 항목만 추가, 버전 머리글은 릴리스 때)
 
+## v0.7.0 — 2026-11-08 (Opus: 조합 말하기 — 핵심 패턴·문법 표 53개)
+- 사용자 결정: 「조합 말하기를 주력으로」 + 「코스 안에 있는 것들을 조합 말하기 형태로」 → **🔁 핵심 패턴 회화(K1~K20)와 📘 문법 더 깊게(G1~G23)를 조합 말하기 표로 옮김.** 기존 코스는 그대로(진행·Anki 그대로), 표만 추가. 조합 말하기 홈에 **탭 3개**: 🧩 기본 문장(17) · 🔁 핵심 패턴 · 📘 문법.
+- 🔁 **핵심 패턴 21표**(묶음: 원하다·필요하다·부탁하다 / 계획·예정 / 경험·습관 / 제안·의견): want to · need to · Do you want to…? · I'd like(+to) · Can I get / Can I… · planning to · thinking about -ing · about to · was/were going to…, but … · Have you ever…? · have never · used to · be used to -ing · usually…, but today… · Why don't we · How about -ing · Do you mind if I · I think we should · It's worth -ing (+ 기본 탭의 be going to 도 여기에 보임).
+- 📘 **문법 33표**(현재완료 / 수동태 / 관계사·명사절 / 가정·조동사 / to부정사·동명사·분사): have been -ing + for/since · just/already · haven't…yet · 현재완료 vs 과거(때 말을 보고 시제를 스스로 고름) · 수동태(현재·by·과거·미래) · have/get + 목적어 + p.p. · who/which/where/when · What…is · I think (that) · 간접 의문문 · if 현재/과거 · I wish(+could) · should have p.p. · might/must be · to부정사 · 동명사 · stop/remember/try 의 to / -ing(6표) · -ed/-ing 형용사(사람/사물을 보고 고름) · see + 사람 + -ing. (Have you ever · have never · used to 는 📘에도 보임)
+- 엔진: 과거분사(p.p.) 활용(불규칙 표) · 목적어 수(is/are) · 다른 맞는 정답(`alts`: that 생략·who/that·which 생략·please·관사·already 문장 끝·are·원형) · 고정 낱말 여러 칸 중 고르기(should have/shouldn't have · just/already · had/got · might/must) · 표에 안 보이는 고정 낱말(`hide`) · 동사 두 개(`V2/O2`) · if 문장 절 순서 바꿔 써도 OK(`norm`) · 영국식 철자(travelled · learnt) · 상태 동사는 진행·p.p.·허락 표에서 제외. 새 패턴은 `core/combo-patterns.js`.
+- 독립 검수 반영(영어 검수 에이전트 1회, 54개 패턴 전수): have/get + p.p. 에서 want·need 등 제외(동사를 clean·wash·fix·check·send 로 한정) · 현재완료 vs 과거의 때 말을 확실한 것만(so far·up to now·since Monday·for two years ↔ yesterday 등) · who 절 앞 my friend 류 제거 · 어색한 동사-목적어 짝 정리(wash my room → clean · study/learn my homework · cook an apple · see the news …) · plan/keep 과거형(planned·kept) · about to 설명 · everyone 부정 제외 · I must be 제외.
+- 🧪 QA: `check_combo.mjs` 가 표 70개 × 300 무작위 조합(패턴별 틀린 문장: 동사 모양·be·have·시제 섞기·어순·who/which)과 맞는 다른 문장(alts)·영국식 철자·사슬까지 23만 건 · `play.py --combo` 탭 3개·표 70개 직접 플레이(390·320px) · 회귀.
+
 ## v0.6.1 — 2026-11-08 (Opus: 「내가 만든 문장」 시스템 삭제)
 - 사용자 결정: 「내가 만든 문장이라는 시스템 자체가 필요 없다」. 조합 말하기에서 **만든 문장 세기·모으기를 전부 뺐어요.**
   - 표 화면: 「이 표로 만든 문장 n/5」 카운터·5문장 목표·🎉 완성 효과·「✅ 만든 문장」 목록·「이미 만든 조합」 안내 삭제. 맞게 쓰면 XP 만 오르고(정답을 보고 쓴 건 XP 없음), 같은 표로 계속 써요.
