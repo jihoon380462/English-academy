@@ -286,13 +286,19 @@ def run():
 
         def combo():
             page.goto(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); layout('조합 홈'); shot('combo-home')
-            ids = page.evaluate('Combo.patterns.map(p => p.id)'); check(page.locator('.combo-row').count() == len(ids) >= 15, f'조합: 문법 목록 {page.locator(".combo-row").count()}개')
+            ids = page.evaluate('Combo.patterns.map(p => p.id)')
+            sets = page.evaluate("Object.fromEntries(['basic', 'pattern', 'grammar'].map(t => [t, Combo.patterns.filter(p => Combo.inSet(p, t)).map(p => p.id)]))")
+            def tab(t):
+                page.click(f'#ctabs button[data-v="{t}"]'); page.wait_for_timeout(40)
+            for t, lst in sets.items():
+                tab(t); check(page.locator('.combo-row').count() == len(lst) > 0, f'조합 탭 {t}: 문법 목록 {page.locator(".combo-row").count()}개 (기대 {len(lst)})'); layout(f'조합 홈 탭 {t}'); shot(f'combo-home-{t}')
+            check(len(sets['basic']) >= 15, '조합: 기본 탭 문법이 15개 미만')
             for pid in ids:
                 nav(BASE + f'courses/combo/#p/{pid}'); page.wait_for_selector('.ctab'); page.wait_for_timeout(40)
                 if pid in ('be-adj', 'svom', 'past-q', 'there'): shot(f'combo-{pid}')
                 layout(f'조합 {pid} 표')
                 tw = page.evaluate("(() => { const w = document.querySelector('.ctab-wrap'); return w.scrollWidth - w.clientWidth; })()"); check(tw <= 2, f'조합 {pid}: 표가 옆으로 {tw}px 넘침')
-                cols = page.evaluate(f'Combo.pattern("{pid}").cols.length'); check(page.locator('.ctab th').count() == cols, f'{pid}: 열 수')
+                cols = page.evaluate(f'Combo.pattern("{pid}").cols.filter(c => !c.hide).length'); check(page.locator('.ctab th').count() == cols, f'{pid}: 열 수')
                 txt = page.inner_text('#view')
                 ex = page.evaluate(f'Combo.pattern("{pid}").ex'); check(ex not in txt, f'{pid}: 예문(정답 같은 문장) 「{ex}」 이 화면에 보임')
                 for k in range(9):
@@ -320,14 +326,18 @@ def run():
                 body2 = page.inner_text('#view'); check('만든 문장' not in body2 and '이미 만든' not in body2, f'{pid}: 「만든 문장」 문구가 아직 보임')
             page.reload(); page.wait_for_timeout(200); nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home')
             home = page.inner_text('#view'); check('내가 만든 문장' not in home and '만든 문장' not in home, '조합 홈: 「만든 문장」 개수가 아직 보임')
-            check(page.locator('.combo-row').filter(has_text='마지막 학습 오늘').count() == len(ids), f'조합 홈: 마지막 학습 날짜 {page.locator(".combo-row").filter(has_text="마지막 학습 오늘").count()}/{len(ids)}')
+            tot = 0
+            for t in sets:
+                tab(t); tot += page.locator('.combo-row').filter(has_text='마지막 학습 오늘').count()
+            check(tot == sum(len(v) for v in sets.values()), f'조합 홈: 마지막 학습 날짜 {tot}/{sum(len(v) for v in sets.values())}')
+            tab(page.evaluate(f'(Combo.pattern("{ids[-1]}").sets || ["basic"])[0]'))
             check(page.locator('.combo-row.latest').count() == 1 and ids[-1] in page.get_attribute('.combo-row.latest', 'href'), '조합 홈: 마지막으로 한 문법 표시(📍) 이상')
             check(ids[-1] in (page.get_attribute('.hero-card a.btn', 'href') or ''), '조합 홈: 이어서 하기 버튼이 마지막 문법으로 안 감')
             page.evaluate("(() => { const d = new Date(Date.now() - 3 * 86400000); const r = Store.data.combo['be-adj']; r.last = todayKey(d); r.lastAt = d.getTime(); Store.save(); })()"); nav(BASE + 'courses/combo/#p/sv'); nav(BASE + 'courses/combo/')
-            page.wait_for_selector('.combo-home'); check('3일 전' in page.locator('.combo-row[href="#p/be-adj"]').inner_text(), '조합 홈: 3일 전 날짜 표시 안 됨')
+            page.wait_for_selector('.combo-home'); tab('basic'); check('3일 전' in page.locator('.combo-row[href="#p/be-adj"]').inner_text(), '조합 홈: 3일 전 날짜 표시 안 됨')
             nav(BASE + 'courses/combo/#p/be-adj'); page.wait_for_selector('.combo-last'); check('3일 전' in page.inner_text('.combo-last'), '조합 표: 들어가면 마지막 학습 날짜 안 보임'); layout('조합 표(마지막 학습)')
             page.evaluate("delete Store.data.combo['there']; Store.save()"); nav(BASE + 'courses/combo/#p/there'); page.wait_for_selector('.combo-last'); check('처음' in page.inner_text('.combo-last'), '조합 표: 처음 문법 안내 없음')
-            nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); check('아직 안 함' in page.locator('.combo-row[href="#p/there"]').inner_text(), '조합 홈: 안 한 문법 표시'); layout('조합 홈(날짜)'); shot('combo-home-dates')
+            nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); tab('basic'); check('아직 안 함' in page.locator('.combo-row[href="#p/there"]').inner_text(), '조합 홈: 안 한 문법 표시'); layout('조합 홈(날짜)'); shot('combo-home-dates')
             # 🔗 바꿔 말하기 사슬: 표에서 맞게 만든 뒤 → 사슬 버튼 → 단계마다 직접 바꿔 쓰기 (틀려 보기·정답 보기·건너뛰기·끝까지)
             for cid in ('svo', 'svom', 'past', 'neg', 'q'):
                 nav(BASE + f'courses/combo/#p/{cid}'); page.wait_for_selector('.ctab'); page.wait_for_timeout(40)

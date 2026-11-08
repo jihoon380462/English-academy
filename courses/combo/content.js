@@ -93,3 +93,45 @@ const COMBO_LEX = {
   ],
   tProg: [{ w: 'now', ko: '지금' }, { w: 'right now', ko: '지금 당장' }, { w: 'at the moment', ko: '지금 이 순간' }],
 };
+
+// ── v0.7.0 추가 낱말 ──────────────────────────────────────────
+(function () {
+  const L = COMBO_LEX;
+  // 과거분사(p.p.): 불규칙만 pp 를 적음. 없으면 과거형과 같음(규칙 동사 + made·bought·met·sent·found·lost·brought·slept·read). get 은 have gotten/got 이 갈려서 과거분사 표에서 뺌(noPP)
+  const PP = { eat: 'eaten', drink: 'drunk', write: 'written', take: 'taken', see: 'seen', forget: 'forgotten', swim: 'swum', sing: 'sung', run: 'run' };
+  for (const x of L.vt.concat(L.vi)) if (PP[x.v]) x.pp = PP[x.v];
+  L.vt.find(x => x.v === 'get').noPP = true;
+  // 목적어의 수: 'pl'(복수) 아니면 'sg'(하나·셀 수 없음) — 수동태 be(is/are)에 씀
+  const PL = ['noodles', 'movies', 'cartoons', 'comic books', 'novels', 'video games', 'board games', 'the dishes', 'my messages', 'my classmates', 'her parents', 'my keys'];
+  for (const o of L.obj) o.n = PL.includes(o.w) ? 'pl' : 'sg';
+  L.tUsed = [{ w: 'a long time ago', ko: '오래전에' }, { w: 'years ago', ko: '몇 년 전에' }, { w: 'back then', ko: '그때는' }, { w: 'in high school', ko: '고등학교 때' }, { w: 'in the past', ko: '예전에' }, { w: 'in those days', ko: '그 시절에' }];
+  L.butTail = [{ w: 'but I forgot', ko: '그런데 깜빡했어요' }, { w: 'but I ran out of time', ko: '그런데 시간이 부족했어요' }, { w: 'but it was closed', ko: '그런데 문을 닫았어요' }, { w: 'but it rained', ko: '그런데 비가 왔어요' },
+    { w: 'but I changed my mind', ko: '그런데 마음을 바꿨어요' }, { w: 'but I was too tired', ko: '그런데 너무 피곤했어요' }, { w: 'but my phone died', ko: '그런데 폰이 꺼졌어요' }, { w: 'but I got busy', ko: '그런데 바빠졌어요' }];
+})();
+
+// ── v0.8.0 추가 낱말 (문법 더 깊게: 현재완료·수동태·관계사·가정법·to부정사·동명사·분사) ──
+(function () {
+  const L = COMBO_LEX;
+  L.tDur = [{ w: 'for two years', ko: '2년 동안' }, { w: 'for a long time', ko: '오랫동안' }, { w: 'for three hours', ko: '세 시간 동안' }, { w: 'for a week', ko: '일주일 동안' },
+    { w: 'since Monday', ko: '월요일부터' }, { w: 'since 2020', ko: '2020년부터' }, { w: 'since last year', ko: '작년부터' }, { w: 'since this morning', ko: '오늘 아침부터' }];
+  // 때를 나타내는 말: t = 'pf'(지금까지 · 현재완료) | 'past'(끝난 때 · 과거)
+  L.tMix = [{ w: 'so far', ko: '지금까지', t: 'pf' }, { w: 'many times', ko: '여러 번', t: 'pf' }, { w: 'before', ko: '전에(경험)', t: 'pf' }, { w: 'yesterday', ko: '어제', t: 'past' }, { w: 'last night', ko: '어젯밤', t: 'past' },
+    { w: 'two days ago', ko: '이틀 전', t: 'past' }, { w: 'last week', ko: '지난주', t: 'past' }, { w: 'in 2019', ko: '2019년에', t: 'past' }];
+  L.person = [{ w: 'a man', ko: '한 남자', n: 'sg' }, { w: 'a woman', ko: '한 여자', n: 'sg' }, { w: 'a girl', ko: '한 소녀', n: 'sg' }, { w: 'a boy', ko: '한 소년', n: 'sg' }, { w: 'my friend', ko: '내 친구', n: 'sg' }, { w: 'a neighbor', ko: '이웃 한 명', n: 'sg' },
+    { w: 'a doctor', ko: '의사 한 분', n: 'sg' }, { w: 'a student', ko: '학생 한 명', n: 'sg' }, { w: 'my friends', ko: '내 친구들', n: 'pl' }, { w: 'two girls', ko: '소녀 두 명', n: 'pl' }, { w: 'some students', ko: '몇몇 학생', n: 'pl' }, { w: 'many people', ko: '많은 사람들', n: 'pl' }];
+  L.placeN = [{ w: 'the park', ko: '공원' }, { w: 'the cafe', ko: '카페' }, { w: 'the library', ko: '도서관' }, { w: 'the restaurant', ko: '식당' }, { w: 'the beach', ko: '해변' }, { w: 'the school', ko: '학교' }, { w: 'the gym', ko: '체육관' }, { w: 'the house', ko: '그 집' }];
+  L.dayN = [{ w: 'the day', ko: '그날' }, { w: 'the night', ko: '그날 밤' }, { w: 'the morning', ko: '그날 아침' }, { w: 'the summer', ko: '그 여름' }, { w: 'the year', ko: '그해' }, { w: 'the weekend', ko: '그 주말' }];
+  L.resFut = [{ w: 'I will be happy', ko: '나는 기쁠 거예요' }, { w: 'we will stay home', ko: '우리는 집에 있을 거예요' }, { w: 'I will text you', ko: '내가 문자할게요' }, { w: 'you will feel better', ko: '기분이 나아질 거예요' },
+    { w: 'they will be late', ko: '그들은 늦을 거예요' }, { w: 'I will join you', ko: '내가 합류할게요' }, { w: 'she will be surprised', ko: '그녀는 놀랄 거예요' }, { w: 'the teacher will be angry', ko: '선생님이 화낼 거예요' }];
+  L.resWould = [{ w: 'I would be happy', ko: '나는 기쁠 텐데요' }, { w: 'I would travel the world', ko: '세계를 여행할 텐데요' }, { w: 'we would go to the beach', ko: '우리는 해변에 갈 텐데요' }, { w: 'I would sleep all day', ko: '하루 종일 잘 텐데요' },
+    { w: 'she would be surprised', ko: '그녀는 놀랄 텐데요' }, { w: 'they would join us', ko: '그들이 우리와 함께할 텐데요' }, { w: 'I would text you', ko: '내가 문자할 텐데요' }, { w: 'my mom would be proud', ko: '엄마가 자랑스러워할 텐데요' }];
+  // 「to + 동사원형」을 쓰는 동사 / 「동사-ing」를 쓰는 동사
+  L.vTo = [{ v: 'want', ko: '원하다' }, { v: 'need', ko: '필요하다' }, { v: 'decide', ko: '결정하다' }, { v: 'plan', ko: '계획하다', ing: 'planning' }, { v: 'hope', ko: '바라다' }, { v: 'learn', ko: '배우다' }, { v: 'try', ko: '노력하다' }, { v: 'promise', ko: '약속하다' }];
+  L.vIng = [{ v: 'enjoy', ko: '즐기다' }, { v: 'finish', ko: '끝내다' }, { v: 'practice', ko: '연습하다' }, { v: 'avoid', ko: '피하다' }, { v: 'keep', ko: '계속하다' }, { v: 'suggest', ko: '제안하다' }];
+  // -ed / -ing 형용사: 원형(w)을 보고 주어에 맞게 고름
+  L.adjEmo = [{ w: 'bore', ko: '지루하게 하다', ed: 'bored', ing: 'boring' }, { w: 'excite', ko: '신나게 하다', ed: 'excited', ing: 'exciting' }, { w: 'interest', ko: '흥미를 끌다', ed: 'interested', ing: 'interesting' },
+    { w: 'surprise', ko: '놀라게 하다', ed: 'surprised', ing: 'surprising' }, { w: 'confuse', ko: '헷갈리게 하다', ed: 'confused', ing: 'confusing' }, { w: 'tire', ko: '피곤하게 하다', ed: 'tired', ing: 'tiring' },
+    { w: 'shock', ko: '충격을 주다', ed: 'shocked', ing: 'shocking' }, { w: 'disappoint', ko: '실망시키다', ed: 'disappointed', ing: 'disappointing' }, { w: 'annoy', ko: '짜증나게 하다', ed: 'annoyed', ing: 'annoying' }];
+  L.subjEmo = [{ w: 'I', ko: '나', p: 's1' }, { w: 'you', ko: '너', p: 's2' }, { w: 'he', ko: '그', p: 's3' }, { w: 'she', ko: '그녀', p: 's3' }, { w: 'we', ko: '우리', p: 'pl' }, { w: 'they', ko: '그들', p: 'pl' }, { w: 'my dad', ko: '우리 아빠', p: 's3' }, { w: 'Mina', ko: '미나', p: 's3' },
+    { w: 'the movie', ko: '그 영화', p: 's3', thing: true }, { w: 'the story', ko: '그 이야기', p: 's3', thing: true }, { w: 'the game', ko: '그 게임', p: 's3', thing: true }, { w: 'the class', ko: '그 수업', p: 's3', thing: true }, { w: 'the trip', ko: '그 여행', p: 's3', thing: true }, { w: 'the news', ko: '그 소식', p: 's3', thing: true }];
+})();

@@ -2,30 +2,34 @@
 // 사용자 결정(11/6): 표(열 = 성분, 행 = 무작위)와 그 문법 설명만 보여 주고, 학습자가 「스스로」 조합해 문장을 만든다. 정답 문장·한국어 문제 없음. 음성은 우선 뺌(입력만).
 // 틀리면 벌점 없이 「고칠 곳」만. 맞힌 문장을 세거나 모아 두지 않음(사용자 결정 11/8: 「내가 만든 문장」 시스템 불필요).
 const COL_ROLE = { S: 'S', V: 'V', BE: 'V', NOT: 'V', DO: 'V', WILL: 'V', GO: 'V', CAN: 'V', HAVE: 'V', TH: 'V', O: 'O', N: 'O', C: 'O', M: 'M' };
+const colRole = (c) => c.role || COL_ROLE[c.k] || 'M';
+const COMBO_SETS = [{ id: 'basic', label: '🧩 기본 문장' }, { id: 'pattern', label: '🔁 핵심 패턴' }, { id: 'grammar', label: '📘 문법' }];
 const CV = {
   st() { const d = Store.data; d.combo = d.combo || {}; return d.combo; },
   rec(id) { const s = this.st(); s[id] = s[id] || {}; return s[id]; },
-  groups() { const g = []; for (const p of Combo.patterns) { let x = g.find(y => y.name === p.group); if (!x) g.push(x = { name: p.group, list: [] }); x.list.push(p); } return g; },
+  groups(set) { const g = []; for (const p of Combo.patterns) { if (!Combo.inSet(p, set)) continue; const nm = (p.grp && p.grp[set]) || p.group; let x = g.find(y => y.name === nm); if (!x) g.push(x = { name: nm, list: [] }); x.list.push(p); } const ord = (Combo.groupOrder || {})[set]; if (ord) g.sort((a, b) => ord.indexOf(a.name) - ord.indexOf(b.name)); return g; },
   hint(n) { return n.replace(/ → <b>[^<]*<\/b>/, ' → <b>?</b>').replace(/ 그대로 /, ' → <b>?</b> ').replace(/원형 <b>[^<]*<\/b>/, '<b>원형</b>'); },
   // 마지막 학습 날짜(사용자 요청 11/6: 어디까지 했는지 보이게). rec.last = 'YYYY-MM-DD', rec.lastAt = 시각
   when(key) { if (!key) return ''; const n = daysBetween(key, todayKey()); const [, m, d] = key.split('-').map(Number); return `${n <= 0 ? '오늘' : n === 1 ? '어제' : n + '일 전'} (${m}월 ${d}일)`; },
   latest() { let best = null; for (const p of Combo.patterns) { const r = this.st()[p.id]; if (r && r.lastAt && (!best || r.lastAt > best.r.lastAt)) best = { p, r }; } return best; },
   touch(id) { const r = this.rec(id); r.last = todayKey(); r.lastAt = Date.now(); },
-  formula(p) { return p.cols.map(c => `<span class="cf r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</span>`).join('<span class="cf-plus">+</span>'); },
+  formula(p) { return p.cols.map(c => `<span class="cf r-${colRole(c)}">${esc(c.label)}</span>`).join('<span class="cf-plus">+</span>'); },
 };
 
 Views.home = () => {
-  const s = Store.data.settings; const L = CV.latest();
+  const s = Store.data.settings; const L = CV.latest(); const tab = COMBO_SETS.some(t => t.id === s.comboTab) ? s.comboTab : (L ? ((L.p.sets || ['basic'])[0]) : 'basic');
   $('#view').innerHTML = `<div class="page combo-home">
     <div class="card hero-card"><div class="hc-row"><div>${myMascot({ size: 60, mood: 'happy' })}</div><div class="grow"><div class="muted small">🧩 조합 말하기 · 표를 보고 스스로 문장 만들기</div><div class="hero-title">${L ? '마지막으로 한 문법' : '처음이에요'}</div>${L ? `<div class="combo-f">${CV.formula(L.p)}</div><div class="small muted">${CV.when(L.r.last)}</div>` : ''}</div></div>
       ${L ? `<a class="btn primary wide" href="#p/${L.p.id}">▶ 이어서 하기</a>` : ''}
       <p class="small muted">문법을 고르면 그 문법의 칸만 있는 단어 표가 나와요. 낱말은 <b>원형</b>으로만 있어요 — 문법에 맞게 바꿔서(like → likes) <b>스스로</b> 문장을 만들어 쓰세요. 정답은 보여 주지 않아요.</p></div>
-    ${CV.groups().map(g => `<div class="card"><div class="card-h">${esc(g.name)}</div><div class="combo-list">${g.list.map(p => { const r = CV.st()[p.id] || {}; const isL = L && L.p.id === p.id; return `<a class="combo-row${isL ? ' latest' : ''}" href="#p/${p.id}"><div class="combo-f">${CV.formula(p)}</div><div class="small ${r.last ? '' : 'muted'}">${r.last ? `${isL ? '📍 ' : ''}마지막 학습 ${CV.when(r.last)}` : '아직 안 함'}</div></a>`; }).join('')}</div></div>`).join('')}
+    <div class="seg combo-tabs" id="ctabs">${COMBO_SETS.map(t => `<button class="${t.id === tab ? 'on' : ''}" data-v="${t.id}">${t.label}</button>`).join('')}</div>
+    ${CV.groups(tab).map(g => `<div class="card"><div class="card-h">${esc(g.name)}</div><div class="combo-list">${g.list.map(p => { const r = CV.st()[p.id] || {}; const isL = L && L.p.id === p.id; return `<a class="combo-row${isL ? ' latest' : ''}" href="#p/${p.id}"><div class="combo-f">${CV.formula(p)}</div><div class="small ${r.last ? '' : 'muted'}">${r.last ? `${isL ? '📍 ' : ''}마지막 학습 ${CV.when(r.last)}` : '아직 안 함'}</div></a>`; }).join('')}</div></div>`).join('')}
     <div class="card"><div class="card-h">⚙ 설정</div>
       <div class="set-row"><span>표에 뜻 보이기</span><div class="seg" id="cko">${[[true, '보이기'], [false, '숨기기']].map(([v, t]) => `<button class="${(s.comboKo ?? true) === v ? 'on' : ''}" data-v="${v}">${t}</button>`).join('')}</div></div>
       <div class="set-row"><span>표 줄 수</span><div class="seg" id="crows">${[4, 6, 8].map(n => `<button class="${(s.comboRows ?? 6) === n ? 'on' : ''}" data-v="${n}">${n}</button>`).join('')}</div></div>
       <p class="small muted">뜻을 숨기면 낱말 칸을 눌렀을 때만 뜻이 보여요.</p></div>
     <div class="foot muted small center"><a href="${CONFIG.HUB_PATH}">🏠 허브</a> · ${esc(T.appName)} v${CONFIG.APP_VERSION}</div></div>`;
+  $$('#ctabs button').forEach(b => b.onclick = () => { s.comboTab = b.dataset.v; Store.save(); Views.home(); });
   $$('#cko button').forEach(b => b.onclick = () => { s.comboKo = b.dataset.v === 'true'; Store.save(); Views.home(); });
   $$('#crows button').forEach(b => b.onclick = () => { s.comboRows = +b.dataset.v; Store.save(); Views.home(); });
 };
@@ -33,7 +37,7 @@ Views.home = () => {
 function comboFb(r, chain) {
   if (!r) return `<div class="small muted">마침표·대문자는 안 따져요. 줄임말(doesn't, I'm)도 돼요.</div>`;
   if (r.empty) return '';
-  if (r.missing) return `<div class="fb fix"><b>표에 있는 낱말로 만들어요.</b><div class="small">못 찾은 칸: ${r.missing.map(c => `<span class="cf r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</span>`).join(' ')}</div></div>`;
+  if (r.missing) return `<div class="fb fix"><b>표에 있는 낱말로 만들어요.</b><div class="small">못 찾은 칸: ${r.missing.map(c => `<span class="cf r-${colRole(c)}">${esc(c.label)}</span>`).join(' ')}</div></div>`;
   const notes = `<ul class="combo-notes">${r.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
   if (r.ok) return `<div class="fb good"><b>✓ 맞아요</b><div class="combo-sent">${esc(r.expect)}</div>${r.typo ? `<div class="small">오타: ${esc(r.typo.got)} → <b>${esc(r.typo.want)}</b></div>` : ''}${notes}${r.chainOk ? `<div class="chain-go"><button class="btn sm" id="cchain">🔗 이 문장 바꿔 말하기 <span class="muted">(부정·질문·과거·미래…)</span></button></div>` : ''}</div>`;
   // 고칠 곳: 어느 낱말이 틀렸는지(줄 긋기) + 이유만. 바른 모양은 「맞는 문장 보기」를 눌러야 보임(스스로 고치기)
@@ -51,13 +55,13 @@ const CPlay = {
   newTable() { this.table = Combo.table(this.p, COMBO_LEX, Store.data.settings.comboRows ?? 6); this.last = null; },
   cell(c, x) { const w = x.w || x.v; const ko = Store.data.settings.comboKo ?? true; return `<button class="cc${x.fixed ? ' fixed' : ''}" data-ko="${esc(x.ko || '')}"><span class="cc-w">${esc(w)}</span>${x.ko && ko ? `<span class="cc-ko">${esc(x.ko)}</span>` : ''}</button>`; },
   render() {
-    const p = this.p, t = this.table; const rows = Math.max(...p.cols.map(c => c.fixed ? 0 : t[c.k].length));
-    const body = []; for (let i = 0; i < rows; i++) body.push(`<tr>${p.cols.map(c => { if (c.fixed) { if (i > 0) return ''; if (t[c.k].length === 1) return `<td rowspan="${rows}" class="fixed-td">${this.cell(c, t[c.k][0])}</td>`; return `<td rowspan="${rows}" class="fixed-td">${t[c.k].map(x => this.cell(c, x)).join('')}</td>`; } const x = t[c.k][i]; return `<td>${x ? this.cell(c, x) : ''}</td>`; }).join('')}</tr>`);
+    const p = this.p, t = this.table; const cols = p.cols.filter(c => !c.hide); const rows = Math.max(...cols.map(c => c.fixed ? 0 : t[c.k].length));
+    const body = []; for (let i = 0; i < rows; i++) body.push(`<tr>${cols.map(c => { if (c.fixed) { if (i > 0) return ''; if (t[c.k].length === 1) return `<td rowspan="${rows}" class="fixed-td">${this.cell(c, t[c.k][0])}</td>`; return `<td rowspan="${rows}" class="fixed-td">${t[c.k].map(x => this.cell(c, x)).join('')}</td>`; } const x = t[c.k][i]; return `<td>${x ? this.cell(c, x) : ''}</td>`; }).join('')}</tr>`);
     $('#view').innerHTML = `<div class="page combo-play">
       <div class="combo-top"><a class="btn xs" href="#">← 문법 목록</a></div>
       <div class="small muted combo-last">${this.prevDay ? `마지막 학습 ${CV.when(this.prevDay)}` : '이 문법은 처음이에요'}</div>
       <div class="card"><div class="combo-f big">${CV.formula(p)}</div>
-        <div class="ctab-wrap"><table class="ctab${p.cols.length >= 5 ? ' wide' : ''}"><colgroup>${p.cols.map(c => `<col${c.fixed ? ' class="fixed-col"' : ''}>`).join('')}</colgroup><thead><tr>${p.cols.map(c => `<th class="r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${body.join('')}</tbody></table></div>
+        <div class="ctab-wrap"><table class="ctab${cols.length >= 5 ? ' wide' : ''}"><colgroup>${cols.map(c => `<col${c.fixed ? ' class="fixed-col"' : ''}>`).join('')}</colgroup><thead><tr>${cols.map(c => `<th class="r-${colRole(c)}">${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${body.join('')}</tbody></table></div>
         <div class="combo-tools"><button class="btn sm" id="shuffle">🔀 새 표</button></div></div>
       <div class="card combo-rule"><div class="card-h">📏 문법</div>${p.rule}</div>
       <div class="card"><div class="combo-in"><input id="cin" type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="표의 낱말로 문장을 직접 쓰세요" enterkeyhint="done"><button class="btn primary" id="cgo">확인</button></div>

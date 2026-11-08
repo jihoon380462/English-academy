@@ -3,7 +3,7 @@
 import fs from 'node:fs'; import path from 'node:path'; import vm from 'node:vm';
 import { ROOT } from './load_content.mjs';
 const ctx = vm.createContext({ console, Math, JSON, Object, Array, String, Number, RegExp, Set, Map });
-for (const f of ['core/config.js', 'core/util.js', 'shared/contractions.js', 'shared/mistakes.js', 'core/grader.js', 'core/combo.js', 'courses/combo/content.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
+for (const f of ['core/config.js', 'core/util.js', 'shared/contractions.js', 'shared/mistakes.js', 'core/grader.js', 'core/combo.js', 'core/combo-patterns.js', 'courses/combo/content.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
 const { Combo, Inflect, COMBO_LEX, Grader, STATIVE } = vm.runInContext('({ Combo, Inflect, COMBO_LEX, Grader, STATIVE })', ctx);
 let fails = 0, n = 0; const F = (m) => { fails++; if (fails <= 40) console.log('  ✗ ' + m); };
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -21,9 +21,19 @@ const all = [...COMBO_LEX.vt, ...COMBO_LEX.vi]; const byV = (v) => all.find(x =>
 for (const [v, w] of Object.entries(ex.s3)) { n++; if (Inflect.s3(v) !== w) F(`s3 ${v} → ${Inflect.s3(v)} (기대 ${w})`); }
 for (const [v, w] of Object.entries(ex.past)) { n++; if (Inflect.past(byV(v)) !== w) F(`past ${v} → ${Inflect.past(byV(v))} (기대 ${w})`); }
 for (const [v, w] of Object.entries(ex.ing)) { n++; if (Inflect.ing(byV(v)) !== w) F(`ing ${v} → ${Inflect.ing(byV(v))} (기대 ${w})`); }
+// 과거분사(p.p.): 불규칙 동사는 pp 가 있거나 과거형과 같아야 함 — 아래 표에 없는 불규칙 동사가 낱말에 있으면 실패(과거분사 확인 필요)
+const PPX = { eat: 'eaten', drink: 'drunk', write: 'written', take: 'taken', see: 'seen', forget: 'forgotten', swim: 'swum', sing: 'sung', run: 'run', make: 'made', buy: 'bought', read: 'read', meet: 'met', send: 'sent', find: 'found', lose: 'lost', bring: 'brought', sleep: 'slept', play: 'played', like: 'liked', study: 'studied', cry: 'cried', carry: 'carried', shop: 'shopped', travel: 'traveled', finish: 'finished', dance: 'danced', get: 'got' };
+for (const x of all) { if (x.past && !(x.v in PPX)) F(`${x.v}: 불규칙 동사의 과거분사를 PPX 표에 적어 주세요`); }
+for (const [v, w] of Object.entries(PPX)) { const x = all.find(y => y.v === v); if (!x || v === 'get') continue; n++; if (Inflect.pp(x) !== w) F(`pp ${v} → ${Inflect.pp(x)} (기대 ${w})`); }
+for (const o of COMBO_LEX.obj) if (!['sg', 'pl'].includes(o.n)) F(`obj ${o.w}: 수(n) 없음`);
 // 짧은 모음 + 자음 하나로 끝나는 1음절 동사는 ing·past 를 직접 적어야 함(자음 겹침)
 for (const x of all) if (/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(x.v) && !x.ing) F(`${x.v}: 자음 겹침 동사 같은데 ing 가 없음`);
 
+const OLD = new Set(['be-adj', 'be-place', 'sv', 'svo', 'svom', 'neg', 'q', 'past', 'past-neg', 'past-q', 'was', 'will', 'going', 'prog', 'can', 'have-to', 'there']); const VL = ['vt', 'vi', 'vTo', 'vIng', 'adjEmo']; const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+// 2c) 패턴 정의: 탭·묶음·열 이름, 걸러내기(only·cats) 낱말이 실제 있는지
+{ const ids = new Set(); for (const p of Combo.patterns) { n++; if (ids.has(p.id)) F(`패턴 id 중복 ${p.id}`); ids.add(p.id); if (!p.group || !p.title || !p.ex || !p.rule) F(`${p.id}: group·title·ex·rule 중 빈 것`); for (const st of p.sets || ['basic']) if (!['basic', 'pattern', 'grammar'].includes(st)) F(`${p.id}: 알 수 없는 탭 ${st}`);
+    const ks = p.cols.map(c => c.k); if (new Set(ks).size !== ks.length) F(`${p.id}: 열 키 중복 ${ks}`); if (p.cols.every(c => c.hide || c.fixed)) F(`${p.id}: 고를 열이 없음`);
+    for (const c of p.cols) { if (c.hide && !c.fixed) F(`${p.id}: hide 는 고정 열만`); if (c.only) for (const w of c.only) if (!(COMBO_LEX[c.from] || []).some(x => x.w === w)) F(`${p.id}: only 낱말 ${w} 가 ${c.from} 에 없음`); if (c.from && !COMBO_LEX[c.from]) F(`${p.id}: 낱말 목록 ${c.from} 없음`); } } }
 // 3) 패턴마다 표 300개 × 무작위 조합: 기대 문장은 통과, 칸을 정확히 알아봄, 흔한 실수는 오답
 const contract = (s) => s.replace(/\bdo not\b/i, "don't").replace(/\bdoes not\b/i, "doesn't").replace(/\bdid not\b/i, "didn't").replace(/\bI am\b/, "I'm").replace(/\b(She|He) is\b/, "$1's").replace(/\bcannot\b/, "can't").replace(/\b(I|You|He|She|We|They) will\b/, "$1'll");
 for (const p of Combo.patterns) {
@@ -52,6 +62,28 @@ for (const p of Combo.patterns) {
     if (p.id === 'was') { const be = Inflect.be(S, true); wrongs.push(want.replace(new RegExp('\\b' + be + '\\b'), be === 'was' ? 'were' : 'was')); }
     if (S && ['neg', 'q'].includes(p.id)) { const d = Inflect.do(S); wrongs.push(want.replace(new RegExp('\\b' + d + '\\b', 'i'), m => (d === 'does' ? 'do' : 'does').replace(/^d/, m[0]))); }
     if (p.id === 'there') wrongs.push(want.replace(/\b(is|are)\b/, m => m === 'is' ? 'are' : 'is'));
+    // 새 패턴: 동사 모양 바꾸기(원형·-s·과거·-ing·p.p.) + 패턴별 흔한 실수
+    if (!OLD.has(p.id)) {
+      for (const c of p.cols) { if (!VL.includes(c.from) || !pick[c.k]) continue; const forms = Combo.forms(c, pick[c.k]); const hit = forms.find(f => new RegExp('\\b' + f + '\\b').test(want)); if (!hit) continue; for (const alt of forms) { if (alt === hit || new RegExp('\\b' + alt + '\\b').test(want)) continue; wrongs.push(want.replace(new RegExp('\\b' + hit + '\\b'), alt)); } }
+      const sw = (re, a, b) => want.replace(re, m => (m.toLowerCase() === a ? (m[0] === m[0].toUpperCase() ? cap(b) : b) : (m[0] === m[0].toUpperCase() ? cap(a) : a)));
+      if (['planning', 'thinking', 'about-to', 'used-ing'].includes(p.id)) { const be = Inflect.be(S); wrongs.push(want.replace(new RegExp('\\b' + be + '\\b'), be === 'is' ? 'are' : 'is')); }
+      if (p.id === 'was-going') wrongs.push(sw(/\b(was|were)\b/, 'was', 'were'));
+      if (['ever-q', 'never'].includes(p.id)) wrongs.push(sw(/\b(has|have)\b/i, 'has', 'have'));
+      if (['want-to', 'need-to'].includes(p.id)) { const w0 = p.id === 'want-to' ? 'want' : 'need'; const good = S.p === 's3' ? w0 + 's' : w0, bad = S.p === 's3' ? w0 : w0 + 's'; wrongs.push(want.replace(new RegExp('\\b' + good + '\\b'), bad)); }
+      if (p.id === 'want-q') wrongs.push(sw(/\b(does|do)\b/i, 'does', 'do'));
+      if (p.id === 'used-to') wrongs.push(want.replace(/\bused to\b/, 'use to'));
+      // 문법 코스(G) 패턴: be·have 맞춤, 시제 섞기, 어순, 다른 맞는 말(that · that 생략)
+      if (['pass', 'pass-by'].includes(p.id)) wrongs.push(sw(/\b(is|are)\b/, 'is', 'are'));
+      if (p.id === 'pass-past') wrongs.push(sw(/\b(was|were)\b/, 'was', 'were'));
+      if (['just-already', 'yet-neg', 'pp-cont'].includes(p.id)) wrongs.push(sw(/\b(has|have)\b/i, 'has', 'have'));
+      if (/^(stop|remember|try)-/.test(p.id)) { const w0 = p.id.split('-')[0]; const good = Inflect.verb(S, { v: w0 }), bad = S.p === 's3' ? w0 : Inflect.s3(w0); wrongs.push(want.replace(new RegExp('\\b' + good + '\\b'), bad)); }
+      if (p.id === 'know-wh') { const d = Inflect.do(S); wrongs.push(`Do you know ${pick.WH.w} ${d} ${S.w} ${pick.V.v}?`); }
+      if (p.id === 'pp-vs') { const M = pick.M, h = Inflect.have(S); wrongs.push(M.t === 'pf' ? Combo.sentence({ parts: [S.w, Inflect.past(pick.V), pick.O.w, M.w] }) : Combo.sentence({ parts: [S.w, h, Inflect.pp(pick.V), pick.O.w, M.w] })); }
+      if (p.id === 'rel-who') { n++; const t2 = want.replace(' who ', ' that '); if (!Combo.judge(p, tb, t2).ok) F(`${p.id}: who 대신 that 「${t2}」 실패`); }
+      if (p.id === 'rel-which') { n++; const t2 = want.replace(' which ', ' that '); if (!Combo.judge(p, tb, t2).ok) F(`${p.id}: which 대신 that 「${t2}」 실패`); n++; if (Combo.judge(p, tb, want.replace(' which ', ' who ')).ok) F(`${p.id}: 물건인데 who 가 통과`); }
+      if (p.id === 'rel-who') { n++; if (Combo.judge(p, tb, want.replace(' who ', ' which ')).ok) F(`${p.id}: 사람인데 which 가 통과`); }
+      if (p.id === 'think-that') { n++; const t2 = want.replace(' that ', ' '); if (!Combo.judge(p, tb, t2).ok) F(`${p.id}: that 생략 「${t2}」 실패`); }
+    }
     for (const w of wrongs) { if (w === want) continue; n++; const rw = Combo.judge(p, tb, w); if (rw.ok) F(`${p.id}: 틀린 문장 「${w}」 이 정답 처리됨 (기대 ${want})`); else if (!rw.expect) F(`${p.id}: 틀린 문장 「${w}」 의 칸을 못 알아봄`); else if (rw.expect !== want) F(`${p.id}: 틀린 문장 「${w}」 → 기대 문장을 「${rw.expect}」 로 잘못 잡음 (맞는 건 ${want})`); }
     okN++;
   }

@@ -7,6 +7,8 @@ const Inflect = {
   s3(v) { if (v === 'have') return 'has'; if (v === 'be') return 'is'; if (/(s|x|z|ch|sh|o)$/.test(v)) return v + 'es'; if (/[^aeiou]y$/.test(v)) return v.slice(0, -1) + 'ies'; return v + 's'; },
   past(x) { if (x.past) return x.past; const v = x.v; if (/e$/.test(v)) return v + 'd'; if (/[^aeiou]y$/.test(v)) return v.slice(0, -1) + 'ied'; return v + 'ed'; },
   ing(x) { if (x.ing) return x.ing; const v = x.v; if (/ie$/.test(v)) return v.slice(0, -2) + 'ying'; if (/[^aeiou]e$/.test(v) && !['be', 'see'].includes(v)) return v.slice(0, -1) + 'ing'; return v + 'ing'; },
+  pp(x) { return x.pp || this.past(x); }, // 과거분사: 불규칙은 x.pp, 없으면 과거형과 같음(규칙·made·bought 류)
+  beN(n, past) { return past ? (n === 'pl' ? 'were' : 'was') : (n === 'pl' ? 'are' : 'is'); }, // 명사 수(sg·u·pl)에 맞는 be
   // 주어 종류: s1 = I, s2 = you, s3 = 3인칭 단수, pl = 복수(we·they·명사 복수)
   be(s, past) { return past ? (s.p === 's1' || s.p === 's3' ? 'was' : 'were') : (s.p === 's1' ? 'am' : s.p === 's3' ? 'is' : 'are'); },
   do(s) { return s.p === 's3' ? 'does' : 'do'; },
@@ -91,6 +93,7 @@ const COMBO_PATTERNS = [
 function esc2(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
 
 // 현재진행형을 안 쓰는 상태 동사 (She is liking … ✗) — 진행형 표와 사슬에서 뺌
+const VERB_LISTS = ['vt', 'vi', 'vTo', 'vIng']; // 동사 목록(활용하는 열)
 const STATIVE = ['like', 'love', 'want', 'need'];
 // 🔗 바꿔 말하기 사슬: 학습자가 만든 문장(주어·동사·목적어)을 다른 모양으로 스스로 바꿔 쓰기
 // to = 바뀌는 문법(COMBO_PATTERNS id) · time = 그 문법의 「언제」 열 · after = 이 단계의 문장을 이어서 바꿈
@@ -113,26 +116,39 @@ const Combo = {
   pattern(id) { return COMBO_PATTERNS.find(p => p.id === id); },
   // 문장 완성: 첫 글자 대문자, I 는 늘 대문자, 끝에 . 또는 ?
   sentence(r) { const s = r.parts.join(' ').replace(/\bi\b/g, 'I'); return cap(s) + (r.q ? '?' : '.'); },
-  // 표 만들기: 열마다 따로 섞어 rows 줄. 동사 열이 있으면 목적어 열에 그 동사와 어울리는 목적어를 하나씩 넣음
+  // 열 하나의 낱말 목록(걸러서): noI 주어에서 I 빼기 · only 낱말만 · cats 목적어 종류 · notN 수(pl 빼기) · noStative 상태 동사 빼기 · pp 과거분사 못 쓰는 동사 빼기
+  poolOf(c, lex) {
+    let pool = lex[c.from] || [];
+    if (c.noI) pool = pool.filter(x => x.w !== 'I');
+    if (c.only) pool = pool.filter(x => c.only.includes(x.w));
+    if (c.cats) pool = pool.filter(x => c.cats.includes(x.cat));
+    if (c.notN) pool = pool.filter(x => !c.notN.includes(x.n));
+    if (c.noStative) pool = pool.filter(x => !STATIVE.includes(x.v));
+    if (c.pp) pool = pool.filter(x => !x.noPP);
+    return pool;
+  },
+  // 표 만들기: 열마다 따로 섞어 rows 줄. 동사 열(V)이 있으면 목적어 열(O)에 그 동사와 어울리는 목적어를 하나씩 넣음 (V2·O2 도 같은 방식)
   table(p, lex, rows = 6, rnd = Math.random) {
     const sh = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-    const t = {}; const vcol = p.cols.find(c => c.k === 'V');
+    const t = {}; const pairs = [['V', 'O'], ['V2', 'O2']].filter(([v, o]) => p.cols.some(c => c.k === v) && p.cols.some(c => c.k === o));
     for (const c of p.cols) {
       if (c.fixed) { t[c.k] = c.fixed.map(w => ({ w, fixed: true })); continue; }
-      let pool = lex[c.from] || []; if (c.noI) pool = pool.filter(x => x.w !== 'I');
-      if (c.noStative) pool = pool.filter(x => !STATIVE.includes(x.v));
+      let pool = this.poolOf(c, lex);
+      for (const [vk, ok] of pairs) if (c.k === vk) { // 동사는 이 표의 목적어 열에 어울리는 목적어 종류가 있는 것만
+        const oc = p.cols.find(x => x.k === ok); const cats = new Set(this.poolOf(oc, lex).map(o => o.cat)); pool = pool.filter(v => (v.obj || []).some(x => cats.has(x)));
+      }
       t[c.k] = sh(pool).slice(0, rows);
     }
-    if (vcol && t.O) { // 동사마다 어울리는 목적어가 표 어딘가에 있게
-      const objs = []; const used = new Set();
-      for (const v of t.V) { const fit = sh((lex.obj || []).filter(o => !used.has(o.w) && (v.obj || []).includes(o.cat))); if (fit[0]) { objs.push(fit[0]); used.add(fit[0].w); } }
-      for (const o of sh(lex.obj || [])) { if (objs.length >= rows) break; if (!used.has(o.w)) { objs.push(o); used.add(o.w); } }
-      t.O = sh(objs.slice(0, rows));
+    for (const [vk, ok] of pairs) { // 동사마다 어울리는 목적어가 표 어딘가에 있게
+      const oc = p.cols.find(x => x.k === ok), opool = this.poolOf(oc, lex); const objs = []; const used = new Set();
+      for (const v of t[vk]) { const fit = sh(opool.filter(o => !used.has(o.w) && (v.obj || []).includes(o.cat))); if (fit[0]) { objs.push(fit[0]); used.add(fit[0].w); } }
+      for (const o of sh(opool)) { if (objs.length >= rows) break; if (!used.has(o.w)) { objs.push(o); used.add(o.w); } }
+      t[ok] = sh(objs.slice(0, rows));
     }
     return t;
   },
   // 낱말 하나가 쓸 수 있는 모양들 (칸 알아보기용)
-  forms(c, x) { if (c.from === 'vt' || c.from === 'vi') return [x.v, Inflect.s3(x.v), Inflect.past(x), Inflect.ing(x)]; return [x.w]; },
+  forms(c, x) { if (c.from === 'adjEmo') return [x.ed, x.ing]; if (VERB_LISTS.includes(c.from)) return [x.v, Inflect.s3(x.v), Inflect.past(x), Inflect.ing(x), Inflect.pp(x)]; return [x.w]; },
   // 학습자 문장 → { pick: 열별 칸, missing: [못 찾은 열], expect, ok, diff, notes }
   judge(p, table, input) {
     const T = Grader.tokens(input); if (!T.length) return { empty: true };
@@ -145,8 +161,14 @@ const Combo = {
     const pick = {}; const missing = []; let ptr = 0;
     for (const c of p.cols) {
       const cells = table[c.k];
-      if (c.fixed && cells.length === 1) { pick[c.k] = cells[0]; continue; }
-      if (c.fixed) { pick[c.k] = cells.find(x => (x.w === 'cannot') === isNeg) || cells[0]; continue; } // can / cannot
+      if (c.fixed) {
+        if (c.fixed.includes('cannot')) { pick[c.k] = cells.find(x => (x.w === 'cannot') === isNeg) || cells[0]; continue; } // can / cannot
+        // 고정 낱말: 쓴 문장에서 그 자리를 찾아 지나감(다음 칸이 그 안의 낱말을 잘못 고르지 않게). 모양이 바뀌는 말은 fx(쓸 수 있는 모양들)로
+        let hit = null; for (const x of (c.fx ? c.fx.map(w => ({ w })) : cells)) { const m = seqAt(Grader.tokens(x.w), ptr); if (m && (!hit || m.at < hit.at || (m.at === hit.at && m.end > hit.end))) hit = { at: m.at, end: m.end, x }; }
+        if (cells.length === 1) { pick[c.k] = cells[0]; if (hit) ptr = hit.end; continue; }
+        if (hit) { pick[c.k] = hit.x; ptr = hit.end; continue; } // 여러 칸 중 하나(might / must …)
+        missing.push(c); continue;
+      }
       let best = null;
       for (const x of cells) for (const f of this.forms(c, x)) { // ① 순서대로 이어서 나오는 칸(가장 긴 것)
         const ft = Grader.tokens(f); const m = seqAt(ft, ptr); if (!m) continue;
@@ -167,11 +189,13 @@ const Combo = {
     const r = p.make(pick); const expect = this.sentence(r);
     // 동사·be·do 의 다른 모양은 오타로 봐주지 않음 (drank ↔ drink, sent ↔ send)
     const avoid = ['am is are was were be been being do does did has have had'];
-    for (const c of p.cols) if ((c.from === 'vt' || c.from === 'vi') && pick[c.k]) avoid.push(this.forms(c, pick[c.k]).join(' '));
-    const g = Grader.text(input, [expect], { avoid: avoid.join(' ') });
+    for (const c of p.cols) if (VERB_LISTS.includes(c.from) && pick[c.k]) avoid.push(this.forms(c, pick[c.k]).join(' '));
+    const answers = [expect].concat((r.alts || []).map(a => this.sentence({ parts: a, q: r.q }))); // 다른 맞는 문장(that 생략·who/that …)
+    const g = Grader.text(input, answers, { avoid: avoid.join(' ') });
     return { pick, expect, ok: g.ok, typo: g.typo, diff: g.diff, notes: r.notes, explain: g.ok ? [] : Grader.explain(input) };
   },
   // 🔗 사슬: 이 문법의 문장이면 바꿔 말하기를 할 수 있어요
+  inSet(p, set) { return (p.sets || ['basic']).includes(set); },
   chainable(p) { return Object.prototype.hasOwnProperty.call(CHAIN_SKIP, p.id) && ['S', 'V', 'O'].every(k => p.cols.some(c => c.k === k)); },
   // 학습자가 만든 pick → { base: 기준 문장, steps: [{ id, label, ask, from, fromSentence, give, subjNote, pick, expect, notes }] }
   chain(p, pick, lex) {
