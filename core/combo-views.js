@@ -3,7 +3,7 @@
 // 틀리면 벌점 없이 「고칠 곳」만. 맞힌 문장을 세거나 모아 두지 않음(사용자 결정 11/8: 「내가 만든 문장」 시스템 불필요).
 const COL_ROLE = { S: 'S', V: 'V', BE: 'V', NOT: 'V', DO: 'V', WILL: 'V', GO: 'V', CAN: 'V', HAVE: 'V', TH: 'V', O: 'O', N: 'O', C: 'O', M: 'M' };
 const colRole = (c) => c.role || COL_ROLE[c.k] || 'M';
-const COMBO_SETS = [{ id: 'basic', label: '🧩 기본 문장' }, { id: 'pattern', label: '🔁 핵심 패턴' }, { id: 'grammar', label: '📘 문법' }];
+const COMBO_SETS = [{ id: 'basic', label: '🧩 기본' }, { id: 'pattern', label: '🔁 패턴' }, { id: 'grammar', label: '📘 문법' }];
 const CV = {
   st() { const d = Store.data; d.combo = d.combo || {}; return d.combo; },
   rec(id) { const s = this.st(); s[id] = s[id] || {}; return s[id]; },
