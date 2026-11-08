@@ -72,7 +72,7 @@ const COMBO_PATTERNS = [
     rule: '<p><b>be going to</b> + 동사 원형 = 「~할 예정이에요」(이미 정해 둔 계획).</p><p>be 는 주어에 맞춰요: I <b>am</b> / 3인칭 단수 <b>is</b> / you·복수 <b>are</b> going to …</p>',
     make: ({ S, V, O, M }) => { const be = Inflect.be(S); return { parts: [S.w, be, 'going', 'to', V.v, O.w, M.w], notes: [`be → <b>${be}</b> (주어 ${esc2(S.w)} = ${P_KO[S.p]})`, `going to + 원형 <b>${V.v}</b>`] }; } },
   { id: 'prog', group: '진행형', title: '주어 + be + 동사-ing + 목적어 + 지금', ex: 'The kids are playing a game right now.',
-    cols: [{ k: 'S', label: '주어', from: 'subj' }, { k: 'BE', label: 'be동사', fixed: ['be'] }, { k: 'V', label: '동사', from: 'vt' }, { k: 'O', label: '목적어', from: 'obj' }, { k: 'M', label: '지금', from: 'tProg' }],
+    cols: [{ k: 'S', label: '주어', from: 'subj' }, { k: 'BE', label: 'be동사', fixed: ['be'] }, { k: 'V', label: '동사', from: 'vt', noStative: true }, { k: 'O', label: '목적어', from: 'obj' }, { k: 'M', label: '지금', from: 'tProg' }],
     rule: '<p><b>현재진행형</b> = be + 동사<b>-ing</b> = 「지금 ~하는 중이에요」.</p><ul><li>보통 +ing: play → play<b>ing</b></li><li>e 로 끝나면 e 빼고 +ing: make → mak<b>ing</b></li><li>짧은 모음 + 자음 하나면 자음 한 번 더: run → run<b>ning</b>, sit → sit<b>ting</b></li></ul><p>be: I <b>am</b> / 3인칭 단수 <b>is</b> / you·복수 <b>are</b></p>',
     make: ({ S, V, O, M }) => { const be = Inflect.be(S), v = Inflect.ing(V); return { parts: [S.w, be, v, O.w, M.w], notes: [`be → <b>${be}</b> (주어 ${esc2(S.w)} = ${P_KO[S.p]})`, `${V.v} → <b>${v}</b>`] }; } },
   { id: 'can', group: '조동사', title: '주어 + can/can\'t + 동사 + 목적어', ex: 'My dad can\'t cook pasta.',
@@ -90,6 +90,24 @@ const COMBO_PATTERNS = [
 ];
 function esc2(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
 
+// 현재진행형을 안 쓰는 상태 동사 (She is liking … ✗) — 진행형 표와 사슬에서 뺌
+const STATIVE = ['like', 'love', 'want', 'need'];
+// 🔗 바꿔 말하기 사슬: 학습자가 만든 문장(주어·동사·목적어)을 다른 모양으로 스스로 바꿔 쓰기
+// to = 바뀌는 문법(COMBO_PATTERNS id) · time = 그 문법의 「언제」 열 · after = 이 단계의 문장을 이어서 바꿈
+const CHAIN_FORMS = [
+  { id: 'pres', to: 'svo', label: '현재형', ask: '<b>현재형</b> 평서문으로' },
+  { id: 'neg', to: 'neg', label: '부정', ask: '<b>부정문</b>으로' },
+  { id: 'q', to: 'q', label: '질문', ask: '<b>질문</b>(Yes/No)으로' },
+  { id: 'past', to: 'past', label: '과거', ask: '<b>과거</b> 문장으로', time: 'tPast' },
+  { id: 'past-neg', to: 'past-neg', label: '과거 부정', ask: '<b>과거 부정문</b>으로', time: 'tPast', after: 'past' },
+  { id: 'past-q', to: 'past-q', label: '과거 질문', ask: '<b>과거 질문</b>으로', time: 'tPast', after: 'past' },
+  { id: 'will', to: 'will', label: '미래', ask: '<b>미래</b>(will) 문장으로', time: 'tFut' },
+  { id: 'prog', to: 'prog', label: '진행', ask: '<b>지금 하는 중</b>(현재진행형)인 일로', time: 'tProg', noStative: true },
+];
+// 사슬을 시작할 수 있는 문법 → 그 문법과 같은 단계는 건너뜀
+const CHAIN_SKIP = { svo: 'pres', svom: 'pres', neg: 'neg', q: 'q', past: 'past', 'past-neg': 'past-neg', 'past-q': 'past-q', will: 'will', going: '', prog: 'prog', can: '', 'have-to': '' };
+const CHAIN_TIME = { tPast: 'yesterday', tFut: 'tomorrow', tProg: 'right now' };
+
 const Combo = {
   patterns: COMBO_PATTERNS,
   pattern(id) { return COMBO_PATTERNS.find(p => p.id === id); },
@@ -102,6 +120,7 @@ const Combo = {
     for (const c of p.cols) {
       if (c.fixed) { t[c.k] = c.fixed.map(w => ({ w, fixed: true })); continue; }
       let pool = lex[c.from] || []; if (c.noI) pool = pool.filter(x => x.w !== 'I');
+      if (c.noStative) pool = pool.filter(x => !STATIVE.includes(x.v));
       t[c.k] = sh(pool).slice(0, rows);
     }
     if (vcol && t.O) { // 동사마다 어울리는 목적어가 표 어딘가에 있게
@@ -139,12 +158,42 @@ const Combo = {
       if (bb) pick[c.k] = bb.x; else missing.push(c);
     }
     if (missing.length) return { missing, pick };
+    const g = this.grade(p, pick, input);
+    g.key = p.cols.filter(c => !c.fixed || table[c.k].length > 1).map(c => pick[c.k].w || pick[c.k].v).join('|');
+    return g;
+  },
+  // 고른 칸(pick)이 정해졌을 때: 맞는 문장을 만들어 학습자 문장과 비교
+  grade(p, pick, input) {
     const r = p.make(pick); const expect = this.sentence(r);
     // 동사·be·do 의 다른 모양은 오타로 봐주지 않음 (drank ↔ drink, sent ↔ send)
     const avoid = ['am is are was were be been being do does did has have had'];
     for (const c of p.cols) if ((c.from === 'vt' || c.from === 'vi') && pick[c.k]) avoid.push(this.forms(c, pick[c.k]).join(' '));
     const g = Grader.text(input, [expect], { avoid: avoid.join(' ') });
-    return { pick, expect, ok: g.ok, typo: g.typo, diff: g.diff, notes: r.notes, explain: g.ok ? [] : Grader.explain(input), key: p.cols.filter(c => !c.fixed || table[c.k].length > 1).map(c => pick[c.k].w || pick[c.k].v).join('|') };
+    return { pick, expect, ok: g.ok, typo: g.typo, diff: g.diff, notes: r.notes, explain: g.ok ? [] : Grader.explain(input) };
   },
+  // 🔗 사슬: 이 문법의 문장이면 바꿔 말하기를 할 수 있어요
+  chainable(p) { return Object.prototype.hasOwnProperty.call(CHAIN_SKIP, p.id) && ['S', 'V', 'O'].every(k => p.cols.some(c => c.k === k)); },
+  // 학습자가 만든 pick → { base: 기준 문장, steps: [{ id, label, ask, from, fromSentence, give, subjNote, pick, expect, notes }] }
+  chain(p, pick, lex) {
+    if (!this.chainable(p) || !pick.S || !pick.V || !pick.O) return null;
+    const find = (list, w) => (lex[list] || []).find(x => x.w === w) || (lex[list] || [])[0];
+    const base = this.sentence(p.make(pick)); const stative = STATIVE.includes(pick.V.v); const steps = [];
+    for (const f of CHAIN_FORMS) {
+      if (f.id === CHAIN_SKIP[p.id] || (f.noStative && stative)) continue;
+      const tp = this.pattern(f.to); const prev = f.after && steps.find(s => s.id === f.after);
+      let S = pick.S, subjNote = '';
+      if ((f.to === 'q' || f.to === 'past-q') && S.w === 'I') { S = find('subj', 'you'); subjNote = '주어 I 는 <b>you</b> 로 바꿔요 (상대에게 묻는 질문)'; }
+      const tp2 = {}; const give = [];
+      for (const c of tp.cols) {
+        if (c.k === 'S') tp2.S = S; else if (c.k === 'V') tp2.V = pick.V; else if (c.k === 'O') tp2.O = pick.O;
+        else if (c.k === 'M') { const sm = p.cols.find(x => x.k === 'M'); const x = prev ? prev.pick.M : (sm && sm.from === c.from && pick.M) ? pick.M : find(c.from, CHAIN_TIME[c.from]); tp2.M = x; give.push(x); }
+        else if (c.fixed) tp2[c.k] = { w: c.fixed[0], fixed: true };
+      }
+      const r = tp.make(tp2);
+      steps.push({ id: f.id, label: f.label, ask: f.ask, to: tp.id, from: prev ? prev.id : 'base', fromSentence: prev ? prev.expect : base, give, subjNote, pick: tp2, expect: this.sentence(r), notes: r.notes });
+    }
+    return { base, steps };
+  },
+  gradeStep(step, input) { if (!Grader.tokens(input).length) return { empty: true }; return this.grade(this.pattern(step.to), step.pick, input); },
 };
 if (typeof module !== 'undefined') module.exports = { Combo, Inflect, COMBO_PATTERNS };

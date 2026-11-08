@@ -31,6 +31,19 @@ Views.home = () => {
   $$('#crows button').forEach(b => b.onclick = () => { s.comboRows = +b.dataset.v; Store.save(); Views.home(); });
 };
 
+function comboFb(r, chain) {
+  if (!r) return `<div class="small muted">마침표·대문자는 안 따져요. 줄임말(doesn't, I'm)도 돼요.</div>`;
+  if (r.empty) return '';
+  if (r.missing) return `<div class="fb fix"><b>표에 있는 낱말로 만들어요.</b><div class="small">못 찾은 칸: ${r.missing.map(c => `<span class="cf r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</span>`).join(' ')}</div></div>`;
+  const notes = `<ul class="combo-notes">${r.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
+  if (r.ok) return `<div class="fb good"><b>✓ 맞아요${r.dup ? ' — 이미 만든 조합이에요. 다른 칸을 골라 봐요' : ''}</b><div class="combo-sent">${esc(r.expect)}</div>${r.typo ? `<div class="small">오타: ${esc(r.typo.got)} → <b>${esc(r.typo.want)}</b></div>` : ''}${notes}${r.chainOk ? `<div class="chain-go"><button class="btn sm" id="cchain">🔗 이 문장 바꿔 말하기 <span class="muted">(부정·질문·과거·미래…)</span></button></div>` : ''}</div>`;
+  // 고칠 곳: 어느 낱말이 틀렸는지(줄 긋기) + 이유만. 바른 모양은 「맞는 문장 보기」를 눌러야 보임(스스로 고치기)
+  const diff = r.diff ? `<div class="diffline">${r.diff.got.map(w => `<span class="${w.ok ? 'w-ok' : 'w-bad'}">${esc(w.w)}</span>`).join(' ')}</div>${r.reveal && r.diff.missing.length ? `<div class="small">빠졌거나 모양이 다른 낱말: ${r.diff.missing.map(w => `<b>${esc(w)}</b>`).join(', ')}</div>` : ''}` : '';
+  const hints = `<ul class="combo-notes">${r.notes.map(n => `<li>${r.reveal ? n : CV.hint(n)}</li>`).join('')}</ul>`;
+  return `<div class="fb fix"><b>✏️ 고칠 곳이 있어요</b>${diff}${hints}${(r.explain || []).map(e => `<div class="small">💡 ${e}</div>`).join('')}
+    ${r.reveal ? `<div class="combo-sent">${esc(r.expect)}</div><div class="small muted">${chain ? '보고 따라 쓰면 점수에 안 들어가요 — 다음 단계로 넘어가요.' : '보고 따라 쓰면 안 세요 — 다른 조합으로 하나 더 만들어 봐요.'}</div>` : `<div class="small muted">${chain ? '다시 써서 맞혀 봐요.' : '같은 칸으로 다시 써서 맞히면 이 표 개수에 들어가요.'} <button class="btn xs" id="cshow">맞는 문장 보기</button></div>`}</div>`;
+}
+
 const CPlay = {
   start(id) {
     const p = Combo.pattern(id); if (!p) { UI.go(''); return; }
@@ -58,24 +71,14 @@ const CPlay = {
     $('#shuffle').onclick = () => { this.newTable(); this.render(); UI.toast('🔀 새 표'); };
     $$('.cc').forEach(b => b.onclick = () => { if (!b.dataset.ko) return; if (!(Store.data.settings.comboKo ?? true)) { const k = b.querySelector('.cc-ko'); if (k) k.remove(); else b.insertAdjacentHTML('beforeend', `<span class="cc-ko">${esc(b.dataset.ko)}</span>`); } });
     const sh = $('#cshow'); if (sh) sh.onclick = () => { this.last.reveal = true; this.render(); };
+    const cc = $('#cchain'); if (cc) cc.onclick = () => CChain.start(this.p, this.last.pick);
     if (!matchMedia('(pointer: coarse)').matches) inp.focus({ preventScroll: true });
     if (this.last && this.scrollFb) { this.scrollFb = false; const f = $('#cfb'); if (f) f.scrollIntoView({ block: 'nearest' }); }
   },
-  fb() {
-    const r = this.last; if (!r) return `<div class="small muted">마침표·대문자는 안 따져요. 줄임말(doesn't, I'm)도 돼요.</div>`;
-    if (r.empty) return '';
-    if (r.missing) return `<div class="fb fix"><b>표에 있는 낱말로 만들어요.</b><div class="small">못 찾은 칸: ${r.missing.map(c => `<span class="cf r-${COL_ROLE[c.k] || 'M'}">${esc(c.label)}</span>`).join(' ')}</div></div>`;
-    const notes = `<ul class="combo-notes">${r.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
-    if (r.ok) return `<div class="fb good"><b>✓ 맞아요${r.dup ? ' — 이미 만든 조합이에요. 다른 칸을 골라 봐요' : ''}</b><div class="combo-sent">${esc(r.expect)}</div>${r.typo ? `<div class="small">오타: ${esc(r.typo.got)} → <b>${esc(r.typo.want)}</b></div>` : ''}${notes}</div>`;
-    // 고칠 곳: 어느 낱말이 틀렸는지(줄 긋기) + 이유만. 바른 모양은 「맞는 문장 보기」를 눌러야 보임(스스로 고치기)
-    const diff = r.diff ? `<div class="diffline">${r.diff.got.map(w => `<span class="${w.ok ? 'w-ok' : 'w-bad'}">${esc(w.w)}</span>`).join(' ')}</div>${r.reveal && r.diff.missing.length ? `<div class="small">빠졌거나 모양이 다른 낱말: ${r.diff.missing.map(w => `<b>${esc(w)}</b>`).join(', ')}</div>` : ''}` : '';
-    const hints = `<ul class="combo-notes">${r.notes.map(n => `<li>${r.reveal ? n : CV.hint(n)}</li>`).join('')}</ul>`;
-    return `<div class="fb fix"><b>✏️ 고칠 곳이 있어요</b>${diff}${hints}${(r.explain || []).map(e => `<div class="small">💡 ${e}</div>`).join('')}
-      ${r.reveal ? `<div class="combo-sent">${esc(r.expect)}</div><div class="small muted">보고 따라 쓰면 안 세요 — 다른 조합으로 하나 더 만들어 봐요.</div>` : `<div class="small muted">같은 칸으로 다시 써서 맞히면 이 표 개수에 들어가요. <button class="btn xs" id="cshow">맞는 문장 보기</button></div>`}</div>`;
-  },
+  fb() { return comboFb(this.last); },
   check() {
     const v = $('#cin').value.trim(); if (!v) return;
-    const prev = this.last; const r = Combo.judge(this.p, this.table, v); this.last = r; this.scrollFb = true; if (!r.empty) CV.touch(this.p.id);
+    const prev = this.last; const r = Combo.judge(this.p, this.table, v); this.last = r; if (r.ok) r.chainOk = Combo.chainable(this.p); this.scrollFb = true; if (!r.empty) CV.touch(this.p.id);
     if (r.ok) {
       const seen = this.made.some(m => Combo.judge(this.p, this.table, m).key === r.key);
       const peeked = prev && prev.reveal && prev.key === r.key; // 정답을 보고 같은 조합을 쓴 건 안 셈
@@ -86,6 +89,65 @@ const CPlay = {
       Store.save(); const badges = Badges.check(); if (goal || x.ups.length || badges.length) UI.reward({ goal, ups: x.ups, badges }); UI.topbar();
     } else { if (!r.missing && !r.empty) Game.stat('comboFix'); Sfx.wrong(); this.keep = v; Store.save(); }
     this.render();
+  },
+};
+// 🔗 바꿔 말하기 사슬: 방금 스스로 만든 문장을 부정 → 질문 → 과거 → 미래 … 로 직접 바꿔 써요. 바꾼 정답은 보여 주지 않고, 그 문법 설명만 접어 두어요.
+const CChain = {
+  start(p, pick) {
+    const c = Combo.chain(p, pick, COMBO_LEX); if (!c) return;
+    this.p = p; this.c = c; this.i = 0; this.done = []; this.last = null; this.skipped = 0; this.render(); window.scrollTo(0, 0);
+  },
+  step() { return this.c.steps[this.i]; },
+  dots() {
+    return this.c.steps.map((s, k) => `<span class="chip-step ${k < this.i ? (this.done[k] === 'ok' ? 'done' : 'skip') : k === this.i ? 'on' : ''}">${k < this.i && this.done[k] === 'ok' ? '✓ ' : ''}${esc(s.label)}</span>`).join('<span class="cf-plus">›</span>');
+  },
+  render() {
+    const c = this.c; if (this.i >= c.steps.length) { this.finish(); return; }
+    const s = this.step(), tp = Combo.pattern(s.to), r = this.last, ok = r && r.ok;
+    $('#view').innerHTML = `<div class="page combo-play combo-chain">
+      <div class="combo-top"><button class="btn xs" id="chback">← 표로 돌아가기</button><span class="combo-count">🔗 바꿔 말하기 <b>${this.i + 1}</b> / ${c.steps.length}</span></div>
+      <div class="card"><div class="chain-steps">${this.dots()}</div>
+        <div class="small muted">${s.from === 'base' ? '내가 만든 문장' : `방금 바꾼 ${esc(c.steps.find(x => x.id === s.from).label)} 문장`}</div>
+        <div class="combo-sent">${esc(s.fromSentence)}</div>
+        <div class="chain-ask">➡ ${s.ask} 바꿔 써 보세요</div>
+        ${s.give.length ? `<div class="small">이 낱말을 넣어요: ${s.give.map(x => `<b>${esc(x.w)}</b> (${esc(x.ko)})`).join(', ')}</div>` : ''}
+        ${s.subjNote ? `<div class="small">${s.subjNote}</div>` : ''}
+        <details class="chain-rule"><summary>📏 막히면: ${esc(tp.title)} 문법 보기</summary><div class="combo-rule">${tp.rule}</div></details></div>
+      <div class="card"><div class="combo-in"><input id="chin" type="text" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="바꾼 문장을 직접 쓰세요" enterkeyhint="done"${ok ? ' disabled' : ''}><button class="btn primary" id="chgo"${ok ? ' disabled' : ''}>확인</button></div>
+        <div id="chfb">${comboFb(r, true)}</div>
+        ${ok ? `<button class="btn primary wide" id="chnext">${this.i + 1 === c.steps.length ? '🎉 마무리' : '다음 ▶'}</button>` : `<div class="chain-skip"><button class="btn xs" id="chskip">건너뛰기</button></div>`}</div>
+    </div>`;
+    const inp = $('#chin'); if (this.keep) { inp.value = this.keep; this.keep = null; }
+    $('#chback').onclick = () => CPlay.render();
+    if (!ok) { $('#chgo').onclick = () => this.check(); inp.onkeydown = (e) => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); this.check(); } }; $('#chskip').onclick = () => this.next('skip'); }
+    else $('#chnext').onclick = () => this.next(this.peeked ? 'peek' : 'ok');
+    const sh = $('#cshow'); if (sh) sh.onclick = () => { this.last.reveal = true; this.peeked = true; this.render(); };
+    if (!ok && !matchMedia('(pointer: coarse)').matches) inp.focus({ preventScroll: true });
+    if (this.last && this.scrollFb) { this.scrollFb = false; const f = $('#chfb'); if (f) f.scrollIntoView({ block: 'nearest' }); }
+  },
+  check() {
+    const v = $('#chin').value.trim(); if (!v) return;
+    const s = this.step(); const r = Combo.gradeStep(s, v); if (r.empty) return;
+    const was = this.last; this.last = r; this.scrollFb = true; CV.touch(this.p.id);
+    if (r.ok) {
+      this.peeked = !!(was && was.reveal); Sfx.pass();
+      if (!this.peeked) { Game.stat('comboChain'); const goal = Game.tick(); const x = Game.addXp(CONFIG.COMBO_XP || 6); Store.save(); const badges = Badges.check(); if (goal || x.ups.length || badges.length) UI.reward({ goal, ups: x.ups, badges }); UI.topbar(); }
+      else r.notes = r.notes.concat(['정답을 본 뒤라 점수에는 안 들어가요']);
+    } else { if (!r.empty) Game.stat('comboFix'); Sfx.wrong(); this.keep = v; this.peeked = false; Store.save(); }
+    this.render();
+  },
+  next(how) { this.done[this.i] = how; this.i++; this.last = null; this.peeked = false; this.render(); window.scrollTo(0, 0); },
+  finish() {
+    const c = this.c, okN = this.done.filter(x => x === 'ok').length;
+    if (okN === c.steps.length) { Game.stat('comboChains'); Sfx.clear(); Confetti.burst(100); Store.save(); const badges = Badges.check(); if (badges.length) UI.reward({ badges }); }
+    $('#view').innerHTML = `<div class="page combo-play combo-chain">
+      <div class="card"><div class="card-h">${okN === c.steps.length ? '🎉 사슬 완성!' : '🔗 사슬 끝'}</div>
+        <p class="small muted">스스로 바꿔 쓴 문장: <b>${okN}</b> / ${c.steps.length}${okN < c.steps.length ? ' — 건너뛰거나 정답을 본 단계는 안 세요' : ''}</p>
+        <div class="small muted">내가 만든 문장</div><div class="combo-sent">${esc(c.base)}</div>
+        <ol class="made">${c.steps.map((s, k) => `<li><span class="small muted">${esc(s.label)}</span> ${esc(s.expect)}${this.done[k] === 'ok' ? ' ✓' : ''}</li>`).join('')}</ol></div>
+      <div class="card"><button class="btn primary wide" id="chagain">🔁 같은 문장 다시 바꿔 보기</button><button class="btn wide" id="chback">← 표로 돌아가기</button></div></div>`;
+    $('#chagain').onclick = () => { this.i = 0; this.done = []; this.last = null; this.peeked = false; this.render(); window.scrollTo(0, 0); };
+    $('#chback').onclick = () => { CPlay.render(); window.scrollTo(0, 0); };
   },
 };
 Views.p = (id) => CPlay.start(id);

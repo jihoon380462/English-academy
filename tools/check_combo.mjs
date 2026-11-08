@@ -4,7 +4,7 @@ import fs from 'node:fs'; import path from 'node:path'; import vm from 'node:vm'
 import { ROOT } from './load_content.mjs';
 const ctx = vm.createContext({ console, Math, JSON, Object, Array, String, Number, RegExp, Set, Map });
 for (const f of ['core/config.js', 'core/util.js', 'shared/contractions.js', 'shared/mistakes.js', 'core/grader.js', 'core/combo.js', 'courses/combo/content.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
-const { Combo, Inflect, COMBO_LEX, Grader } = vm.runInContext('({ Combo, Inflect, COMBO_LEX, Grader })', ctx);
+const { Combo, Inflect, COMBO_LEX, Grader, STATIVE } = vm.runInContext('({ Combo, Inflect, COMBO_LEX, Grader, STATIVE })', ctx);
 let fails = 0, n = 0; const F = (m) => { fails++; if (fails <= 40) console.log('  ✗ ' + m); };
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
 
@@ -59,4 +59,41 @@ for (const p of Combo.patterns) {
 }
 // 4) 표 밖 낱말·빈 입력
 { const p = Combo.pattern('svo'); const tb = Combo.table(p, COMBO_LEX, 6, rnd); n++; const r = Combo.judge(p, tb, 'hello world'); if (r.ok || !r.missing) F('표에 없는 낱말인데 칸을 찾았다고 함'); n++; if (!Combo.judge(p, tb, '  ').empty) F('빈 입력'); }
+// 5) 🔗 바꿔 말하기 사슬: 문법마다 표 200개 × 무작위 조합 → 단계마다 기대 문장 통과 · 줄임말 · 틀린 모양 오답
+{
+  const srcs = Combo.patterns.filter(p => Combo.chainable(p)); let steps = 0; console.log('\n  사슬 시작 문법: ' + srcs.map(p => p.id).join(' '));
+  for (const p of srcs) {
+    for (let t = 0; t < 200; t++) {
+      const tb = Combo.table(p, COMBO_LEX, 6, rnd); const pick = {}; for (const c of p.cols) pick[c.k] = tb[c.k][Math.floor(rnd() * tb[c.k].length)];
+      const ch = Combo.chain(p, pick, COMBO_LEX); if (!ch) { F(`${p.id}: 사슬이 안 만들어짐`); continue; }
+      const ids = ch.steps.map(s => s.id); n++;
+      if (new Set(ids).size !== ids.length) F(`${p.id}: 사슬 단계 중복 ${ids}`);
+      if (ids.length < 6) F(`${p.id}: 사슬 단계가 ${ids.length}개뿐 (${ids})`);
+      if (ch.steps.some(s => s.id === (({ svo: 'pres', svom: 'pres' })[p.id] || p.id) && p.id !== 'going')) F(`${p.id}: 자기 자신으로 바꾸는 단계가 있음 ${ids}`);
+      if (STATIVE.includes(pick.V.v) && ids.includes('prog')) F(`${p.id}: 상태 동사 ${pick.V.v} 로 진행형 단계가 생김`);
+      for (const s of ch.steps) {
+        steps++; const want = s.expect; n++;
+        const r = Combo.gradeStep(s, want); if (!r.ok) F(`${p.id}→${s.id}: 기대 문장 「${want}」 이 통과 못 함`);
+        const low = want.toLowerCase().replace(/[.?]$/, ''); n++; if (!Combo.gradeStep(s, low).ok) F(`${p.id}→${s.id}: 소문자·마침표 없이 「${low}」 실패`);
+        const ct = contract(want); if (ct !== want) { n++; if (!Combo.gradeStep(s, ct).ok) F(`${p.id}→${s.id}: 줄임말 「${ct}」 실패`); }
+        if (s.give.length && !s.give.every(x => want.includes(x.w))) F(`${p.id}→${s.id}: 알려 준 낱말이 문장에 없음 ${s.give.map(x => x.w)} / ${want}`);
+        if (s.from !== 'base' && !ids.includes(s.from)) F(`${p.id}→${s.id}: 이어 바꿀 단계 ${s.from} 가 사슬에 없음`);
+        if (s.fromSentence === want) F(`${p.id}→${s.id}: 바꿀 문장과 정답이 같음`);
+        if (s.id === 'q' || s.id === 'past-q') { if (!want.endsWith('?')) F(`${p.id}→${s.id}: 질문인데 물음표 없음 ${want}`); if (pick.S.w === 'I' && !/\byou\b/i.test(want)) F(`${p.id}→${s.id}: I 인데 you 로 안 바뀜 ${want}`); }
+        // 흔한 실수: 동사 모양 (원형 ↔ -s ↔ 과거 ↔ -ing)
+        const V = pick.V; const forms = [V.v, Inflect.s3(V.v), Inflect.past(V), Inflect.ing(V)];
+        const hit = forms.find(f => new RegExp('\\b' + f + '\\b').test(want));
+        for (const alt of forms) { if (!hit || alt === hit || new RegExp('\\b' + alt + '\\b').test(want)) continue; const bad = want.replace(new RegExp('\\b' + hit + '\\b'), alt); n++; if (Combo.gradeStep(s, bad).ok) F(`${p.id}→${s.id}: 틀린 문장 「${bad}」 이 정답 처리됨 (기대 ${want})`); }
+        // 안 바꾸고 그대로 베끼기는 오답 (바꿀 문장 ≠ 정답일 때)
+        n++; if (Combo.gradeStep(s, s.fromSentence).ok) F(`${p.id}→${s.id}: 바꿀 문장 그대로 베껴도 정답 처리 「${s.fromSentence}」`);
+      }
+    }
+  }
+  console.log(`  사슬 단계 ${steps}개 검사`);
+  // 진행형 표에는 상태 동사가 없어야 함
+  for (let t = 0; t < 100; t++) { const tb = Combo.table(Combo.pattern('prog'), COMBO_LEX, 8, rnd); n++; if (tb.V.some(v => STATIVE.includes(v.v))) F('진행형 표에 상태 동사가 있음'); }
+  // 눈으로 확인: 예시 사슬
+  const p0 = Combo.pattern('svo'); const pk = { S: COMBO_LEX.subj.find(x => x.w === 'I'), V: COMBO_LEX.vt.find(x => x.v === 'eat'), O: COMBO_LEX.obj.find(x => x.w === 'pizza') };
+  const ex = Combo.chain(p0, pk, COMBO_LEX); console.log('\n  예) ' + ex.base); for (const s of ex.steps) console.log(`     ${s.label.padEnd(6)} ← ${s.from === 'base' ? '기준' : s.from}  ${s.expect}${s.subjNote ? '   (' + s.subjNote.replace(/<[^>]+>/g, '') + ')' : ''}`);
+}
 console.log(`\n확인 ${n}건 · FAILS ${fails}`); process.exit(fails ? 1 : 0);

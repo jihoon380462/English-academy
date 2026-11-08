@@ -330,6 +330,49 @@ def run():
             nav(BASE + 'courses/combo/#p/be-adj'); page.wait_for_selector('.combo-last'); check('3일 전' in page.inner_text('.combo-last'), '조합 표: 들어가면 마지막 학습 날짜 안 보임'); layout('조합 표(마지막 학습)')
             page.evaluate("delete Store.data.combo['there']; Store.save()"); nav(BASE + 'courses/combo/#p/there'); page.wait_for_selector('.combo-last'); check('처음' in page.inner_text('.combo-last'), '조합 표: 처음 문법 안내 없음')
             nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home'); check('아직 안 함' in page.locator('.combo-row[href="#p/there"]').inner_text(), '조합 홈: 안 한 문법 표시'); layout('조합 홈(날짜)'); shot('combo-home-dates')
+            # 🔗 바꿔 말하기 사슬: 표에서 맞게 만든 뒤 → 사슬 버튼 → 단계마다 직접 바꿔 쓰기 (틀려 보기·정답 보기·건너뛰기·끝까지)
+            for cid in ('svo', 'svom', 'past', 'neg', 'q'):
+                nav(BASE + f'courses/combo/#p/{cid}'); page.wait_for_selector('.ctab'); page.wait_for_timeout(40)
+                good = page.evaluate(r'''(() => { const p = CPlay.p, t = CPlay.table; const pick = {}; for (const c of p.cols) { const a = t[c.k]; pick[c.k] = a[Math.floor(Math.random() * a.length)]; } return Combo.sentence(p.make(pick)); })()''')
+                check(page.locator('#cchain').count() == 0, f'사슬 {cid}: 문장 쓰기 전인데 사슬 버튼이 있음')
+                page.fill('#cin', good + 'x'); page.keyboard.press('Enter'); page.wait_for_timeout(30)
+                check(page.locator('#cchain').count() == 0, f'사슬 {cid}: 틀린 문장인데 사슬 버튼이 보임')
+                page.fill('#cin', good); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
+                check(page.locator('#cchain').count() == 1, f'사슬 {cid}: 맞게 만든 뒤 사슬 버튼이 없음')
+                page.click('#cchain'); page.wait_for_selector('.combo-chain'); page.wait_for_timeout(40); closem()
+                n = page.evaluate('CChain.c.steps.length'); check(n >= 6, f'사슬 {cid}: 단계 {n}개')
+                check(page.locator('.chain-steps .chip-step').count() == n, f'사슬 {cid}: 단계 표시 수')
+                if cid == 'svo': layout('사슬 첫 단계'); shot('combo-chain')
+                tw = page.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth"); check(tw <= 2, f'사슬 {cid}: 가로 넘침 {tw}px')
+                body = page.inner_text('#view'); exp0 = page.evaluate('CChain.step().expect'); check(exp0 not in body, f'사슬 {cid}: 정답 「{exp0}」 이 화면에 보임')
+                check(page.evaluate('CChain.step().fromSentence') in body, f'사슬 {cid}: 바꿀 문장이 안 보임')
+                pre = page.evaluate('Store.data.stats.comboChain || 0'); preC = page.evaluate('Store.data.stats.comboChains || 0')
+                for i in range(n):
+                    exp = page.evaluate('CChain.step().expect'); lab = page.evaluate('CChain.step().label')
+                    if i == 0:   # 틀려 보기 → 정답을 안 보여 주고 입력이 남음 → 정답 보기 → 쓰기 (점수 없음) → 다음
+                        bad = ' '.join(exp.rstrip('.?').split()[1:]) or 'hello'
+                        page.fill('#chin', bad); page.keyboard.press('Enter'); page.wait_for_timeout(40)
+                        check(page.locator('#chfb .fb.fix').count() == 1, f'사슬 {cid}/{lab}: 틀린 「{bad}」 인데 고칠 곳이 안 나옴')
+                        check(exp not in page.inner_text('#chfb'), f'사슬 {cid}/{lab}: 틀렸을 때 정답을 바로 보여 줌')
+                        check(page.input_value('#chin') == bad, f'사슬 {cid}/{lab}: 틀린 뒤 입력이 지워짐')
+                        page.click('#cshow'); page.wait_for_timeout(30); check(exp in page.inner_text('#chfb'), f'사슬 {cid}/{lab}: 맞는 문장 보기 안 됨')
+                        page.fill('#chin', exp); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
+                        check(page.evaluate('Store.data.stats.comboChain || 0') == pre, f'사슬 {cid}: 정답 보고 쓴 단계가 점수에 들어감')
+                    elif i == 1:  # 건너뛰기
+                        page.click('#chskip'); page.wait_for_timeout(30); closem(); continue
+                    else:
+                        page.fill('#chin', exp.lower().rstrip('.?')); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
+                        check(page.locator('#chfb .fb.good').count() == 1, f'사슬 {cid}/{lab}: 맞는 문장 「{exp}」 이 안 맞다고 함 — {page.inner_text("#chfb")[:100]}')
+                    check(page.locator('#chnext').count() == 1, f'사슬 {cid}/{lab}: 다음 버튼 없음'); page.click('#chnext'); page.wait_for_timeout(30)
+                check(page.locator('#chagain').count() == 1, f'사슬 {cid}: 끝 화면이 안 나옴')
+                done = page.evaluate('Store.data.stats.comboChain || 0') - pre; check(done == n - 2, f'사슬 {cid}: 점수 {done} (기대 {n - 2})')
+                check(page.evaluate('Store.data.stats.comboChains || 0') == preC, f'사슬 {cid}: 건너뛰었는데 「사슬 완성」으로 셈')
+                if cid == 'svo': layout('사슬 끝 화면'); shot('combo-chain-end')
+                page.click('#chagain'); page.wait_for_timeout(30)   # 다시 → 전부 맞히면 사슬 완성
+                for i in range(n):
+                    page.fill('#chin', page.evaluate('CChain.step().expect')); page.keyboard.press('Enter'); page.wait_for_timeout(30); closem(); page.click('#chnext'); page.wait_for_timeout(20)
+                check(page.evaluate('Store.data.stats.comboChains || 0') == preC + 1, f'사슬 {cid}: 전부 맞혔는데 사슬 완성이 안 셈'); closem()
+                page.click('#chback'); page.wait_for_selector('.ctab'); check(page.locator('.combo-play .ctab').count() == 1, f'사슬 {cid}: 표로 돌아오기')
             page.goto(BASE); page.wait_for_selector('.hub-courses'); check(page.locator('.hub-courses a[href*="courses/combo/"]').count() >= 1, '허브: 조합 말하기 카드 없음')
 
         courses = A.course or ['basic', 'talk', 'grammar', 'read', 'dev', 'pattern', 'write', 'travel', 'work', 'phrasal']

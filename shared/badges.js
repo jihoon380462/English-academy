@@ -25,6 +25,8 @@ const BADGES = [
   { id: 'combo10', icon: '🧩', name: '내 문장 10', desc: '조합 말하기로 스스로 만든 문장 10개', cond: s => (s.comboMade || 0) >= 10 },
   { id: 'combo100', icon: '🏗️', name: '내 문장 100', desc: '조합 말하기로 스스로 만든 문장 100개', cond: s => (s.comboMade || 0) >= 100 },
   { id: 'combotable', icon: '🎯', name: '표 하나 완성', desc: '한 표로 서로 다른 문장 5개', cond: s => (s.comboTables || 0) >= 1 },
+  { id: 'chain1', icon: '🔗', name: '사슬 완성', desc: '만든 문장을 스스로 바꿔 말하기 사슬 하나 완성', cond: s => (s.comboChains || 0) >= 1 },
+  { id: 'chain30', icon: '🪢', name: '바꿔 말하기 30', desc: '조합 말하기 사슬에서 스스로 바꿔 쓴 문장 30개', cond: s => (s.comboChain || 0) >= 30 },
   { id: 'words30', icon: '📖', name: '단어 30', desc: '단어 카드 30장 외움', cond: s => (s.wordsLearned || 0) >= 30 },
   { id: 'words300', icon: '📚', name: '단어 300', desc: '단어 카드 300장 외움', cond: s => (s.wordsLearned || 0) >= 300 },
   { id: 'wordquiz10', icon: '🎯', name: '단어 만점', desc: '단어 퀴즈 10/10', cond: s => (s.wordQuizBest || 0) >= 10 },
