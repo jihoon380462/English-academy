@@ -295,9 +295,9 @@ def run():
                 cols = page.evaluate(f'Combo.pattern("{pid}").cols.length'); check(page.locator('.ctab th').count() == cols, f'{pid}: 열 수')
                 txt = page.inner_text('#view')
                 ex = page.evaluate(f'Combo.pattern("{pid}").ex'); check(ex not in txt, f'{pid}: 예문(정답 같은 문장) 「{ex}」 이 화면에 보임')
-                made = 0
                 for k in range(9):
                     # 사람처럼: 표에서 칸을 고르고 → 맞는 문장 / 흔한 실수 / 같은 조합 반복 을 섞어서 씀
+                    xp0 = page.evaluate('Store.data.xp')
                     case = page.evaluate(r"""(() => { const p = CPlay.p, t = CPlay.table; const pick = {}; for (const c of p.cols) { const a = t[c.k]; pick[c.k] = a[Math.floor(Math.random() * a.length)]; } const r = p.make(pick); const good = Combo.sentence(r);
                       let bad = good; const V = pick.V, S = pick.S;
                       if (V) { const forms = [V.v, Inflect.s3(V.v), Inflect.past(V), Inflect.ing(V)]; const hit = forms.find(f => new RegExp('\\b' + f + '\\b').test(good)); const alt = forms.find(f => f !== hit && !new RegExp('\\b' + f + '\\b').test(good)); if (hit && alt) bad = good.replace(new RegExp('\\b' + hit + '\\b'), alt); }
@@ -311,15 +311,13 @@ def run():
                         if pid == 'svo': layout('조합 고칠 곳'); shot('combo-fix')
                         page.click('#cshow'); page.wait_for_timeout(30); check(case['good'] in page.inner_text('#cfb'), f'{pid}: 맞는 문장 보기 안 됨')
                         page.fill('#cin', case['good']); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
-                        check(page.evaluate('CPlay.made.length') == made, f'{pid}: 정답 보고 쓴 조합이 개수에 들어감'); continue
+                        check(page.evaluate('Store.data.xp') == xp0, f'{pid}: 정답을 보고 쓴 문장에 XP 가 들어감'); continue
                     page.fill('#cin', case['good'].lower().rstrip('.?')); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
                     fbt = page.inner_text('#cfb'); check(page.locator('#cfb .fb.good').count() == 1, f'{pid}: 맞는 문장 「{case["good"]}」 이 안 맞다고 함 — {fbt[:120]}')
-                    n2 = page.evaluate('CPlay.made.length'); check(n2 in (made, made + 1), f'{pid}: 개수 이상 {made}→{n2}'); made = n2
-                    if k == 4:
-                        page.fill('#cin', case['good']); page.keyboard.press('Enter'); page.wait_for_timeout(40); check('이미 만든 조합' in page.inner_text('#cfb'), f'{pid}: 같은 조합 두 번인데 안내 없음'); check(page.evaluate('CPlay.made.length') == made, f'{pid}: 같은 조합이 두 번 셈')
+                    check(page.evaluate('Store.data.xp') > xp0, f'{pid}: 맞는 문장인데 XP 가 안 오름')
                 page.fill('#cin', 'hello my good world'); page.keyboard.press('Enter'); page.wait_for_timeout(30); check('표에 있는 낱말로' in page.inner_text('#cfb'), f'{pid}: 표 밖 낱말 안내 없음')
-                page.click('#shuffle'); page.wait_for_timeout(40); check(page.evaluate('CPlay.made.length') == 0, f'{pid}: 새 표인데 개수 그대로')
-            check(page.evaluate('(Store.data.stats.comboMade || 0) >= 50'), f'조합: 만든 문장 통계 {page.evaluate("Store.data.stats.comboMade")}')
+                page.click('#shuffle'); page.wait_for_timeout(40); check(page.locator('.ctab').count() == 1, f'{pid}: 새 표')
+                body2 = page.inner_text('#view'); check('만든 문장' not in body2 and '이미 만든' not in body2, f'{pid}: 「만든 문장」 문구가 아직 보임')
             page.reload(); page.wait_for_timeout(200); nav(BASE + 'courses/combo/'); page.wait_for_selector('.combo-home')
             home = page.inner_text('#view'); check('내가 만든 문장' not in home and '만든 문장' not in home, '조합 홈: 「만든 문장」 개수가 아직 보임')
             check(page.locator('.combo-row').filter(has_text='마지막 학습 오늘').count() == len(ids), f'조합 홈: 마지막 학습 날짜 {page.locator(".combo-row").filter(has_text="마지막 학습 오늘").count()}/{len(ids)}')
@@ -346,7 +344,7 @@ def run():
                 tw = page.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth"); check(tw <= 2, f'사슬 {cid}: 가로 넘침 {tw}px')
                 body = page.inner_text('#view'); exp0 = page.evaluate('CChain.step().expect'); check(exp0 not in body, f'사슬 {cid}: 정답 「{exp0}」 이 화면에 보임')
                 check(page.evaluate('CChain.step().fromSentence') in body, f'사슬 {cid}: 바꿀 문장이 안 보임')
-                pre = page.evaluate('Store.data.stats.comboChain || 0'); preC = page.evaluate('Store.data.stats.comboChains || 0')
+                preC = page.evaluate('Store.data.stats.comboChains || 0')
                 for i in range(n):
                     exp = page.evaluate('CChain.step().expect'); lab = page.evaluate('CChain.step().label')
                     if i == 0:   # 틀려 보기 → 정답을 안 보여 주고 입력이 남음 → 정답 보기 → 쓰기 (점수 없음) → 다음
@@ -355,9 +353,9 @@ def run():
                         check(page.locator('#chfb .fb.fix').count() == 1, f'사슬 {cid}/{lab}: 틀린 「{bad}」 인데 고칠 곳이 안 나옴')
                         check(exp not in page.inner_text('#chfb'), f'사슬 {cid}/{lab}: 틀렸을 때 정답을 바로 보여 줌')
                         check(page.input_value('#chin') == bad, f'사슬 {cid}/{lab}: 틀린 뒤 입력이 지워짐')
-                        page.click('#cshow'); page.wait_for_timeout(30); check(exp in page.inner_text('#chfb'), f'사슬 {cid}/{lab}: 맞는 문장 보기 안 됨')
+                        xpa = page.evaluate('Store.data.xp'); page.click('#cshow'); page.wait_for_timeout(30); check(exp in page.inner_text('#chfb'), f'사슬 {cid}/{lab}: 맞는 문장 보기 안 됨')
                         page.fill('#chin', exp); page.keyboard.press('Enter'); page.wait_for_timeout(40); closem()
-                        check(page.evaluate('Store.data.stats.comboChain || 0') == pre, f'사슬 {cid}: 정답 보고 쓴 단계가 점수에 들어감')
+                        check(page.evaluate('Store.data.xp') == xpa, f'사슬 {cid}: 정답 보고 쓴 단계에 XP 가 들어감')
                     elif i == 1:  # 건너뛰기
                         page.click('#chskip'); page.wait_for_timeout(30); closem(); continue
                     else:
@@ -365,7 +363,8 @@ def run():
                         check(page.locator('#chfb .fb.good').count() == 1, f'사슬 {cid}/{lab}: 맞는 문장 「{exp}」 이 안 맞다고 함 — {page.inner_text("#chfb")[:100]}')
                     check(page.locator('#chnext').count() == 1, f'사슬 {cid}/{lab}: 다음 버튼 없음'); page.click('#chnext'); page.wait_for_timeout(30)
                 check(page.locator('#chagain').count() == 1, f'사슬 {cid}: 끝 화면이 안 나옴')
-                done = page.evaluate('Store.data.stats.comboChain || 0') - pre; check(done == n - 2, f'사슬 {cid}: 점수 {done} (기대 {n - 2})')
+                check(page.evaluate('Store.data.xp') > xpa, f'사슬 {cid}: 맞게 바꿔 쓴 단계에 XP 가 안 오름')
+                check('✓ 맞아요' not in page.inner_text('#view') and '내가 만든 문장' not in page.inner_text('#view'), f'사슬 {cid}: 끝 화면에 목록·문구가 보임')
                 check(page.evaluate('Store.data.stats.comboChains || 0') == preC, f'사슬 {cid}: 건너뛰었는데 「사슬 완성」으로 셈')
                 if cid == 'svo': layout('사슬 끝 화면'); shot('combo-chain-end')
                 page.click('#chagain'); page.wait_for_timeout(30)   # 다시 → 전부 맞히면 사슬 완성

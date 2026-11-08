@@ -1,7 +1,7 @@
 // core/config.js — 버전·코스 목록·수치·문구 (수정할 때 APP_VERSION 을 올리고 node tools/stamp.mjs)
 // 저장 키는 eng.* / 캐시는 english-shell-* — 같은 출처의 파이썬 아카데미(academy.*, academy-shell-*)와 절대 겹치면 안 된다 (SPEC 6절)
 const CONFIG = {
-  APP_VERSION: '0.6.0',
+  APP_VERSION: '0.6.1',
   SCHEMA_VERSION: 1,
   KEY_PREFIX: 'eng.',
   HUB_PATH: '../../index.html',
@@ -46,7 +46,7 @@ const CONFIG = {
   COMBO_MULT: [[10, 1.5], [5, 1.3], [3, 1.15]],
   REVIEW_XP: 5,
   CARD_XP: 2,
-  COMBO_XP: 6, // 🧩 조합 말하기: 스스로 만든 문장 1개
+  COMBO_XP: 6, // 🧩 조합 말하기: 스스로 맞게 쓴 문장 1개(바꿔 말하기 한 단계도 같음)
   MAX_LEVEL: 60,
   xpForLevel: (L) => 60 + L * 25,
   TITLES: ['첫걸음', '알파벳 탐험가', '문장 조립공', '단어 수집가', '대화 견습생', '여행 회화러', '문장 장인', '영어 모험가', '자신감 스피커', '영어 달인', '마스터', '전설'],
