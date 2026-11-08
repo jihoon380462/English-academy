@@ -306,7 +306,7 @@ def run():
                     xp0 = page.evaluate('Store.data.xp')
                     case = page.evaluate(r"""(() => { const p = CPlay.p, t = CPlay.table; const pick = {}; for (const c of p.cols) { const a = t[c.k]; pick[c.k] = a[Math.floor(Math.random() * a.length)]; } const r = p.make(pick); const good = Combo.sentence(r);
                       let bad = good; const V = pick.V, S = pick.S;
-                      if (V) { const forms = [V.v, Inflect.s3(V.v), Inflect.past(V), Inflect.ing(V)]; const hit = forms.find(f => new RegExp('\\b' + f + '\\b').test(good)); const alt = forms.find(f => f !== hit && !new RegExp('\\b' + f + '\\b').test(good)); if (hit && alt) bad = good.replace(new RegExp('\\b' + hit + '\\b'), alt); }
+                      if (V) { const forms = [V.v, Inflect.s3(V.v), Inflect.past(V), Inflect.ing(V)]; const hit = forms.find(f => new RegExp('\\b' + f + '\\b').test(good)); const alt = forms.find(f => f !== hit && !new RegExp('\\b' + f + '\\b').test(good) && !(CPlay.p.id === 'see-ing' && f === V.v)); if (hit && alt) bad = good.replace(new RegExp('\\b' + hit + '\\b'), alt); }
                       if (bad === good) bad = good.replace(/\b(am|is|are|was|were)\b/, m => ({ am: 'is', is: 'are', are: 'is', was: 'were', were: 'was' })[m]);
                       return { good, bad, key: Object.values(pick).map(x => x.w || x.v).join('|') }; })()""")
                     if k == 2 and case['bad'] != case['good']:
